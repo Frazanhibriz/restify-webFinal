@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { RiArrowLeftLine, RiFileTextLine, RiEyeLine, RiEyeOffLine, RiStarFill, RiStarLine, RiCameraLine } from 'react-icons/ri';
@@ -409,6 +409,12 @@ export default function ProfilePage() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const router = useRouter();
 
+  const selectedBookingRef = useRef<Booking | null>(null);
+
+  useEffect(() => {
+    selectedBookingRef.current = selectedBooking;
+  }, [selectedBooking]);
+
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -573,25 +579,29 @@ export default function ProfilePage() {
       
       setBookings(mapped);
 
-      
-      if (selectedBooking) {
-        const updatedDetail = mapped.find((item: Booking) => item.id === selectedBooking.id);
+      const currentSelected = selectedBookingRef.current;
+      if (currentSelected) {
+        const updatedDetail = mapped.find((item: Booking) => item.id === currentSelected.id);
         if (updatedDetail) {
-          setSelectedBooking(updatedDetail);
+          if (
+            updatedDetail.rawStatus !== currentSelected.rawStatus ||
+            updatedDetail.rawPaymentStatus !== currentSelected.rawPaymentStatus
+          ) {
+            setSelectedBooking(updatedDetail);
+          }
         }
       }
     } catch (error) {
-      console.error("Gagal memuat riwayat booking:", error);
+      console.warn("Gagal memuat riwayat booking:", error);
     }
   };
 
   useEffect(() => {
     fetchBookingHistory();
 
-    
     const interval = setInterval(fetchBookingHistory, 5000);
     return () => clearInterval(interval);
-  }, [selectedBooking]);
+  }, []);
 
   const handleLogout = async () => {
     await logout();

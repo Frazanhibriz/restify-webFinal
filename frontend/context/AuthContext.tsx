@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const response = await api.get("/profile");
           setUser(normalizeUser(response.data.user));
         } catch (error) {
-          console.error("Failed to load profile", error);
+          console.warn("Failed to load profile", error);
           localStorage.removeItem("token");
           setToken(null);
           setUser(null);
