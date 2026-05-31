@@ -253,21 +253,28 @@ function HotelDetailContent() {
                         <div className="animate-fade-in">
                             <div className="flex justify-between items-center mb-8">
                                 <h3 className="text-xl font-bold">Apa Kata Tamu?</h3>
-                                <button onClick={() => setShowReview(true)} className="bg-restify-olive/10 text-restify-olive px-6 py-2.5 rounded-full text-xs font-black hover:bg-restify-olive hover:text-white transition-all">
-                                    ✏️ Tulis Ulasan
-                                </button>
                             </div>
                             <div className="space-y-6">
                             {hotelData.ratings?.length > 0 ? hotelData.ratings.map((r: any) => (
                                 <div key={r.id} className="p-6 bg-gray-50 rounded-[24px] border border-gray-100">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <img src={`https://ui-avatars.com/api/?name=${r.user?.name || 'User'}&background=random`} className="w-12 h-12 rounded-full border-2 border-white shadow-sm" />
+                                <div className="flex items-center gap-4 mb-3">
+                                    <img src={r.user?.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.name || 'User')}&background=random`} className="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover" />
                                     <div>
                                     <strong className="block text-sm">{r.user?.name}</strong>
                                     <div className="flex text-yellow-500 text-[10px]">{"★".repeat(r.rating)}</div>
                                     </div>
                                 </div>
-                                <p className="text-gray-600 text-sm italic">"{r.comment}"</p>
+                                {r.review && (
+                                    <p className="text-gray-600 text-sm italic mb-3">"{r.review}"</p>
+                                )}
+                                {r.image_url && (
+                                    <img
+                                    src={r.image_url}
+                                    alt="Foto ulasan"
+                                    className="w-full max-h-56 object-cover rounded-2xl mt-1 border border-gray-100"
+                                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                    />
+                                )}
                                 </div>
                             )) : <p className="text-gray-400 italic text-center py-10">Belum ada ulasan. Jadilah yang pertama memberikan ulasan!</p>}
                             </div>
