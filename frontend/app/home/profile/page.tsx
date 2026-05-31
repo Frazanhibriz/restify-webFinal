@@ -159,17 +159,7 @@ function BookingDetail({
     }
   };
 
-  const handleCheckout = async () => {
-    if (!confirm("Apakah Anda yakin ingin checkout secara mandiri sekarang?")) return;
-    try {
-      await api.post(`/user/checkout/${booking.id}`);
-      toast.success("Checkout berhasil! Terima kasih telah menginap.");
-      onActionSuccess();
-      onBack();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Gagal checkout.");
-    }
-  };
+
 
   const handleSubmitReview = async () => {
     if (!reviewText.trim()) {
@@ -307,15 +297,7 @@ function BookingDetail({
             </div>
           )}
 
-          {}
-          {booking.rawStatus === 'checked_in' && (
-            <button
-              onClick={handleCheckout}
-              className="w-full bg-orange-600 text-white rounded-xl py-3 text-xs font-black hover:bg-orange-700 transition-colors shadow-sm"
-            >
-              Check Out Mandiri
-            </button>
-          )}
+
 
           {}
           {booking.rawStatus === 'completed' && (
