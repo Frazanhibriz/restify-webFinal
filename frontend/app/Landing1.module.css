@@ -1,0 +1,33 @@
+.container {
+  position: fixed; /* 🔥 penting */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+
+  background-color: #5f7054;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  opacity: 1;
+  transition: opacity 1s ease;
+
+  z-index: 9999; /* biar di atas semua */
+}
+
+.fadeOut {
+  opacity: 0;
+}
+
+.logoWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logoImage {
+  width: 400px;
+  height: auto;
+}

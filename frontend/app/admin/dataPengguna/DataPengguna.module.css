@@ -1,0 +1,144 @@
+.container {
+  background: #f5f5f5;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.topbar img {
+  height: 90px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%;
+  margin: 30px auto;
+}
+
+.backBtn {
+  background: orangered;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.title {
+  flex: 1;
+  text-align: center;
+  margin-right: 60px;
+  font-weight: bold;
+}
+
+.table {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.tableHeader,
+.tableRow {
+  display: grid;
+  grid-template-columns: 70px 3fr 3fr 3fr;
+  padding: 12px;
+  align-items: center;
+  justify-items: center;
+}
+
+.tableHeader {
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+}
+
+.tableRow {
+  border-bottom: 1px solid #eee;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.btn.detail {
+  border: none;
+  border-radius: 8px;
+  background: #1e3a8a;
+  color: white;
+}
+
+.btn.delete {
+  border: none;
+  border-radius: 8px;
+  background: #dc2626;
+  color: white;
+}
+
+.btn img {
+  width: 16px;
+  height: 16px;
+}
+
+.addBtn {
+  background: #1877F2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.addBtn:hover {
+  opacity: 0.9;
+}
+
+.confirmBox {
+  grid-column: 1 / -1;
+  background: #FEFAE0;
+  padding: 10px 15px;
+  border-radius: 12px;
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 10px;
+}
+
+.btnTidak {
+  background: #5F6F52;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btnYa {
+  background: #FF3D00;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}

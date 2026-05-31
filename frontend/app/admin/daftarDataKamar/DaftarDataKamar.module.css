@@ -1,0 +1,170 @@
+.container {
+  width: 100%;
+  min-height: 10vh;
+  font-family: Arial, sans-serif;
+  padding: 40px 80px;
+  box-sizing: border-box;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.backBtn {
+  background-color: #ff4d00;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.title {
+  justify-self: center;
+  text-align: center;
+  font-weight: bold;
+}
+
+.subtitle {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.table {
+  border-top: 1px solid #ccc;
+}
+
+.tableHeader,
+.tableRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 12px 0;
+  align-items: center;
+  text-align: center;
+}
+
+.tableHeader {
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+}
+
+.tableRow {
+  border-bottom: 1px solid #eee;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 4px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plus {
+  background-color: #5c6f5c;
+  color: white;
+}
+
+.minus {
+  background-color: #f4b400;
+  color: white;
+}
+
+.topbar {
+  width: 100%;
+  padding: 15px 20px;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.topbar img {
+  width: 250px;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 10px;
+}
+
+.btnTidak {
+  background: #5F6F52;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btnYa {
+  background: #FF3D00 !important;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.confirmBox {
+  grid-column: 1 / -1;
+  background: #FEFAE0;
+  padding: 10px 15px;
+  border-radius: 12px;
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn.detail {
+  border: none;
+  border-radius: 8px;
+  background: #1e3a8a;
+  color: white;
+}
+
+.btn.delete {
+  border: none;
+  border-radius: 8px;
+  background: #dc2626;
+  color: white;
+}
+
+.btn img {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.addBtn {
+  background: #1877F2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 2;
+  justify-self: end;
+}
+
+.addBtn:hover {
+  opacity: 0.9;
+}

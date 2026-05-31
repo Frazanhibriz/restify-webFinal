@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 class AuthController extends Controller
 {
 
-    // REGISTER
+    
     public function register(RegisterRequest $request)
     {
         $data = $request->validated();
@@ -26,7 +26,7 @@ class AuthController extends Controller
             'email' => $data['email'],
             'phone' => $data['phone'] ?? null,
             'password' => Hash::make($data['password']),
-            'role_id' => 2, // role user/tamu
+            'role_id' => 2, 
             'hotel_id' => null
         ]);
 
@@ -52,7 +52,7 @@ class AuthController extends Controller
     }
 
 
-    // LOGIN
+    
     public function login(LoginRequest $request)
     {
         $data = $request->validated();
@@ -75,7 +75,7 @@ class AuthController extends Controller
     }
 
 
-    // UNTUK MELIHAT PROFILE
+    
     public function profile(Request $request)
     {
         $user = $request->user()->load('role');
@@ -105,7 +105,7 @@ class AuthController extends Controller
     }
 
 
-    // UPLOAD PROFILE PICTURE
+    
     public function uploadProfile(Request $request)
     {
         $request->validate([
@@ -114,7 +114,7 @@ class AuthController extends Controller
 
         $user = auth()->user();
 
-        // hapus foto lama jika ada
+        
         if ($user->profile_picture) {
 
             $oldPath = public_path('storage/' . $user->profile_picture);
@@ -124,11 +124,11 @@ class AuthController extends Controller
             }
         }
 
-        // simpan foto baru
+        
         $path = $request->file('profile_picture')
             ->store('profiles', 'public');
 
-        // update user
+        
         $user->update([
             'profile_picture' => $path
         ]);
@@ -141,7 +141,7 @@ class AuthController extends Controller
     }
 
 
-    // LOGOUT
+    
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -151,7 +151,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // FORGOT PASSWORD
+    
     public function forgotPassword(ForgotPasswordRequest $request)
     {
         $request->validate([
@@ -183,7 +183,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // RESET PASSWORD
+    
     public function resetPassword(resetPassword $request)
     {
         $data = $request->validated();
@@ -216,6 +216,29 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Password berhasil direset'
+        ]);
+    }
+
+    
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ]);
+
+        return response()->json([
+            'message' => 'Profil berhasil diperbarui',
+            'user' => $user->load('role')
         ]);
     }
 }

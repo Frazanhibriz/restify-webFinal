@@ -1,0 +1,1569 @@
+/* Layout Utama Halaman */
+.adminContainer {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+}
+
+/* ================= SIDEBAR STYLING ================= */
+.sidebar {
+  width: 260px;
+  background-color: #5f7054;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarHeader {
+  height: 64px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333333;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 18px;
+}
+
+.logoIcon {
+  font-size: 24px;
+  color: #5f7054;
+}
+
+.sidebarMenu {
+  flex: 1;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menuTitle {
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  padding: 0 8px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f1f5f9;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.menuItem:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menuItem.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.sidebarFooter {
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.logoutBtn {
+  width: 100%;
+  background-color: #ff4500;
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logoutBtn:hover {
+  background-color: #e03e00;
+}
+
+/* ================= MAIN CONTENT AREA ================= */
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+/* Header Atas */
+.navbar {
+  height: 64px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #f0f0f0;
+  position: relative;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.toggleBtn:hover {
+  color: #4b5563;
+  background-color: #f9fafb;
+}
+
+.navbarTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.spacer {
+  width: 38px;
+}
+
+/* Konten Dinamis */
+.contentArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+}
+
+.dashboardView {
+  max-width: 800px;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Banner Selamat Datang */
+.welcomeBanner {
+  background-color: #f6f5f2;
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+}
+
+.welcomeBanner h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.welcomeBanner p {
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Grid Kartu Statistik */
+.cardsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.cardsRow {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.cardsRow.singleCenter {
+  justify-content: center;
+}
+
+/* Kerangka Kartu */
+.card {
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #f9fafb;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 260px;
+}
+
+.cardIconWrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+/* Pewarnaan Unik Tiap Lingkaran Icon */
+.hotelIcon {
+  background-color: #e8eae6;
+  color: #5f7054;
+}
+
+.kamarIcon {
+  background-color: #fcf6eb;
+  color: #d4af8b;
+}
+
+.penggunaIcon {
+  background-color: #f0f5fa;
+  color: #7a9bbf;
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardLabel {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  margin: 0 0 4px 0;
+}
+
+.cardValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* Animasi & Placeholder */
+.placeholderView {
+  animation: fadeIn 0.4s ease;
+}
+
+.placeholderView h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= HOTEL MANAGEMENT VIEW STYLING ================= */
+
+.hotelViewSection {
+  animation: fadeIn 0.4s ease;
+  width: 100%;
+}
+
+/* Penataan Bar Judul + Search + Tambah Tombol */
+.hotelControlsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+  width: 100%;
+}
+
+.viewTitleText {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Wrapper kolom cari data hotel */
+.searchBarWrapper {
+  position: relative;
+  flex: 1;
+  max-width: 550px;
+}
+
+.searchIconInside {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a0a0a0;
+  font-size: 16px;
+}
+
+.hotelSearchInput {
+  width: 100%;
+  background-color: #fcfcf4; /* warna krem kekuningan halus sesuai mockup */
+  border: 1px solid #e2e2d5;
+  border-radius: 8px;
+  padding: 10px 16px 10px 44px;
+  font-size: 14px;
+  color: #333333;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.hotelSearchInput:focus {
+  border-color: #5f7054;
+}
+
+/* Tombol Tambah Hotel */
+.addHotelBtn {
+  background-color: #5f7054;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.addHotelBtn:hover {
+  background-color: #4b5942;
+}
+
+/* Grid Layout 2 Kolom untuk Kartu Hotel */
+.hotelGridContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* Kotak Kartu Hotel */
+.hotelCardItem {
+  background-color: #ffffff;
+  border: 1px solid #eef0eb;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hotelCardItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Thumbnail Gambar di Sisi Kiri */
+.hotelImageThumbnail {
+  width: 120px;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #f0f0f0;
+}
+
+.actualImgPlaceholder {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Area Detail Sisi Kanan */
+.hotelDetailsWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hotelCardTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.hotelNameText {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px 0;
+}
+
+.hotelLocationText {
+  font-size: 12px;
+  color: #909090;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pinIcon {
+  color: #b0b0b0;
+}
+
+.ratingBadgeText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #d4af8b;
+  white-space: nowrap;
+}
+
+/* Wadah Barisan Tombol Aksi */
+.hotelActionButtonsGroup {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Desain Outline Tombol Sesuai Mockup Gambar */
+.actionBtnOutline {
+  background: #ffffff;
+  border: 1px solid transparent;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Variasi Warna Masing-Masing Tombol Aksi */
+.btnUbah {
+  border-color: #79a6d2;
+  color: #4a80b3;
+}
+.btnUbah:hover {
+  background-color: #f2f7fc;
+}
+
+.btnKamar {
+  border-color: #a3b899;
+  color: #617755;
+}
+.btnKamar:hover {
+  background-color: #f5f8f3;
+}
+
+.btnHapus {
+  border-color: #ff8a8a;
+  color: #ff4d4d;
+}
+.btnHapus:hover {
+  background-color: #fff2f2;
+}
+
+/* Indikator Jika Hasil Cari Kosong */
+.emptyStateNotice {
+  grid-column: span 2;
+  text-align: center;
+  padding: 40px;
+  color: #999999;
+  font-size: 14px;
+}
+
+/* ================= TAMBAH HOTEL FORM VIEW STYLING ================= */
+
+.formContainerSection {
+  animation: fadeIn 0.4s ease;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.formHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.formMainTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111111;
+  margin: 0 0 4px 0;
+}
+
+.formSubTitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin: 0;
+}
+
+/* Tombol Kembali Atas Kanan */
+.backBtnOutline {
+  background: #ffffff;
+  border: 1px solid #ff9e9e;
+  color: #ff6b6b;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.backBtnOutline:hover {
+  background-color: #fff5f5;
+}
+
+/* Kotak Kontainer Field (Informasi Hotel & Media Kamar) */
+.formCardBox {
+  background: #ffffff;
+  border: 1px solid #eef0eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.boxSectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #5f7054;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Pembagian Responsif Grid Kiri Kanan */
+.inputsResponsiveGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 18px;
+}
+
+.inputFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputFieldGroup label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c2c2c;
+}
+
+.requiredStar {
+  color: #ff4d4d;
+}
+
+.inputFieldGroup input[type="text"],
+.inputFieldGroup input[type="number"],
+.inputFieldGroup textarea {
+  width: 100%;
+  border: 1px solid #dcdcd0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #333333;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.inputFieldGroup input:focus,
+.inputFieldGroup textarea:focus {
+  border-color: #5f7054;
+}
+
+/* Pembungkus input dengan Icon */
+.inputIconWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.innerFieldIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a0a0a0;
+  font-size: 14px;
+}
+
+/* Desain Checkbox List */
+.checkboxListWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkboxCustomLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2e2d5;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c2c2c;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+/* ================= TRIPLE CARDS MEDIA & KAMAR ================= */
+.mediaTripleGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.subMediaCard {
+  border: 1px solid #eef0eb;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #ffffff;
+}
+
+.subMediaCard h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0 0 12px 0;
+}
+
+/* Dropzone style */
+.dragDropZoneBox, .mapZoneBox, .roomZoneBox {
+  border: 1px dashed #cccccc;
+  border-radius: 6px;
+  padding: 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 160px;
+  background-color: #fafafa;
+}
+
+.uploadCloudIcon, .roomIconEmpty {
+  font-size: 32px;
+  color: #a0a39e;
+  margin-bottom: 8px;
+}
+
+.mockMapPinIndicator {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.mainUploadText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0 0 4px 0;
+}
+
+.subUploadText {
+  font-size: 10px;
+  color: #999999;
+  margin: 0 0 14px 0;
+}
+
+/* Tombol kecil di dalam box media */
+.miniSelectFileBtn {
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #555555;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.miniSelectFileBtn:hover {
+  background-color: #f5f5f5;
+}
+
+/* ================= FOOTER BUTTONS ================= */
+.formActionFooterRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.btnFooterBatal {
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  color: #555555;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btnFooterBatal:hover {
+  background-color: #f5f5f5;
+}
+
+.btnFooterSimpan {
+  background-color: #5f7054;
+  border: none;
+  color: #ffffff;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btnFooterSimpan:hover {
+  background-color: #4b5942;
+}
+
+/* ================= DATA KAMAR VIEW STYLING (Gambar 1) ================= */
+.roomViewSection {
+  animation: fadeIn 0.4s ease;
+  width: 100%;
+}
+
+.roomControlsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.roomSubHotelTitle {
+  font-size: 14px;
+  color: #666666;
+  margin: 4px 0 0 0;
+}
+
+.hotelHighlightText {
+  color: #5f7054;
+  font-weight: 600;
+}
+
+.roomActionTopGroup {
+  display: flex;
+  gap: 12px;
+}
+
+.backBtnOutlineRed {
+  background: #ffffff;
+  border: 1px solid #ff9e9e;
+  color: #ff5252;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.backBtnOutlineRed:hover {
+  background-color: #fff5f5;
+}
+
+.addRoomBtn {
+  background-color: #5f7054;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addRoomBtn:hover {
+  background-color: #4b5942;
+}
+
+/* Tabel Data Kamar */
+.roomTableContainer {
+  background: #ffffff;
+  border: 1px solid #eef0eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  margin-bottom: 20px;
+}
+
+.roomTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.roomTable th {
+  background-color: #e2e7df;
+  color: #4f5e46;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 14px 20px;
+}
+
+.roomTable td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f2ee;
+  vertical-align: middle;
+}
+
+.roomTypeCell {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.roomMiniImg {
+  width: 80px;
+  height: 55px;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  background-color: #f0f0f0;
+}
+
+.roomTypeName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+}
+
+.centerText {
+  text-align: center;
+}
+
+.availableCountText {
+  font-size: 26px;
+  font-weight: 700;
+  color: #222222;
+  line-height: 1;
+}
+
+.availableSubText {
+  font-size: 11px;
+  color: #999999;
+  margin-top: 4px;
+}
+
+/* Kumpulan Grid Tombol Aksi Update */
+.roomUpdateActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.iconGridBtn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  transition: opacity 0.2s;
+}
+
+.iconGridBtn:hover {
+  opacity: 0.85;
+}
+
+.bgGreenIcon { background-color: #5f7054; }
+.bgYellowIcon { background-color: #ffbc00; }
+.bgNavyIcon { background-color: #1a2e5a; }
+.bgRedIcon { background-color: #ff5252; }
+
+.emptyTableRow {
+  text-align: center;
+  color: #999999;
+  font-size: 14px;
+  padding: 40px !important;
+}
+
+/* Banner Total Kamar Bawah */
+.roomTotalBanner {
+  background-color: #e2e7df;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3f4e36;
+}
+
+.infoIconBanner {
+  font-size: 18px;
+  color: #5f7054;
+}
+
+
+/* ================= TAMBAH KAMAR FORM STYLING (Gambar 2) ================= */
+.hotelHighlightTextForm {
+  color: #5f7054;
+}
+
+.inputFieldLeftLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.inputPrefixWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dcdcd0;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.prefixLabel {
+  background-color: #f5f5f5;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555555;
+  border-right: 1px solid #dcdcd0;
+}
+
+.inputPrefixWrapper input {
+  border: none !important;
+  outline: none;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.textareaCounterWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.charCounterText {
+  position: absolute;
+  right: 12px;
+  bottom: -20px;
+  font-size: 11px;
+  color: #a0a0a0;
+}
+
+/* Grid Checkbox Fasilitas */
+.facilitiesGridList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.facilityCheckItem {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e2e2d5;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+.facilityCheckItem input[type="checkbox"] {
+  margin-right: 10px;
+  accent-color: #5f7054;
+}
+
+.facilityIconRight {
+  margin-left: auto;
+  font-size: 16px;
+}
+
+/* Desain Row Stepper */
+.stepperRowItem {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e2e2d5;
+  border-radius: 6px;
+  padding: 6px 14px;
+  background-color: #ffffff;
+  margin-bottom: 16px;
+}
+
+.stepperActionBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f7f7f5;
+  border-radius: 6px;
+  padding: 4px 8px;
+  border: 1px solid #e2e2d5;
+}
+
+.stepperActionBox button {
+  background: #5f7054;
+  color: #ffffff;
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.stepperActionBox button:hover {
+  background-color: #4b5942;
+}
+
+.stepperActionBox span {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* Dual Stepper Bawah */
+.dualFormStepperRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stepperBoxCard {
+  border: 1px solid #e2e2d5;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+}
+
+.orangeBorderHighlight {
+  border: 1px solid #ff9e9e;
+}
+
+.stepperCardTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.formBottomWarningBanner {
+  background-color: #e2e7df;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #4f5e46;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* ================= DATA PENGGUNA VIEW STYLING (Gambar 1) ================= */
+.searchBarWrapperUsers {
+  display: flex;
+  align-items: center;
+  background-color: #fcfcf4;
+  border: 1px solid #e2e2d5;
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin-bottom: 16px;
+  width: 320px;
+}
+
+.searchIconUsers {
+  color: #666666;
+  margin-right: 10px;
+}
+
+.userSearchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  width: 100%;
+  color: #333333;
+}
+
+.userAvatarCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid #222222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #222222;
+  background-color: #ffffff;
+}
+
+/* Kategori badge peran (Role Pills) */
+.roleBadge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.badgeAdmin {
+  background-color: #4f5e46;
+  color: #ffffff;
+}
+
+.badgeRecep {
+  background-color: #ffe6cc;
+  color: #b35c00;
+}
+
+.badgeTamu {
+  background-color: #e6f0ff;
+  color: #0052cc;
+}
+
+/* Kategori badge status (Status Pills) */
+.statusBadge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+.statusAktif {
+  background-color: #e2e7df;
+  color: #4f5e46;
+}
+
+.statusNonAktif {
+  background-color: #ffe5e5;
+  color: #ff3333;
+}
+
+/* ================= CSS LAYOUT FORMULIR (Gambar 2 & Edit) ================= */
+.formContainerWrapper {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.formHeaderFlexRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.formSectionMainTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px 0;
+}
+
+.formSectionSubTitle {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
+.btnOutlineBackRed {
+  background: transparent;
+  border: 1px solid #e63946;
+  color: #e63946;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.formTwoColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.whiteFormBoxCard {
+  background: #ffffff;
+  border: 1px solid #e2e2d5;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.boxGroupTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #333333;
+  margin: 0 0 16px 0;
+}
+
+.boxGroupSubHintText {
+  font-size: 12px;
+  color: #888888;
+  margin: -12px 0 16px 0;
+}
+
+.formInputWrapperItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.formInputWrapperItem label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #222222;
+}
+
+.redStarMark {
+  color: #e63946;
+}
+
+.formInputWrapperItem input,
+.customSelectDropdown {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dcdcd0;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.inputAdornmentIconBtn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #777777;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Stack Radio Selector Box Peran */
+.roleSelectionFlexStack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.roleRadioSelectCard {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e2e2d5;
+  border-radius: 8px;
+  padding: 14px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cardRoleSelected {
+  border: 1.5px solid #4f5e46;
+  background-color: #fcfcf9;
+}
+
+.roleAvatarCircleIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f0f2ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4f5e46;
+}
+
+.roleNameLabelText {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222222;
+  margin: 0 0 2px 0;
+}
+
+.roleDescriptionText {
+  font-size: 11px;
+  color: #666666;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Tombol Bulat Radio */
+.radioCircleOuter {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #b5b5a7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 12px;
+}
+
+.radioCircleActive {
+  border-color: #4f5e46;
+}
+
+.radioCircleInner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: transparent;
+}
+
+.radioCircleActive .radioCircleInner {
+  background-color: #4f5e46;
+}
+
+/* Input kondisional sub box */
+.subConditionalInputCard {
+  background: #fbfbf9;
+  border: 1px solid #e2e2d5;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: -6px;
+}
+
+.subConditionalInputCard label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.subConditionalInputCard input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dcdcd0;
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+}
+
+/* Banner Notifikasi */
+.bottomStatusNoticeBanner {
+  display: flex;
+  align-items: center;
+  background-color: #e2e7df;
+  border-radius: 6px;
+  padding: 12px;
+  color: #333333;
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+/* Footer Form */
+.formFooterActionFlexBar {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.btnActionFooterCancel {
+  background-color: #ffffff;
+  border: 1px solid #b5b5a7;
+  color: #333333;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btnActionFooterSave {
+  background-color: #4f5e46;
+  border: none;
+  color: #ffffff;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ================= DASHBOARD LAYOUT STYLES ================= */
+.dashboardViewSection {
+  padding: 8px;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.welcomeBannerBox {
+  background-color: #fbfbf6;
+  border-radius: 8px;
+  padding: 24px 32px;
+  margin-bottom: 32px;
+  border: 1px solid #f2f2eb;
+}
+
+.welcomeBannerTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111111;
+  margin: 0 0 6px 0;
+}
+
+.welcomeBannerSubtitle {
+  font-size: 13px;
+  color: #777777;
+  margin: 0;
+}
+
+/* Container Wrapper Kartu Statistik */
+.statsCardsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 700px;
+  margin: 0 auto; /* Membuat blok dashboard berada di tengah */
+}
+
+/* Baris Atas: Menampilkan 2 Kolom Sejajar */
+.statsCardsRowTop {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+
+/* Baris Bawah: Menampilkan 1 Kolom di Tengah */
+.statsCardsRowBottom {
+  display: flex;
+  justify-content: center;
+}
+
+/* Komponen Kartu Statistik Individual */
+.summaryStatCard {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  min-width: 260px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f0e8;
+  transition: transform 0.2s ease;
+}
+
+.summaryStatCard:hover {
+  transform: translateY(-2px);
+}
+
+/* Desain Lingkaran Background Ikon */
+.statCircleBadge {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+/* Variasi Warna Lingkaran Sesuai Mockup */
+.colorMutedGreen {
+  background-color: #e2e7df;
+  color: #4f5e46;
+}
+
+.colorSoftYellow {
+  background-color: #fdf5e2;
+  color: #bfa15f;
+}
+
+.colorSoftBlue {
+  background-color: #e6f0ff;
+  color: #4a90e2;
+}
+
+/* Meta Teks di Dalam Card */
+.statCardContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.statLabelHeading {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555555;
+  margin-bottom: 2px;
+}
+
+.statDisplayNumber {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111111;
+  line-height: 1.1;
+}

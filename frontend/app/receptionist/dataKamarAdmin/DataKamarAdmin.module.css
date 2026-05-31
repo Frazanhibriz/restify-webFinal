@@ -1,0 +1,204 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: Arial;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.backBtn {
+  position: absolute;
+  left: 40px;
+  background: orangered;
+  color: white;
+  border: none;
+  padding: 10px 40px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.title {
+  font-size: 28px;
+}
+
+/* TITLE */
+.table {
+  text-align: center;
+  font-size: 20px;
+  margin: 20px;
+}
+
+/* FORM BOX */
+.formBox {
+  width: 60%;
+  margin: auto;
+  background: #f2f3f4;
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 40px;
+  display: flex;
+  gap: 60px;
+}
+
+/* LEFT */
+.formLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formLeft input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid gray;
+}
+
+/* DURASI */
+.durasiBox {
+  display: flex;
+  gap: 30px;
+  margin-top: 10px;
+}
+
+.divider {
+  width: 2px;
+  background: #ccc;
+}
+
+/* RIGHT */
+.formRight {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formRight textarea {
+  height: 120px;
+  border-radius: 6px;
+  border: 1px solid gray;
+  padding: 10px;
+}
+
+.formRight input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid gray;
+  width: 200px;
+}
+
+/* BUTTON AREA */
+.buttonArea {
+  width: 60%;
+  margin: 30px auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.confirm {
+  background: green;
+  color: white;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 20px;
+}
+
+.reject {
+  background: orangered;
+  color: white;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 20px;
+}
+
+.checkin {
+  background: green;
+  color: white;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 20px;
+}
+
+.checkout {
+  background: orangered;
+  color: white;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 20px;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.kodeWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.kodeBox {
+  position: relative;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 10px 40px 10px 10px;
+  border-radius: 8px;
+  font-family: monospace;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eyeBtn img {
+  width: 20px;
+  height: 20px;
+}
+
+.readonlyBox {
+  background: #f5f5f5;
+  border: 1px solid gray;
+  padding: 10px;
+  border-radius: 6px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+/* biar catatan bisa multiline */
+.readonlyBox.multiline {
+  align-items: flex-start;
+  min-height: 120px;
+  white-space: pre-wrap;
+}

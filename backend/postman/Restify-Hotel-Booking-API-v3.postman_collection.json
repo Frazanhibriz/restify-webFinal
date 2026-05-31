@@ -1,0 +1,3294 @@
+{
+  "info": {
+    "_postman_id": "0914a233-88f5-4c3b-a748-528e92ddf2d7",
+    "name": "Restify - Hotel Booking API v3",
+    "description": "Postman Collection lengkap untuk Restify Hotel Booking System (42 routes).\n\n## Flow End-to-End:\nRegister → Login → Booking → Payment → Confirm → Check-in → Checkout → Rating\n\n## Setup:\n1. Import collection + environment\n2. Pilih environment 'Restify Local'\n3. Jalankan Login → token tersimpan otomatis ke {{token}}",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50326927"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "  pm.environment.set('token', json.token);",
+                  "  console.log('Token saved:', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"kael\",\n  \"email\": \"kael@gmail.com\",\n  \"phone\" : \"08123060709\"\n  \"password\": \"060709\",\n  \"password_confirmation\": \"060709\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "201 - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"User registered successfully\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"User Test\",\n    \"email\": \"user@test.com\",\n    \"role\": \"user\"\n  },\n  \"token\": \"1|abc123xyz...\"\n}"
+            },
+            {
+              "name": "422 - Validation Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"The email has already been taken.\",\n  \"errors\": {\n    \"email\": [\"The email has already been taken.\"]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Token tersimpan otomatis', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('token');",
+                  "  pm.environment.set('token', json.token);",
+                  "  if (json.user && json.user.id) {",
+                  "    pm.environment.set('user_id', json.user.id.toString());",
+                  "  }",
+                  "  console.log('✅ Token saved:', json.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@test.com\",\n  \"password\": \"12345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Login successful\",\n  \"user\": {\n    \"id\": 2,\n    \"name\": \"User Test\",\n    \"email\": \"user@test.com\",\n    \"role\": \"user\"\n  },\n  \"token\": \"2|usertoken456xyz\"\n}"
+            },
+            {
+              "name": "401 - Invalid Credentials",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Invalid credentials\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Token tersimpan otomatis', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('token');",
+                  "  pm.environment.set('token', json.token);",
+                  "  if (json.user && json.user.id) {",
+                  "    pm.environment.set('user_id', json.user.id.toString());",
+                  "  }",
+                  "  console.log('✅ Token saved:', json.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@test.com\",\n  \"password\": \"12345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Login successful\",\n  \"user\": {\n    \"id\": 2,\n    \"name\": \"User Test\",\n    \"email\": \"user@test.com\",\n    \"role\": \"user\"\n  },\n  \"token\": \"2|usertoken456xyz\"\n}"
+            },
+            {
+              "name": "401 - Invalid Credentials",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Invalid credentials\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Response memiliki message', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('message');",
+                  "  console.log('Response:', json.message);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@test.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/forgot-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "forgot-password"
+              ]
+            },
+            "description": "Kirim link reset password ke email. Token reset akan dikirim via email."
+          },
+          "response": [
+            {
+              "name": "200 - Email Terkirim",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Password reset link has been sent to your email.\"\n}"
+            },
+            {
+              "name": "422 - Email tidak ditemukan",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"We can't find a user with that email address.\",\n  \"errors\": {\n    \"email\": [\"We can't find a user with that email address.\"]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reset Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Password berhasil direset', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('message');",
+                  "  console.log('Reset status:', json.message);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@test.com\",\n  \"token\": \"TOKEN_RESET_PASSWORD\",\n  \"password\": \"passwordbaru123\",\n  \"password_confirmation\": \"passwordbaru123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/reset-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reset-password"
+              ]
+            },
+            "description": "Reset password menggunakan token yang diterima via email dari endpoint forgot-password."
+          },
+          "response": [
+            {
+              "name": "200 - Password Berhasil Direset",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Your password has been reset successfully.\"\n}"
+            },
+            {
+              "name": "422 - Token Tidak Valid",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"This password reset token is invalid.\",\n  \"errors\": {\n    \"token\": [\"This password reset token is invalid.\"]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.environment.set('token', '');",
+                  "console.log('🔒 Token cleared');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logout"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Logout Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Logged out successfully\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Data user tersedia', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/profile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "profile"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Profile",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"name\": \"User Test\",\n  \"email\": \"user@test.com\",\n  \"role\": \"user\",\n  \"created_at\": \"2026-01-01T10:00:00.000000Z\"\n}"
+            },
+            {
+              "name": "401 - Unauthenticated",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Hotel",
+          "item": [
+            {
+              "name": "Get All Hotels",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/hotels",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "hotels"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 - Success",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Grand Restify Hotel\",\n    \"address\": \"Jl. Sudirman No. 1\",\n    \"city\": \"Bandung\",\n    \"latitude\": \"-6.9175\",\n    \"longitude\": \"107.6191\",\n    \"description\": \"Hotel bintang 5 di pusat kota\",\n    \"image_url\": \"http://localhost:8000/storage/hotels/hotel1.jpg\",\n    \"qris_image_url\": \"http://localhost:8000/storage/hotels/qris/hotel1-qris.png\"\n  }\n]"
+                }
+              ]
+            },
+            {
+              "name": "Create Hotel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                      "pm.test('Hotel ID tersimpan', () => {",
+                      "  const json = pm.response.json();",
+                      "  const hotel = json.hotel || json;",
+                      "  pm.environment.set('hotel_id', hotel.id.toString());",
+                      "  console.log('✅ Hotel ID saved:', hotel.id);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "Grand Restify Hotel",
+                      "type": "text"
+                    },
+                    {
+                      "key": "address",
+                      "value": "Jl. Sudirman No. 1, Bandung",
+                      "type": "text"
+                    },
+                    {
+                      "key": "city",
+                      "value": "Bandung",
+                      "type": "text"
+                    },
+                    {
+                      "key": "latitude",
+                      "value": "-6.9175",
+                      "type": "text"
+                    },
+                    {
+                      "key": "longitude",
+                      "value": "107.6191",
+                      "type": "text"
+                    },
+                    {
+                      "key": "description",
+                      "value": "Hotel bintang 5 di pusat kota Bandung dengan fasilitas lengkap dan kolam renang",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "description": "Upload foto utama hotel (jpg/png/webp, max 2MB)",
+                      "value": null
+                    },
+                    {
+                      "key": "qris_image",
+                      "type": "file",
+                      "description": "Upload foto QRIS pembayaran hotel (jpg/png, max 2MB)",
+                      "value": null
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/hotels",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "hotels"
+                  ]
+                },
+                "description": "⚠️ Wajib form-data karena ada upload image dan qris_image.\nPilih file dari komputer Anda untuk field image dan qris_image."
+              },
+              "response": [
+                {
+                  "name": "201 - Created",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"message\": \"Hotel created successfully\",\n  \"hotel\": {\n    \"id\": 1,\n    \"name\": \"Grand Restify Hotel\",\n    \"address\": \"Jl. Sudirman No. 1, Bandung\",\n    \"city\": \"Bandung\",\n    \"latitude\": \"-6.9175\",\n    \"longitude\": \"107.6191\",\n    \"description\": \"Hotel bintang 5 di pusat kota Bandung\",\n    \"image_url\": \"http://localhost:8000/storage/hotels/hotel1.jpg\",\n    \"qris_image_url\": \"http://localhost:8000/storage/hotels/qris/hotel1-qris.png\"\n  }\n}"
+                },
+                {
+                  "name": "422 - Validation Error",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "Unprocessable Content",
+                  "code": 422,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"message\": \"The name field is required.\",\n  \"errors\": {\n    \"name\": [\"The name field is required.\"],\n    \"image\": [\"The image must be an image file (jpg, jpeg, png, webp).\"],\n    \"qris_image\": [\"The qris image must be an image file.\"]\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Hotel Detail",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/hotels/{{hotel_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "hotels",
+                    "{{hotel_id}}"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 - Success",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"id\": 1,\n  \"name\": \"Grand Restify Hotel\",\n  \"address\": \"Jl. Sudirman No. 1, Bandung\",\n  \"city\": \"Bandung\",\n  \"latitude\": \"-6.9175\",\n  \"longitude\": \"107.6191\",\n  \"description\": \"Hotel bintang 5 di pusat kota Bandung\",\n  \"image_url\": \"http://localhost:8000/storage/hotels/hotel1.jpg\",\n  \"qris_image_url\": \"http://localhost:8000/storage/hotels/qris/hotel1-qris.png\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Hotel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "Grand Restify Hotel (Updated)",
+                      "type": "text"
+                    },
+                    {
+                      "key": "address",
+                      "value": "Jl. Sudirman No. 1, Bandung",
+                      "type": "text"
+                    },
+                    {
+                      "key": "city",
+                      "value": "Bandung",
+                      "type": "text"
+                    },
+                    {
+                      "key": "latitude",
+                      "value": "-6.9175",
+                      "type": "text"
+                    },
+                    {
+                      "key": "longitude",
+                      "value": "107.6191",
+                      "type": "text"
+                    },
+                    {
+                      "key": "description",
+                      "value": "Hotel bintang 5 setelah renovasi total",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "description": "Kosongkan jika tidak ganti foto hotel",
+                      "value": null
+                    },
+                    {
+                      "key": "qris_image",
+                      "type": "file",
+                      "description": "Kosongkan jika tidak ganti foto QRIS",
+                      "value": null
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/hotels/{{hotel_id}}?_method=PUT",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "hotels",
+                    "{{hotel_id}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "_method",
+                      "value": "PUT"
+                    }
+                  ]
+                },
+                "description": "⚠️ Gunakan POST + ?_method=PUT karena form-data tidak support PUT langsung di Laravel.\nKosongkan field image/qris_image jika tidak ingin menggantinya."
+              },
+              "response": [
+                {
+                  "name": "200 - Updated",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"message\": \"Hotel updated successfully\",\n  \"hotel\": {\n    \"id\": 1,\n    \"name\": \"Grand Restify Hotel (Updated)\",\n    \"city\": \"Bandung\",\n    \"image_url\": \"http://localhost:8000/storage/hotels/hotel1-new.jpg\",\n    \"qris_image_url\": \"http://localhost:8000/storage/hotels/qris/hotel1-qris-new.png\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete Hotel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/hotels/{{hotel_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "hotels",
+                    "{{hotel_id}}"
+                  ]
+                },
+                "description": "⚠️ Hapus hotel beserta semua data terkait (rooms, bookings)."
+              },
+              "response": [
+                {
+                  "name": "200 - Deleted",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"message\": \"Hotel deleted successfully\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Room",
+          "item": [
+            {
+              "name": "Get All Rooms",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/rooms",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "rooms"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 - Success",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n  {\n    \"id\": 1,\n    \"hotel_id\": 1,\n    \"room_type\": \"Deluxe\",\n    \"price\": 500000,\n    \"capacity\": 2,\n    \"status\": \"available\",\n    \"description\": \"Kamar Deluxe pemandangan kota\",\n    \"image_url\": \"http://localhost:8000/storage/rooms/room1.jpg\"\n  }\n]"
+                }
+              ]
+            },
+            {
+              "name": "Create Room",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                      "pm.test('Room ID tersimpan', () => {",
+                      "  const json = pm.response.json();",
+                      "  const room = json.room || json;",
+                      "  pm.environment.set('room_id', room.id.toString());",
+                      "  console.log('✅ Room ID saved:', room.id);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "hotel_id",
+                      "value": "{{hotel_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "room_type",
+                      "value": "Deluxe",
+                      "type": "text"
+                    },
+                    {
+                      "key": "price",
+                      "value": "500000",
+                      "type": "text"
+                    },
+                    {
+                      "key": "capacity",
+                      "value": "2",
+                      "type": "text"
+                    },
+                    {
+                      "key": "status",
+                      "value": "available",
+                      "type": "text",
+                      "description": "available | booked | maintenance"
+                    },
+                    {
+                      "key": "description",
+                      "value": "Kamar Deluxe dengan pemandangan kota dan fasilitas premium",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "description": "Upload foto kamar (jpg/png/webp, max 2MB)",
+                      "value": null
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/rooms",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "rooms"
+                  ]
+                },
+                "description": "⚠️ Wajib form-data karena ada upload image.\nStatus: available | booked | maintenance"
+              },
+              "response": [
+                {
+                  "name": "201 - Created",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"message\": \"Room created successfully\",\n  \"room\": {\n    \"id\": 1,\n    \"hotel_id\": 1,\n    \"room_type\": \"Deluxe\",\n    \"price\": 500000,\n    \"capacity\": 2,\n    \"status\": \"available\",\n    \"image_url\": \"http://localhost:8000/storage/rooms/room1.jpg\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Room Detail",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/rooms/{{room_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "rooms",
+                    "{{room_id}}"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 - Success",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"id\": 1,\n  \"hotel_id\": 1,\n  \"room_type\": \"Deluxe\",\n  \"price\": 500000,\n  \"capacity\": 2,\n  \"status\": \"available\",\n  \"description\": \"Kamar Deluxe pemandangan kota\",\n  \"image_url\": \"http://localhost:8000/storage/rooms/room1.jpg\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Room",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "hotel_id",
+                      "value": "{{hotel_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "room_type",
+                      "value": "Suite",
+                      "type": "text"
+                    },
+                    {
+                      "key": "price",
+                      "value": "750000",
+                      "type": "text"
+                    },
+                    {
+                      "key": "capacity",
+                      "value": "3",
+                      "type": "text"
+                    },
+                    {
+                      "key": "status",
+                      "value": "available",
+                      "type": "text"
+                    },
+                    {
+                      "key": "description",
+                      "value": "Kamar Suite dengan jacuzzi dan view panorama kota",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "description": "Kosongkan jika tidak ganti foto kamar",
+                      "value": null
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/rooms/{{room_id}}?_method=PUT",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "rooms",
+                    "{{room_id}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "_method",
+                      "value": "PUT"
+                    }
+                  ]
+                },
+                "description": "⚠️ Gunakan POST + ?_method=PUT untuk update dengan form-data."
+              },
+              "response": [
+                {
+                  "name": "200 - Updated",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"message\": \"Room updated successfully\",\n  \"room\": {\n    \"id\": 1,\n    \"room_type\": \"Suite\",\n    \"price\": 750000,\n    \"status\": \"available\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete Room",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/rooms/{{room_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "rooms",
+                    "{{room_id}}"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 - Deleted",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"message\": \"Room deleted successfully\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "User Management",
+          "item": [
+            {
+              "name": "Get All Users",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/users",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 - Success",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Admin Restify\",\n    \"email\": \"admin@restify.com\",\n    \"role\": \"admin\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"User Test\",\n    \"email\": \"user@test.com\",\n    \"role\": \"user\"\n  },\n  {\n    \"id\": 3,\n    \"name\": \"Receptionist 1\",\n    \"email\": \"receptionist@restify.com\",\n    \"role\": \"receptionist\"\n  }\n]"
+                }
+              ]
+            },
+            {
+              "name": "Create User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                      "const json = pm.response.json();",
+                      "const user = json.user || json;",
+                      "if (user && user.id) pm.environment.set('user_id', user.id.toString());"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Receptionist Baru\",\n  \"email\": \"receptionist@restify.com\",\n  \"password\": \"recep12345\",\n  \"password_confirmation\": \"recep12345\",\n  \"role\": \"receptionist\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/users",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "201 - Created",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"message\": \"User created successfully\",\n  \"user\": {\n    \"id\": 3,\n    \"name\": \"Receptionist Baru\",\n    \"email\": \"receptionist@restify.com\",\n    \"role\": \"receptionist\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get User Detail",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/users/{{user_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users",
+                    "{{user_id}}"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 - Success",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"id\": 3,\n  \"name\": \"Receptionist Baru\",\n  \"email\": \"receptionist@restify.com\",\n  \"role\": \"receptionist\",\n  \"created_at\": \"2026-01-01T10:00:00.000000Z\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Receptionist Update\",\n  \"email\": \"receptionist@restify.com\",\n  \"role\": \"receptionist\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/users/{{user_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users",
+                    "{{user_id}}"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 - Updated",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"message\": \"User updated successfully\",\n  \"user\": {\n    \"id\": 3,\n    \"name\": \"Receptionist Update\",\n    \"role\": \"receptionist\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/users/{{user_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users",
+                    "{{user_id}}"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 - Deleted",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": ""
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"message\": \"User deleted successfully\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Get All Bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "bookings"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 1,\n    \"transaction_code\": \"TRX-MDIZNMBA\",\n    \"user\": { \"name\": \"User Test\", \"email\": \"user@test.com\" },\n    \"room\": { \"room_type\": \"Deluxe\", \"price\": 500000 },\n    \"hotel\": { \"name\": \"Grand Restify Hotel\", \"city\": \"Bandung\" },\n    \"check_in_date\": \"2026-11-10\",\n    \"check_out_date\": \"2026-11-12\",\n    \"guests\": 2,\n    \"extra_bed\": false,\n    \"total_price\": 1000000,\n    \"status\": \"waiting_confirmation\",\n    \"payment_status\": \"paid\"\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Upload Foto Profile",
+          "request": {
+            "method": "POST",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Create Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('Booking ID & transaction_code tersimpan', () => {",
+                  "  const json = pm.response.json();",
+                  "  const booking = json.booking || json;",
+                  "  pm.environment.set('booking_id', booking.id.toString());",
+                  "  if (booking.transaction_code) {",
+                  "    pm.environment.set('transaction_code', booking.transaction_code);",
+                  "    console.log('✅ Transaction Code saved:', booking.transaction_code);",
+                  "  }",
+                  "  console.log('✅ Booking ID saved:', booking.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": 1,\n  \"check_in_date\": \"2026-11-10\",\n  \"check_out_date\": \"2026-11-12\",\n  \"guests\": 2,\n  \"extra_bed\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "booking"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "201 - Booking Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Booking created successfully\",\n  \"booking\": {\n    \"id\": 1,\n    \"transaction_code\": \"TRX-MDIZNMBA\",\n    \"user_id\": 2,\n    \"room_id\": 1,\n    \"check_in_date\": \"2026-11-10\",\n    \"check_out_date\": \"2026-11-12\",\n    \"guests\": 2,\n    \"extra_bed\": false,\n    \"total_price\": 1000000,\n    \"status\": \"pending\",\n    \"payment_status\": \"unpaid\"\n  }\n}"
+            },
+            {
+              "name": "422 - Room Tidak Tersedia",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Room is not available for the selected dates.\",\n  \"errors\": {\n    \"room_id\": [\"Room is already booked for selected dates.\"]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "POST",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Create Booking Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('Booking ID & transaction_code tersimpan', () => {",
+                  "  const json = pm.response.json();",
+                  "  const booking = json.booking || json;",
+                  "  pm.environment.set('booking_id', booking.id.toString());",
+                  "  if (booking.transaction_code) {",
+                  "    pm.environment.set('transaction_code', booking.transaction_code);",
+                  "    console.log('✅ Transaction Code saved:', booking.transaction_code);",
+                  "  }",
+                  "  console.log('✅ Booking ID saved:', booking.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": 1,\n  \"check_in_date\": \"2026-11-10\",\n  \"check_out_date\": \"2026-11-12\",\n  \"guests\": 2,\n  \"extra_bed\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "booking"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "201 - Booking Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Booking created successfully\",\n  \"booking\": {\n    \"id\": 1,\n    \"transaction_code\": \"TRX-MDIZNMBA\",\n    \"user_id\": 2,\n    \"room_id\": 1,\n    \"check_in_date\": \"2026-11-10\",\n    \"check_out_date\": \"2026-11-12\",\n    \"guests\": 2,\n    \"extra_bed\": false,\n    \"total_price\": 1000000,\n    \"status\": \"pending\",\n    \"payment_status\": \"unpaid\"\n  }\n}"
+            },
+            {
+              "name": "422 - Room Tidak Tersedia",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Room is not available for the selected dates.\",\n  \"errors\": {\n    \"room_id\": [\"Room is already booked for selected dates.\"]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Booking History",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/booking-history",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "booking-history"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 1,\n    \"transaction_code\": \"TRX-MDIZNMBA\",\n    \"room\": { \"room_type\": \"Deluxe\" },\n    \"hotel\": { \"name\": \"Grand Restify Hotel\" },\n    \"check_in_date\": \"2026-11-10\",\n    \"check_out_date\": \"2026-11-12\",\n    \"total_price\": 1000000,\n    \"status\": \"confirmed\",\n    \"payment_status\": \"paid\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Booking Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/booking/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "booking",
+                "{{booking_id}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Booking Detail",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 1,\n  \"transaction_code\": \"TRX-MDIZNMBA\",\n  \"user_id\": 2,\n  \"room_id\": 1,\n  \"check_in_date\": \"2026-11-10\",\n  \"check_out_date\": \"2026-11-12\",\n  \"guests\": 2,\n  \"extra_bed\": false,\n  \"total_price\": 1000000,\n  \"status\": \"confirmed\",\n  \"payment_status\": \"paid\",\n  \"room\": { \"room_type\": \"Deluxe\", \"price\": 500000 },\n  \"hotel\": { \"name\": \"Grand Restify Hotel\", \"city\": \"Bandung\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Payment Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Response memiliki qris_code', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('qris_code');",
+                  "  pm.expect(json).to.have.property('qris_image_url');",
+                  "  pm.expect(json).to.have.property('transaction_code');",
+                  "  pm.expect(json).to.have.property('payment_method');",
+                  "  pm.expect(json).to.have.property('amount');",
+                  "  console.log('QRIS Code:', json.qris_code);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/payment/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "payment",
+                "{{booking_id}}"
+              ]
+            },
+            "description": "Response wajib include: qris_code, qris_image_url, transaction_code, payment_method, amount."
+          },
+          "response": [
+            {
+              "name": "200 - Payment + QRIS Hotel",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"booking_id\": 1,\n  \"transaction_code\": \"TRX-MDIZNMBA\",\n  \"payment_method\": \"qris\",\n  \"amount\": 1000000,\n  \"payment_status\": \"unpaid\",\n  \"qris_code\": \"00020101021226590014ID.LINKAJA.WWW011893600911003194875\",\n  \"qris_image_url\": \"http://localhost:8000/storage/hotels/qris/hotel1-qris.png\",\n  \"expired_at\": \"2026-11-09T23:59:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Pay Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Payment sukses', () => {",
+                  "  const json = pm.response.json();",
+                  "  console.log('Status setelah bayar:', json.booking ? json.booking.status : json.status);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payment_method\": \"qris\",\n  \"payment_token\": \"TRX-MDIZNMBA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/pay/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "pay",
+                "{{booking_id}}"
+              ]
+            },
+            "description": "Simulasi pembayaran QRIS dummy. Status booking → waiting_confirmation setelah bayar."
+          },
+          "response": [
+            {
+              "name": "200 - Payment Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Payment successful. Waiting for receptionist confirmation.\",\n  \"booking\": {\n    \"id\": 1,\n    \"transaction_code\": \"TRX-MDIZNMBA\",\n    \"payment_status\": \"paid\",\n    \"status\": \"waiting_confirmation\"\n  }\n}"
+            },
+            {
+              "name": "400 - Sudah Dibayar",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Booking has already been paid.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Checkout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Checkout berhasil', () => {",
+                  "  console.log('✅ Checkout selesai! Sekarang bisa submit rating.');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checkout_notes\": \"Terima kasih, pelayanannya sangat memuaskan!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/checkout/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "checkout",
+                "{{booking_id}}"
+              ]
+            },
+            "description": "Proses checkout. Status → checked_out. User bisa submit rating setelah ini."
+          },
+          "response": [
+            {
+              "name": "200 - Checkout Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Checkout successful. Thank you for staying with us!\",\n  \"booking\": {\n    \"id\": 1,\n    \"status\": \"checked_out\",\n    \"checked_out_at\": \"2026-11-12T10:00:00Z\"\n  }\n}"
+            },
+            {
+              "name": "400 - Status Tidak Valid",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Cannot checkout. Booking must be in checked_in status.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Submit Rating",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('Rating berhasil', () => {",
+                  "  console.log('🎉 FLOW SELESAI: Register → Login → Booking → Payment → Confirm → Check-in → Checkout → Rating');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": 1,\n  \"rating\": 5,\n  \"review\": \"Bagus banget! Kamar bersih, staff ramah, lokasi strategis. Pasti balik lagi!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/ratings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "ratings"
+              ]
+            },
+            "description": "Beri rating 1-5 untuk hotel. Hanya bisa setelah status booking = checked_out."
+          },
+          "response": [
+            {
+              "name": "201 - Rating Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Rating submitted successfully\",\n  \"rating\": {\n    \"id\": 1,\n    \"user_id\": 2,\n    \"hotel_id\": 1,\n    \"booking_id\": 1,\n    \"rating\": 5,\n    \"review\": \"Bagus banget!\"\n  }\n}"
+            },
+            {
+              "name": "400 - Belum Checkout",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"You can only submit a rating after checkout.\"\n}"
+            },
+            {
+              "name": "400 - Sudah Rating",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"You have already rated this booking.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Receptionist",
+      "item": [
+        {
+          "name": "Get Booking List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/receptionist/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "receptionist",
+                "bookings"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Booking List",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 1,\n    \"transaction_code\": \"TRX-MDIZNMBA\",\n    \"user\": { \"name\": \"User Test\", \"email\": \"user@test.com\" },\n    \"room\": { \"room_type\": \"Deluxe\", \"price\": 500000 },\n    \"hotel\": { \"name\": \"Grand Restify Hotel\", \"city\": \"Bandung\" },\n    \"check_in_date\": \"2026-11-10\",\n    \"check_out_date\": \"2026-11-12\",\n    \"guests\": 2,\n    \"extra_bed\": false,\n    \"total_price\": 1000000,\n    \"status\": \"waiting_confirmation\",\n    \"payment_status\": \"paid\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Confirm Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Booking dikonfirmasi', () => {",
+                  "  const json = pm.response.json();",
+                  "  console.log('✅ Status:', json.booking ? json.booking.status : 'confirmed');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_code\": \"TRX-MDIZNMBA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/receptionist/confirm-booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "receptionist",
+                "confirm-booking"
+              ]
+            },
+            "description": "Konfirmasi booking. Status → confirmed."
+          },
+          "response": [
+            {
+              "name": "200 - Confirmed",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Booking confirmed successfully\",\n  \"booking\": {\n    \"id\": 1,\n    \"transaction_code\": \"TRX-MDIZNMBA\",\n    \"status\": \"confirmed\"\n  }\n}"
+            },
+            {
+              "name": "404 - Transaction Code Tidak Ditemukan",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Booking with transaction code not found.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Check-in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Check-in berhasil', () => {",
+                  "  const json = pm.response.json();",
+                  "  console.log('✅ Check-in status:', json.booking ? json.booking.status : 'checked_in');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_code\": \"TRX-MDIZNMBA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/receptionist/check-in",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "receptionist",
+                "check-in"
+              ]
+            },
+            "description": "Proses check-in tamu. Status → checked_in."
+          },
+          "response": [
+            {
+              "name": "200 - Check-in Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Check-in successful. Welcome!\",\n  \"booking\": {\n    \"id\": 1,\n    \"transaction_code\": \"TRX-MDIZNMBA\",\n    \"status\": \"checked_in\",\n    \"checked_in_at\": \"2026-11-10T14:00:00Z\"\n  }\n}"
+            },
+            {
+              "name": "400 - Belum Dikonfirmasi",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Cannot check-in. Booking must be confirmed first.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Decline Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": 1,\n  \"reason\": \"Kamar sedang dalam perbaikan mendadak, mohon maaf atas ketidaknyamanannya.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/receptionist/decline-booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "receptionist",
+                "decline-booking"
+              ]
+            },
+            "description": "Tolak booking. Status → declined."
+          },
+          "response": [
+            {
+              "name": "200 - Declined",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Booking declined successfully.\",\n  \"booking\": {\n    \"id\": 1,\n    \"status\": \"declined\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Room Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": 1,\n  \"status\": \"available\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/receptionist/update-room-status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "receptionist",
+                "update-room-status"
+              ]
+            },
+            "description": "Update status kamar.\nStatus valid: available | booked | maintenance"
+          },
+          "response": [
+            {
+              "name": "200 - Room Status Updated",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Room status updated successfully\",\n  \"room\": {\n    \"id\": 1,\n    \"room_type\": \"Deluxe\",\n    \"status\": \"available\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Get All Hotels",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Response include image_url, average_rating, qris_image_url', () => {",
+                  "  const json = pm.response.json();",
+                  "  const hotels = Array.isArray(json) ? json : (json.data || []);",
+                  "  if (hotels.length > 0) {",
+                  "    pm.expect(hotels[0]).to.have.property('image_url');",
+                  "    pm.expect(hotels[0]).to.have.property('average_rating');",
+                  "    pm.expect(hotels[0]).to.have.property('qris_image_url');",
+                  "    pm.expect(hotels[0]).to.have.property('rooms');",
+                  "  }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/hotels",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hotels"
+              ]
+            },
+            "description": "Endpoint publik tanpa auth. Response include: image_url, average_rating, rooms, qris_image_url."
+          },
+          "response": [
+            {
+              "name": "200 - Hotels List",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Grand Restify Hotel\",\n    \"address\": \"Jl. Sudirman No. 1\",\n    \"city\": \"Bandung\",\n    \"latitude\": \"-6.9175\",\n    \"longitude\": \"107.6191\",\n    \"description\": \"Hotel bintang 5 di pusat kota Bandung\",\n    \"image_url\": \"http://localhost:8000/storage/hotels/hotel1.jpg\",\n    \"qris_image_url\": \"http://localhost:8000/storage/hotels/qris/hotel1-qris.png\",\n    \"average_rating\": 4.8,\n    \"total_reviews\": 24,\n    \"rooms\": [\n      {\n        \"id\": 1,\n        \"room_type\": \"Deluxe\",\n        \"price\": 500000,\n        \"capacity\": 2,\n        \"status\": \"available\",\n        \"image_url\": \"http://localhost:8000/storage/rooms/room1.jpg\"\n      }\n    ]\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Hotel Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/hotels/{{hotel_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hotels",
+                "{{hotel_id}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Hotel Detail",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Grand Restify Hotel\",\n  \"address\": \"Jl. Sudirman No. 1\",\n  \"city\": \"Bandung\",\n  \"latitude\": \"-6.9175\",\n  \"longitude\": \"107.6191\",\n  \"description\": \"Hotel bintang 5\",\n  \"image_url\": \"http://localhost:8000/storage/hotels/hotel1.jpg\",\n  \"qris_image_url\": \"http://localhost:8000/storage/hotels/qris/hotel1-qris.png\",\n  \"average_rating\": 4.8,\n  \"total_reviews\": 24,\n  \"rooms\": [],\n  \"ratings\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Rooms by Hotel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/hotels/{{hotel_id}}/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hotels",
+                "{{hotel_id}}",
+                "rooms"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Rooms List",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 1,\n    \"room_type\": \"Deluxe\",\n    \"price\": 500000,\n    \"capacity\": 2,\n    \"status\": \"available\",\n    \"description\": \"Kamar Deluxe pemandangan kota\",\n    \"image_url\": \"http://localhost:8000/storage/rooms/room1.jpg\"\n  },\n  {\n    \"id\": 2,\n    \"room_type\": \"Suite\",\n    \"price\": 1200000,\n    \"capacity\": 4,\n    \"status\": \"available\",\n    \"description\": \"Kamar Suite mewah dengan jacuzzi\",\n    \"image_url\": \"http://localhost:8000/storage/rooms/room2.jpg\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Ratings by Hotel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/hotels/{{hotel_id}}/ratings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hotels",
+                "{{hotel_id}}",
+                "ratings"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Ratings List",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 1,\n    \"user\": { \"name\": \"User Test\" },\n    \"rating\": 5,\n    \"review\": \"Bagus banget! Sangat direkomendasikan.\",\n    \"created_at\": \"2026-11-12T12:00:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Midtrains Calback",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

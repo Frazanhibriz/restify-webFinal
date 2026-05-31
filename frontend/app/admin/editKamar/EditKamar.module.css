@@ -1,0 +1,178 @@
+.container {
+  width: 100%;
+  min-height: 10vh;
+  font-family: Arial, sans-serif;
+  padding: 40px 80px;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.backBtn {
+  background-color: #ff4d00;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.title {
+  font-weight: bold;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.table {
+  border-top: 1px solid #ccc;
+  font-weight: 400;
+  padding: 12px 0;
+  text-align: center;
+  font-size: 20px;
+}
+
+.topbar {
+  width: 100%;
+  padding: 15px 20px;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.topbar img {
+  width: 250px;
+}
+
+.formBox {
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  padding: 30px;
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+  background-color: #F2F3F4;
+}
+
+.formLeft,
+.formRight {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formLeft input,
+.formRight input,
+.formRight textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.formRight textarea {
+  height: 120px;
+}
+
+.counterBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.counterControl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.minus {
+  background: #43a047;
+  color: white;
+  border: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+}
+
+.plus {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+}
+
+.btnWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.btnSimpan {
+  background: #2d6cdf;
+  color: white;
+  border: none;
+  padding: 10px 60px;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.fasilitasHeader {
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.fasilitasGrid2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 30px;
+}
+
+.fasilitasCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fasilitasRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background-color: #ffffff;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.radioUi {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #e7da86;
+  position: relative;
+}
+
+.active::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: #ddce6a;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
