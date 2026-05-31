@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { RiArrowLeftLine, RiFileTextLine, RiEyeLine, RiEyeOffLine, RiStarFill, RiStarLine, RiCameraLine } from 'react-icons/ri';
+import { RiArrowLeftLine, RiFileTextLine, RiEyeLine, RiEyeOffLine, RiStarFill, RiStarLine, RiCameraLine, RiImageAddLine, RiCloseLine } from 'react-icons/ri';
 import {
   type Booking as MockBooking,
   formatTanggal,
@@ -114,6 +114,8 @@ function BookingDetail({
   const [showReview, setShowReview] = useState(false);
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
+  const [reviewPhoto, setReviewPhoto] = useState<File | null>(null);
+  const [reviewPhotoPreview, setReviewPhotoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getFriendlyStatus = () => {
@@ -161,6 +163,18 @@ function BookingDetail({
 
 
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setReviewPhoto(file);
+    setReviewPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const handleRemovePhoto = () => {
+    setReviewPhoto(null);
+    setReviewPhotoPreview(null);
+  };
+
   const handleSubmitReview = async () => {
     if (!reviewText.trim()) {
       toast.error("Silakan tulis komentar ulasan Anda terlebih dahulu.");
@@ -168,16 +182,31 @@ function BookingDetail({
     }
     setIsSubmitting(true);
     try {
-      await api.post('/user/ratings', {
-        hotel_id: booking.hotelId,
-        rating: rating,
-        comment: reviewText
+      const formData = new FormData();
+      formData.append('booking_id', String(booking.id));
+      formData.append('rating', String(rating));
+      formData.append('review', reviewText);
+      if (reviewPhoto) {
+        formData.append('image', reviewPhoto);
+      }
+      await api.post('/user/ratings', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
       toast.success("Ulasan berhasil dikirim!");
       setShowReview(false);
+      setReviewText("");
+      setRating(5);
+      setReviewPhoto(null);
+      setReviewPhotoPreview(null);
       onActionSuccess();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Gagal mengirim ulasan.");
+      const errors = error.response?.data?.errors;
+      if (errors) {
+        const firstMsg = Object.values(errors)[0] as string[];
+        toast.error(firstMsg[0] || "Validasi gagal.");
+      } else {
+        toast.error(error.response?.data?.message || "Gagal mengirim ulasan.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -346,12 +375,40 @@ function BookingDetail({
                       value={reviewText}
                       onChange={(e) => setReviewText(e.target.value)}
                       placeholder="Bagikan pengalaman menginap Anda di sini..."
-                      className="w-full bg-[#FFFDF0] rounded-xl px-4 py-3 text-xs text-gray-700 outline-none resize-none mb-6 border border-transparent focus:border-[#5E6B52]"
+                      className="w-full bg-[#FFFDF0] rounded-xl px-4 py-3 text-xs text-gray-700 outline-none resize-none mb-4 border border-transparent focus:border-[#5E6B52]"
                     />
+
+                    <label className="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-wide">Foto (Opsional)</label>
+                    {reviewPhotoPreview ? (
+                      <div className="relative mb-5">
+                        <img
+                          src={reviewPhotoPreview}
+                          alt="Preview foto ulasan"
+                          className="w-full h-36 object-cover rounded-xl"
+                        />
+                        <button
+                          onClick={handleRemovePhoto}
+                          className="absolute top-2 right-2 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center text-white hover:bg-black/80 transition-colors"
+                        >
+                          <RiCloseLine className="text-[14px]" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="flex flex-col items-center justify-center w-full h-24 mb-5 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-[#5E6B52] hover:bg-[#FFFDF0] transition-colors">
+                        <RiImageAddLine className="text-2xl text-gray-300 mb-1" />
+                        <span className="text-[10px] font-bold text-gray-400">Tambah Foto</span>
+                        <input
+                          type="file"
+                          accept="image/jpg,image/jpeg,image/png"
+                          className="hidden"
+                          onChange={handlePhotoChange}
+                        />
+                      </label>
+                    )}
 
                     <div className="flex gap-3">
                       <button
-                        onClick={() => setShowReview(false)}
+                        onClick={() => { setShowReview(false); handleRemovePhoto(); }}
                         className="flex-1 py-2.5 rounded-full border border-gray-200 text-gray-500 text-xs font-bold hover:bg-gray-50 transition-colors"
                       >
                         Batal
