@@ -147,27 +147,27 @@ php artisan key:generate
 
 ---
 
-## Konfigurasi Environment
+## Konfigurasi Environment Backend (Laravel)
 
-Buka file `.env`, lalu sesuaikan konfigurasi aplikasi.
+Buka file `backend/.env`, lalu sesuaikan konfigurasi aplikasi.
 
 Contoh konfigurasi utama:
 
 ```env
 APP_NAME=Restify
 APP_ENV=local
-APP_KEY=
+APP_KEY=base64:... (Generated via key:generate)
 APP_DEBUG=true
 APP_URL=http://127.0.0.1:8000
 ```
 
 ---
 
-## Konfigurasi Database PostgreSQL
+## Konfigurasi Database PostgreSQL (Backend)
 
 Project ini menggunakan PostgreSQL.
 
-Contoh konfigurasi database pada file `.env`:
+Contoh konfigurasi database pada file `backend/.env`:
 
 ```env
 DB_CONNECTION=pgsql
@@ -179,11 +179,24 @@ DB_PASSWORD=your_database_password
 ```
 
 Catatan:
-
 * `DB_DATABASE` disarankan menggunakan nama `restify`.
 * `DB_USERNAME` sesuaikan dengan username PostgreSQL lokal.
 * `DB_PASSWORD` sesuaikan dengan password PostgreSQL lokal.
-* File `.env` tidak dikumpulkan karena berisi konfigurasi lokal dan data sensitif.
+
+---
+
+## Konfigurasi Environment Frontend (Next.js)
+
+Masuk ke folder `frontend/` lalu buat file `.env.local` untuk mengarahkan frontend ke server API Backend.
+
+Contoh konfigurasi utama:
+```env
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
+```
+
+Catatan:
+* `NEXT_PUBLIC_API_URL` harus mengarah ke alamat endpoint API Laravel backend. Secara default berjalan di port `8000`.
+* File `.env.local` tidak di-commit karena berisi konfigurasi lokal Anda.
 
 ---
 
@@ -305,37 +318,43 @@ Jika gambar tidak tampil, jalankan ulang command tersebut.
 
 ---
 
-## Menjalankan Laravel Server
+## Menjalankan Server Aplikasi
 
-Jalankan server lokal:
+Untuk menjalankan aplikasi secara utuh, Anda perlu menjalankan server backend Laravel dan server frontend Next.js secara bersamaan.
 
+### 1. Menjalankan Server Backend (Laravel)
+Masuk ke folder `backend/` lalu jalankan command berikut di terminal:
 ```bash
 php artisan serve
 ```
-
-Server akan berjalan di:
-
+Server backend akan berjalan di:
 ```text
 http://127.0.0.1:8000
 ```
 
-Base URL API:
-
+### 2. Menjalankan Server Frontend (Next.js)
+Buka terminal baru, masuk ke folder `frontend/` lalu jalankan command berikut:
+```bash
+npm run dev
+```
+Server frontend akan berjalan di:
 ```text
-http://127.0.0.1:8000/api
+http://localhost:3000
 ```
 
 ---
 
-## Menjalankan Scheduler
+## Menjalankan Scheduler (Auto-Cancel Booking)
 
-Scheduler digunakan untuk menjalankan proses otomatis, salah satunya auto cancel booking yang sudah expired.
+Aplikasi memiliki fitur otomatis membatalkan pemesanan yang tidak dibayar dalam **15 menit** (mengubah status booking menjadi `cancelled` dan status payment menjadi `failed`).
+
+Untuk menjalankan scheduler ini secara lokal, buka terminal baru di direktori `backend/` dan jalankan command:
 
 ```bash
 php artisan schedule:work
 ```
 
-Booking dengan status pending memiliki waktu expired selama 15 menit.
+*   **Penting:** Command ini akan mengecek masa aktif booking setiap menit secara background. Pastikan command ini tetap berjalan selama simulasi pemesanan.
 
 ---
 
@@ -343,7 +362,7 @@ Booking dengan status pending memiliki waktu expired selama 15 menit.
 
 Project ini menggunakan Midtrans Snap untuk proses pembayaran.
 
-Contoh konfigurasi pada file `.env`:
+Contoh konfigurasi pada file `backend/.env`:
 
 ```env
 MIDTRANS_SERVER_KEY=your_midtrans_server_key
@@ -354,10 +373,35 @@ MIDTRANS_IS_3DS=true
 ```
 
 Catatan:
+*   Gunakan Midtrans Sandbox untuk testing.
+*   Jangan commit key asli Midtrans ke GitHub.
+*   Key asli hanya disimpan di file `.env` lokal.
 
-* Gunakan Midtrans Sandbox untuk testing.
-* Jangan commit key asli Midtrans ke GitHub.
-* Key asli hanya disimpan di file `.env` lokal.
+---
+
+## Simulasi Pembayaran Real-Time dengan Ngrok (Tunneling Webhook)
+
+Untuk mensimulasikan status pembayaran secara real-time dari Midtrans ke server lokal Anda (webhook callback), Anda harus menggunakan **Ngrok** untuk melakukan port forwarding / tunneling.
+
+### Langkah-langkah Simulasi Webhook:
+
+1.  **Jalankan Ngrok:**
+    Buka terminal baru di komputer Anda, lalu jalankan command untuk meneruskan port backend Laravel (`8000`):
+    ```bash
+    ngrok http 8000
+    ```
+2.  **Dapatkan URL Public:**
+    Salin URL public forwarding HTTPS yang diberikan oleh Ngrok (contoh: `https://abcd-123-456.ngrok-free.app`).
+3.  **Konfigurasi di Dashboard Midtrans Sandbox:**
+    *   Buka portal **[Midtrans MAP Sandbox](https://dashboard.sandbox.midtrans.com/)**.
+    *   Masuk ke menu **Settings > Merchant Base URL**.
+    *   Isi **Payment Notification URL** dengan URL Ngrok Anda ditambah path callback API, contoh:
+        ```text
+        https://abcd-123-456.ngrok-free.app/api/midtrans/callback
+        ```
+    *   Klik **Save**.
+4.  **Uji Coba Pembayaran:**
+    Ketika Anda melakukan pemesanan di frontend, sistem akan membuat Snap Token. Lakukan pembayaran simulasi di halaman popup Snap menggunakan simulator kartu kredit / QRIS Midtrans. Begitu pembayaran sukses, Midtrans akan mengirim callback ke URL public Ngrok Anda, dan status pesanan di dashboard user maupun receptionist akan berubah menjadi **Paid / Lunas** secara real-time!
 
 ---
 

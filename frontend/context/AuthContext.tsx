@@ -8,6 +8,9 @@ interface User {
   name: string;
   email: string;
   role: string;
+  profile_picture_url?: string;
+  hotel_id?: number | null;
+  hotel?: { name: string; id: number } | null;
 }
 
 interface AuthContextType {

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./EditPengguna.module.css";
 import api from "@/lib/axios";
 import { notify } from "@/lib/notifications";
+import { toast } from "sonner";
 
 function EditPenggunaContent() {
   const router = useRouter();
@@ -52,6 +53,22 @@ function EditPenggunaContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!name.trim() || !email.trim()) {
+      toast.warning("Mohon lengkapi semua kolom wajib");
+      return;
+    }
+
+    if (password && password.length < 6) {
+      toast.warning("Kata sandi baru harus minimal 6 karakter");
+      return;
+    }
+
+    if (roleId === 3 && !hotelId) {
+      toast.warning("Resepsionis harus ditetapkan ke salah satu hotel");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -72,7 +89,7 @@ function EditPenggunaContent() {
     } catch (error: any) {
       console.error("Gagal memperbarui user:", error);
       if (error.response?.data?.message) {
-          alert(error.response.data.message);
+          toast.error(error.response.data.message);
       } else {
           notify.api.serverError();
       }

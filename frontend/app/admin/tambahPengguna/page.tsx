@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import styles from "./TambahPengguna.module.css";
 import api from "@/lib/axios";
 import { notify } from "@/lib/notifications";
+import { toast } from "sonner";
 
 export default function Page() {
   const router = useRouter();
@@ -33,6 +34,22 @@ export default function Page() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!name.trim() || !email.trim() || !password) {
+      toast.warning("Mohon lengkapi semua kolom wajib");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.warning("Kata sandi harus minimal 6 karakter");
+      return;
+    }
+
+    if (roleId === 3 && !hotelId) {
+      toast.warning("Resepsionis harus ditetapkan ke salah satu hotel");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -50,7 +67,7 @@ export default function Page() {
     } catch (error: any) {
       console.error("Gagal menambahkan user:", error);
       if (error.response?.data?.message) {
-          alert(error.response.data.message);
+          toast.error(error.response.data.message);
       } else {
           notify.api.serverError();
       }

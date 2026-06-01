@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { RiHome5Fill, RiUser3Line } from 'react-icons/ri';
+import { RiHome5Fill, RiUser3Line, RiHeartFill, RiHeartLine } from 'react-icons/ri';
 import { useAuth } from '@/context/AuthContext';
 
 export default function HomeLayout({
@@ -22,10 +22,19 @@ export default function HomeLayout({
 
         {}
         <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 z-50">
-          <div className="w-full max-w-[1400px] mx-auto flex justify-center gap-32 items-center px-8 md:px-16 lg:px-20 py-3 pb-6">
+          <div className="w-full max-w-[1400px] mx-auto flex justify-center gap-16 md:gap-24 lg:gap-32 items-center px-8 py-3 pb-6">
             <Link href="/home" className="flex flex-col items-center gap-1">
               <RiHome5Fill className={`text-2xl ${pathname === '/home' ? 'text-[#c68a47]' : 'text-gray-400'}`} />
               <span className={`text-[12px] font-bold ${pathname === '/home' ? 'text-[#c68a47]' : 'text-gray-400'}`}>Beranda</span>
+            </Link>
+
+            <Link href="/home/favorites" className="flex flex-col items-center gap-1">
+              {pathname === '/home/favorites' ? (
+                <RiHeartFill className="text-2xl text-[#c68a47]" />
+              ) : (
+                <RiHeartLine className="text-2xl text-gray-400" />
+              )}
+              <span className={`text-[12px] font-bold ${pathname === '/home/favorites' ? 'text-[#c68a47]' : 'text-gray-400'}`}>Favorit</span>
             </Link>
             
             <Link href="/home/profile" className="flex flex-col items-center gap-1">

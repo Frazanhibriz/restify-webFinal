@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MOCK_NOTIFICATIONS } from '@/data/mockNotifications';
-import { FaMapMarkerAlt, FaStar, FaRegHeart } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaStar, FaRegHeart, FaHeart } from 'react-icons/fa';
 import { FiChevronDown, FiBell, FiSearch, FiFilter } from 'react-icons/fi';
 import NotificationPanel from '@/app/components/NotificationPanel';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 export default function HomePage() {
     const { user } = useAuth();
@@ -32,6 +33,35 @@ export default function HomePage() {
     const [showNotif, setShowNotif] = useState(false);
     const [selectedCity, setSelectedCity] = useState('Bandung');
     const [showCityDropdown, setShowCityDropdown] = useState(false);
+    
+    const [favorites, setFavorites] = useState<number[]>([]);
+    
+    useEffect(() => {
+        const saved = localStorage.getItem('restify_favorites');
+        if (saved) {
+            try {
+                setFavorites(JSON.parse(saved));
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    }, []);
+
+    const toggleFavorite = (hotelId: number, e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        let newFavorites;
+        const isFav = favorites.includes(hotelId);
+        if (isFav) {
+            newFavorites = favorites.filter(id => id !== hotelId);
+            toast.success('Hotel dihapus dari daftar favorit.');
+        } else {
+            newFavorites = [...favorites, hotelId];
+            toast.success('Hotel ditambahkan ke daftar favorit!');
+        }
+        setFavorites(newFavorites);
+        localStorage.setItem('restify_favorites', JSON.stringify(newFavorites));
+    };
     
     const [unreadCount, setUnreadCount] = useState(3);
     const [minPrice, setMinPrice] = useState('');
@@ -57,7 +87,7 @@ export default function HomePage() {
             }
         };
         fetchUnreadNotifications();
-        const interval = setInterval(fetchUnreadNotifications, 5000);
+        const interval = setInterval(fetchUnreadNotifications, 30000);
         return () => clearInterval(interval);
     }, []);
 
@@ -106,15 +136,22 @@ export default function HomePage() {
     const isSearching = appliedSearchQuery.trim() !== '';
 
     const filteredHotels = hotels.filter((hotel: any) => {
-        if (selectedCity && hotel.location.toLowerCase() !== selectedCity.toLowerCase()) return false;
+        if (selectedCity && hotel.location.toLowerCase() !== selectedCity.toLowerCase()) {
+            if (isSearching) {
+                const q = appliedSearchQuery.toLowerCase();
+                if (!hotel.location.toLowerCase().includes(q)) return false;
+            } else {
+                return false;
+            }
+        }
 
         if (appliedMin !== null && hotel.pricePerDay < appliedMin) return false;
         if (appliedMax !== null && hotel.pricePerDay > appliedMax) return false;
 
         if (isSearching) {
             const q = appliedSearchQuery.toLowerCase();
-            const matchName = hotel.name.toLowerCase().includes(q);
-            const matchLoc = hotel.location.toLowerCase().includes(q);
+            const matchName = hotel.name?.toLowerCase().includes(q);
+            const matchLoc = hotel.location?.toLowerCase().includes(q);
             const matchAddr = hotel.address?.toLowerCase().includes(q);
             if (!matchName && !matchLoc && !matchAddr) return false;
         }
@@ -286,8 +323,15 @@ export default function HomePage() {
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                                         />
                                         <div className="absolute top-4 right-4 z-10">
-                                            <button className="w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:text-red-500 transition-colors">
-                                                <FaRegHeart className="text-xl" />
+                                            <button 
+                                                onClick={(e) => toggleFavorite(hotel.id, e)}
+                                                className="w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all shadow-sm"
+                                            >
+                                                {favorites.includes(hotel.id) ? (
+                                                    <FaHeart className="text-xl text-red-500 animate-pulse" />
+                                                ) : (
+                                                    <FaRegHeart className="text-xl text-white hover:text-red-500 transition-colors" />
+                                                )}
                                             </button>
                                         </div>
                                         <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-[12px] font-bold shadow-sm">

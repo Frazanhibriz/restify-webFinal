@@ -18,12 +18,11 @@ class HotelController extends Controller
 
         //SEARCH
         if ($request->filled('search')) {
-
-            $query->where(
-                'name',
-                'like',
-                '%' . $request->search . '%'
-            );
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('city', 'like', '%' . $request->search . '%')
+                  ->orWhere('address', 'like', '%' . $request->search . '%');
+            });
         }
 
         //FILTER CITY
@@ -92,6 +91,7 @@ class HotelController extends Controller
                 'id' => $hotel->id,
                 'name' => $hotel->name,
                 'city' => $hotel->city,
+                'address' => $hotel->address,
                 'description' => $hotel->description,
 
                 'facilities' => $hotel->facilities,

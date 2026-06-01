@@ -177,9 +177,10 @@ class AuthController extends Controller
             ]
         );
 
+        \Illuminate\Support\Facades\Log::info("Password reset token generated for {$request->email}: {$token}");
+
         return response()->json([
-            'message' => 'Token reset password berhasil dibuat',
-            'token' => $token
+            'message' => 'Token reset password berhasil dibuat (silakan cek log Laravel)'
         ]);
     }
 

@@ -44,7 +44,7 @@ class User extends Authenticatable
 
     public function getRoleAttribute()
     {
-        return $this->role()->first()->name ?? null;
+        return $this->role ? $this->role->name : null;
     }
 
     public function role()

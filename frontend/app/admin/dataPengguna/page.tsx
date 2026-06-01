@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./DataPengguna.module.css";
 import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 export default function Page() {
   const router = useRouter();
@@ -23,6 +24,13 @@ export default function Page() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmIndex, setConfirmIndex] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredData = useMemo(() => {
+    if (!searchQuery.trim()) return data;
+    const q = searchQuery.toLowerCase();
+    return data.filter((item) => item.name?.toLowerCase().includes(q));
+  }, [data, searchQuery]);
 
   useEffect(() => {
     if (user && user.role === 'admin') {
@@ -48,9 +56,10 @@ export default function Page() {
       const newData = data.filter((_, i) => i !== index);
       setData(newData);
       setConfirmIndex(null);
-    } catch (error) {
+      toast.success("Pengguna berhasil dihapus");
+    } catch (error: any) {
       console.error("Gagal menghapus pengguna:", error);
-      alert("Gagal menghapus pengguna");
+      toast.error(error.response?.data?.message || "Gagal menghapus pengguna");
     }
   };
 
@@ -73,6 +82,31 @@ export default function Page() {
         </button>
       </div>
 
+      <div style={{ width: '90%', margin: '0 auto 16px auto' }}>
+        <div style={{ position: 'relative', maxWidth: 400 }}>
+          <input
+            type="text"
+            placeholder="Cari nama pengguna..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '10px 16px 10px 40px',
+              borderRadius: 24,
+              border: '2px solid #e5e7eb',
+              outline: 'none',
+              fontSize: 14,
+              transition: 'border-color 0.2s',
+            }}
+            onFocus={(e) => (e.target.style.borderColor = '#5F6F52')}
+            onBlur={(e) => (e.target.style.borderColor = '#e5e7eb')}
+          />
+          <svg style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: '#9ca3af' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+
       <div className={styles.table}>
         <div className={styles.tableHeader}>
           <span>No.</span>
@@ -83,9 +117,9 @@ export default function Page() {
 
         {loading ? (
             <div className="p-4 text-center">Memuat data...</div>
-        ) : data.length === 0 ? (
-            <div className="p-4 text-center">Tidak ada data pengguna</div>
-        ) : data.map((item, index) => (
+        ) : filteredData.length === 0 ? (
+            <div className="p-4 text-center">{searchQuery ? `Tidak ada pengguna dengan nama "${searchQuery}"` : 'Tidak ada data pengguna'}</div>
+        ) : filteredData.map((item, index) => (
           <div key={item.id || index}>
             <div className={styles.tableRow}>
               <span>{index + 1}</span>

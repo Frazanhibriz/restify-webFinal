@@ -1,15 +1,19 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { FiCalendar, FiBox, FiLogOut } from 'react-icons/fi';
+import { FiCalendar, FiBox, FiLogOut, FiClock, FiCheckCircle, FiUserCheck } from 'react-icons/fi';
+import api from '@/lib/axios';
 
 export default function ReceptionistHomePage() {
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
+
+  const [stats, setStats] = useState({ pending: 0, confirmed: 0, checkedIn: 0 });
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
     if (!isLoading) {
@@ -21,10 +25,65 @@ export default function ReceptionistHomePage() {
     }
   }, [user, isLoading, router]);
 
+  const fetchStats = useCallback(async (showLoading = false) => {
+    try {
+      if (showLoading) setStatsLoading(true);
+      const res = await api.get('/receptionist/bookings');
+      const bookings: any[] = res.data || [];
+      setStats({
+        pending: bookings.filter((b) => b.status === 'pending').length,
+        confirmed: bookings.filter((b) => b.status === 'confirmed').length,
+        checkedIn: bookings.filter((b) => b.status === 'checked_in').length,
+      });
+    } catch (error) {
+      console.error('Gagal mengambil statistik:', error);
+    } finally {
+      if (showLoading) setStatsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user && user.role === 'receptionist') {
+      fetchStats(true);
+      const interval = setInterval(() => fetchStats(false), 10000);
+      return () => clearInterval(interval);
+    }
+  }, [user, fetchStats]);
+
   const handleLogout = async () => {
     await logout();
     router.push('/login');
   };
+
+  const statCards = [
+    {
+      label: 'Menunggu Konfirmasi',
+      value: stats.pending,
+      icon: <FiClock className="text-xl" />,
+      bg: 'bg-amber-50',
+      border: 'border-amber-200',
+      text: 'text-amber-600',
+      valueBg: 'bg-amber-100',
+    },
+    {
+      label: 'Belum Check-in',
+      value: stats.confirmed,
+      icon: <FiCheckCircle className="text-xl" />,
+      bg: 'bg-blue-50',
+      border: 'border-blue-200',
+      text: 'text-blue-600',
+      valueBg: 'bg-blue-100',
+    },
+    {
+      label: 'Sedang Check-in',
+      value: stats.checkedIn,
+      icon: <FiUserCheck className="text-xl" />,
+      bg: 'bg-green-50',
+      border: 'border-green-200',
+      text: 'text-green-600',
+      valueBg: 'bg-green-100',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#FFFDF0] flex flex-col items-center justify-center p-6 font-sans text-gray-800 relative overflow-hidden">
@@ -43,12 +102,29 @@ export default function ReceptionistHomePage() {
         </div>
         
         {}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-2 block">Dashboard Management</span>
             <h1 className="text-3xl font-black mb-1 text-restify-dark">Halo, Resepsionis</h1>
             <div className="inline-block bg-restify-olive/10 text-restify-olive px-4 py-1.5 rounded-full text-xs font-black mt-3">
                 {user?.hotel?.name || "Memuat..."}
             </div>
+        </div>
+
+        {}
+        <div className="grid grid-cols-3 gap-3 mb-8">
+          {statsLoading ? (
+            <div className="col-span-3 text-center py-4 text-sm text-gray-400 font-medium">Memuat statistik...</div>
+          ) : (
+            statCards.map((card, i) => (
+              <div key={i} className={`${card.bg} ${card.border} border rounded-2xl p-3 flex flex-col items-center text-center transition-all hover:scale-[1.03]`}>
+                <div className={`${card.valueBg} ${card.text} w-10 h-10 rounded-xl flex items-center justify-center mb-2`}>
+                  {card.icon}
+                </div>
+                <span className={`text-2xl font-black ${card.text}`}>{card.value}</span>
+                <span className="text-[10px] font-bold text-gray-500 mt-1 leading-tight">{card.label}</span>
+              </div>
+            ))
+          )}
         </div>
         
         {}

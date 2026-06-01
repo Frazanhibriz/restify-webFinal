@@ -1,9 +1,10 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
 import styles from "./MapPage.module.css";
 
-export default function MapPage() {
+function MapPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -45,5 +46,13 @@ export default function MapPage() {
       </div>
 
     </div>
+  );
+}
+
+export default function MapPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-bold text-restify-olive">Memuat Peta...</div>}>
+      <MapPageContent />
+    </Suspense>
   );
 }

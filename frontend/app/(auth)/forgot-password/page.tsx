@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FiChevronLeft } from 'react-icons/fi';
 import { notify } from '@/lib/notifications';
+import api from '@/lib/axios';
 
 export default function ForgotPasswordPage() {
     const router = useRouter();
@@ -19,16 +20,12 @@ export default function ForgotPasswordPage() {
         setIsLoading(true);
 
         try {
-            
-            await new Promise((r) => setTimeout(r, 800));
-            
-            
+            await api.post('/forgot-password', { email });
+            sessionStorage.setItem('reset_email', email);
             notify.auth.resetLinkSent();
-            
-            
             router.push('/reset-password');
-            
-        } catch {
+        } catch (error: any) {
+            const message = error.response?.data?.message || "Email tidak ditemukan atau terjadi kesalahan.";
             notify.api.serverError();
         } finally {
             setIsLoading(false);

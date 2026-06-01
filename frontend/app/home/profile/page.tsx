@@ -117,6 +117,8 @@ function BookingDetail({
   const [reviewPhoto, setReviewPhoto] = useState<File | null>(null);
   const [reviewPhotoPreview, setReviewPhotoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
 
   const getFriendlyStatus = () => {
     if (booking.rawStatus === 'cancelled') return 'Dibatalkan';
@@ -130,7 +132,6 @@ function BookingDetail({
   };
 
   const handleCancel = async () => {
-    if (!confirm("Apakah Anda yakin ingin membatalkan pesanan ini?")) return;
     try {
       await api.post(`/user/cancel-booking/${booking.id}`);
       toast.success("Booking berhasil dibatalkan!");
@@ -142,22 +143,58 @@ function BookingDetail({
   };
 
   const handlePay = async () => {
+    if (isPaying) return;
+    setIsPaying(true);
     try {
       const payRes = await api.post(`/user/pay/${booking.id}`);
       const snapToken = payRes.data.snap_token;
       
-      (window as any).snap.pay(snapToken, {
+      // Dynamically ensure Snap script is loaded
+      const snapInstance = await new Promise<any>((resolve) => {
+          if ((window as any).snap) {
+              if (typeof (window as any).snap.hide === 'function') {
+                  try { (window as any).snap.hide(); } catch (e) {}
+              }
+              resolve((window as any).snap);
+              return;
+          }
+          const script = document.createElement("script");
+          script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+          script.setAttribute("data-client-key", "Mid-client-XxTfLCZ76GoQZj3Z");
+          script.onload = () => resolve((window as any).snap);
+          script.onerror = () => resolve(null);
+          document.body.appendChild(script);
+      });
+
+      if (!snapInstance) {
+          toast.error("Gagal memuat sistem pembayaran Midtrans. Silakan coba beberapa saat lagi.");
+          setIsPaying(false);
+          return;
+      }
+
+      snapInstance.pay(snapToken, {
           onSuccess: function(){
               toast.success('Pembayaran berhasil!');
+              setIsPaying(false);
               onActionSuccess();
               onBack();
           },
-          onPending: function(){ toast.info('Menunggu pembayaran Anda...'); },
-          onError: function(){ toast.error('Pembayaran gagal!'); },
-          onClose: function(){ toast.warning('Anda menutup popup tanpa menyelesaikan pembayaran'); }
+          onPending: function(){
+              toast.info('Menunggu pembayaran Anda...');
+              setIsPaying(false);
+          },
+          onError: function(){
+              toast.error('Pembayaran gagal!');
+              setIsPaying(false);
+          },
+          onClose: function(){
+              toast.warning('Anda menutup popup tanpa menyelesaikan pembayaran');
+              setIsPaying(false);
+          }
       });
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Gagal memproses pembayaran.');
+      toast.error(error.response?.data?.message || error.message || 'Gagal memproses pembayaran.');
+      setIsPaying(false);
     }
   };
 
@@ -279,12 +316,13 @@ function BookingDetail({
             <div className="flex w-full gap-3">
               <button
                 onClick={handlePay}
-                className="flex-1 bg-white text-gray-800 rounded-xl py-3 text-xs font-black hover:bg-gray-50 transition-colors shadow-sm"
+                disabled={isPaying}
+                className={`flex-1 bg-white text-gray-800 rounded-xl py-3 text-xs font-black hover:bg-gray-50 transition-colors shadow-sm ${isPaying ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Bayar Sekarang
+                {isPaying ? 'Memproses...' : 'Bayar Sekarang'}
               </button>
               <button
-                onClick={handleCancel}
+                onClick={() => setShowCancelConfirm(true)}
                 className="flex-1 bg-red-600/30 border border-red-500/50 text-white rounded-xl py-3 text-xs font-black hover:bg-red-600/50 transition-colors"
               >
                 Batalkan Pesanan
@@ -305,7 +343,7 @@ function BookingDetail({
                 </div>
               </div>
               <button
-                onClick={handleCancel}
+                onClick={() => setShowCancelConfirm(true)}
                 className="w-full bg-red-600/30 border border-red-500/50 text-white rounded-xl py-3 text-xs font-black hover:bg-red-600/50 transition-colors"
               >
                 Batalkan Pesanan
@@ -435,6 +473,39 @@ function BookingDetail({
           )}
         </div>
       </div>
+
+      {/* Kustom Premium Modal Konfirmasi Pembatalan */}
+      {showCancelConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setShowCancelConfirm(false)} />
+          <div className="relative w-full max-w-sm bg-white rounded-[32px] shadow-2xl p-8 animate-fade-in-up text-center border border-gray-100">
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-3xl select-none">⚠️</span>
+            </div>
+            <h3 className="text-xl font-black text-gray-800 mb-2">Batalkan Pesanan?</h3>
+            <p className="text-gray-500 text-xs leading-relaxed mb-8">
+              Apakah Anda benar-benar yakin ingin membatalkan pesanan di <span className="font-bold text-[#5E6B52]">{booking.hotelName}</span>? Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setShowCancelConfirm(false)}
+                className="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold text-xs hover:bg-gray-200 transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={() => {
+                  setShowCancelConfirm(false);
+                  handleCancel();
+                }}
+                className="flex-1 py-4 bg-[#E34A42] text-white rounded-2xl font-black text-xs hover:bg-[#c93f38] transition-colors shadow-lg shadow-red-500/20"
+              >
+                Ya, Batalkan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

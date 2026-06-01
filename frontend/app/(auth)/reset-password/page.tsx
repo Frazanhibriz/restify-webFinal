@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FiChevronLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 import { notify } from '@/lib/notifications';
+import api from '@/lib/axios';
+import { toast } from 'sonner';
 
 export default function ResetPasswordPage() {
     const router = useRouter();
@@ -12,6 +14,7 @@ export default function ResetPasswordPage() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [token, setToken] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,23 +25,31 @@ export default function ResetPasswordPage() {
             return;
         }
 
-        if (newPassword.length < 6) {
-            notify.auth.passwordTooWeak();
+        if (newPassword.length < 8) {
+            toast.error("Kata sandi minimal harus 8 karakter");
             return;
         }
 
         setIsLoading(true);
 
+        const email = typeof window !== 'undefined' ? sessionStorage.getItem('reset_email') || '' : '';
+
         try {
-            
-            await new Promise((r) => setTimeout(r, 800));
-            
+            await api.post('/reset-password', {
+                email,
+                token,
+                password: newPassword,
+                password_confirmation: confirmPassword
+            });
             
             notify.auth.passwordResetSuccess();
+            if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('reset_email');
+            }
             router.push('/login');
-            
-        } catch {
-            notify.api.serverError();
+        } catch (error: any) {
+            const message = error.response?.data?.message || "Gagal mereset kata sandi. Pastikan token dan kata sandi baru memenuhi syarat (mengandung huruf besar, kecil, dan angka).";
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }
@@ -68,7 +79,21 @@ export default function ResetPasswordPage() {
 
                     <form className="w-full" onSubmit={handleResetPassword}>
 
-                        {}
+                        <div className="mb-5">
+                            <label htmlFor="reset-token" className="block text-xs font-bold text-gray-800 mb-2">
+                                Token Reset
+                            </label>
+                            <input
+                                id="reset-token"
+                                type="text"
+                                placeholder="Masukkan token reset..."
+                                value={token}
+                                onChange={(e) => setToken(e.target.value)}
+                                className="w-full bg-[#FFFDF0] px-4 py-4 rounded-[12px] text-sm text-gray-800 outline-none placeholder-gray-300 focus:ring-1 focus:ring-[#9FA682] transition-all"
+                                required
+                            />
+                        </div>
+
                         <div className="mb-5 relative">
                             <label htmlFor="new-password" className="block text-xs font-bold text-gray-800 mb-2">
                                 Kata Sandi Baru

@@ -96,14 +96,14 @@ export default function AdminPage() {
 
     const [activeTab, setActiveTab] = useState('dashboard'); 
     const [searchQuery, setSearchQuery] = useState('');
-    const [editingHotel, setEditingHotel] = useState(null);
+    const [editingHotel, setEditingHotel] = useState<any>(null);
 
     
-    const [selectedHotel, setSelectedHotel] = useState(null);
-    const [editingRoom, setEditingRoom] = useState(null);
+    const [selectedHotel, setSelectedHotel] = useState<any>(null);
+    const [editingRoom, setEditingRoom] = useState<any>(null);
 
     
-    const [editingUser, setEditingUser] = useState(null);
+    const [editingUser, setEditingUser] = useState<any>(null);
     const [userSearchQuery, setUserSearchQuery] = useState('');
 
     
@@ -129,7 +129,7 @@ export default function AdminPage() {
         setEditingUser(null);
     };
 
-    const handleEditPengguna = (user) => {
+    const handleEditPengguna = (user: any) => {
         setEditingUser(user);
         setNamaPengguna(user.name);
         setEmailPengguna(user.email);
@@ -141,7 +141,7 @@ export default function AdminPage() {
         setActiveTab('tambahPengguna');
     };
 
-    const handleHapusPengguna = async (userId) => {
+    const handleHapusPengguna = async (userId: any) => {
         if(confirm("Apakah Anda yakin ingin menghapus akun pengguna ini?")) {
             try {
                 await api.delete(`/admin/users/${userId}`);
@@ -156,7 +156,7 @@ export default function AdminPage() {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSimpanPengguna = async (e) => {
+    const handleSimpanPengguna = async (e: any) => {
         e.preventDefault();
         setIsSubmitting(true);
 
@@ -214,7 +214,7 @@ export default function AdminPage() {
         makanMalam: false, wifi: false, kulkas: false, tempatTidurTambahan: false
     });
     
-        const [hotels, setHotels] = useState([
+        const [hotels, setHotels] = useState<any[]>([
             { 
                 id: 1, name: 'Hotel Grand Serela', location: 'Bandung, Indonesia', rating: '4.5', image: '/images/Restify_BG2.png',
                 rooms: [
@@ -242,12 +242,12 @@ export default function AdminPage() {
     });
 
     
-    const handleCheckboxChange = (e) => {
+    const handleCheckboxChange = (e: any) => {
         const { name, checked } = e.target;
         setFasilitas(prev => ({ ...prev, [name]: checked }));
     };
 
-    const handleEdit = (hotel) => {
+    const handleEdit = (hotel: any) => {
         setEditingHotel(hotel); 
         setNamaHotel(hotel.name || hotel.nama);
         setLokasiHotel(hotel.location || hotel.lokasi);
@@ -264,11 +264,11 @@ export default function AdminPage() {
         setEditingHotel(null); 
     };
 
-    const handleSimpanHotel = (e) => {
+    const handleSimpanHotel = (e: any) => {
         e.preventDefault();
         
         if (!namaHotel || !lokasiHotel || !deskripsiHotel) {
-            alert('Mohon lengkapi semua bidang yang bertanda bintang (*)!');
+            toast.warning('Mohon lengkapi semua bidang yang bertanda bintang (*)!');
             return;
         }
 
@@ -285,6 +285,7 @@ export default function AdminPage() {
                 }
                 return hotel;
             }));
+            toast.success("Hotel berhasil diperbarui");
         } else {
             
             const newHotel = {
@@ -292,10 +293,12 @@ export default function AdminPage() {
                 name: namaHotel,
                 location: lokasiHotel,
                 rating: '4.5',
-                image: '/images/Restify_BG2.png'
+                image: '/images/Restify_BG2.png',
+                rooms: []
             };
 
             setHotels([newHotel, ...hotels]); 
+            toast.success("Hotel berhasil ditambahkan");
         }
 
         resetForm();
@@ -303,20 +306,21 @@ export default function AdminPage() {
     };
 
     
-    const handleDeleteHotel = (id) => {
+    const handleDeleteHotel = (id: any) => {
         setHotels(hotels.filter(hotel => hotel.id !== id));
+        toast.success("Hotel berhasil dihapus");
     };
 
 
-    const handleBukaDataKamar = (hotel) => {
+    const handleBukaDataKamar = (hotel: any) => {
         setSelectedHotel(hotel);
         setActiveTab('dataKamar');
     };
 
-    const handleUbahKamarTersedia = (roomId, increment) => {
+    const handleUbahKamarTersedia = (roomId: any, increment: any) => {
         setHotels(hotels.map(h => {
             if (h.id === selectedHotel.id) {
-                const updatedRooms = h.rooms.map(r => {
+                const updatedRooms = h.rooms.map((r: any) => {
                     if (r.id === roomId) {
                         const newVal = r.available + (increment ? 1 : -1);
                         return { ...r, available: newVal < 0 ? 0 : newVal };
@@ -330,12 +334,13 @@ export default function AdminPage() {
         }));
     };
 
-    const handleHapusKamar = (roomId) => {
+    const handleHapusKamar = (roomId: any) => {
         if(confirm("Apakah Anda yakin ingin menghapus tipe kamar ini?")) {
             setHotels(hotels.map(h => {
                 if (h.id === selectedHotel.id) {
-                    const updatedRooms = h.rooms.filter(r => r.id !== roomId);
+                    const updatedRooms = h.rooms.filter((r: any) => r.id !== roomId);
                     setSelectedHotel({ ...h, rooms: updatedRooms });
+                    toast.success("Tipe kamar berhasil dihapus");
                     return { ...h, rooms: updatedRooms };
                 }
                 return h;
@@ -358,7 +363,7 @@ export default function AdminPage() {
         setEditingRoom(null);
     };
 
-    const handleEditKamar = (room) => {
+    const handleEditKamar = (room: any) => {
         setEditingRoom(room);
         setNamaKamar(room.name);
         setHargaKamar(room.price || '');
@@ -371,18 +376,19 @@ export default function AdminPage() {
         setActiveTab('tambahKamar');
     };
 
-    const handleSimpanKamar = (e) => {
+    const handleSimpanKamar = (e: any) => {
         e.preventDefault();
         
         setHotels(hotels.map(h => {
             if (h.id === selectedHotel.id) {
                 let updatedRooms;
                 if (editingRoom) {
-                    updatedRooms = h.rooms.map(r => r.id === editingRoom.id ? {
+                    updatedRooms = h.rooms.map((r: any) => r.id === editingRoom.id ? {
                         ...r, name: namaKamar, price: Number(hargaKamar), size: Number(ukuranKamar),
                         description: deskripsiKamar, available: jumlahKamarTersediaForm,
                         kamarMandi: jumlahKamarMandi, kamarTidur: jumlahKamarTidur, facilities: fasilitasKamar
                     } : r);
+                    toast.success("Kamar berhasil diperbarui");
                 } else {
                     const newRoom = {
                         id: Date.now(), name: namaKamar, price: Number(hargaKamar), size: Number(ukuranKamar),
@@ -391,6 +397,7 @@ export default function AdminPage() {
                         image: '/images/Restify_BG2.png'
                     };
                     updatedRooms = [...h.rooms, newRoom];
+                    toast.success("Kamar berhasil ditambahkan");
                 }
                 setSelectedHotel({ ...h, rooms: updatedRooms });
                 return { ...h, rooms: updatedRooms };
@@ -669,7 +676,7 @@ export default function AdminPage() {
                                         <div className={styles.inputFieldGroup}>
                                             <label>Deskripsi Hotel <span className={styles.requiredStar}>*</span></label>
                                             <textarea 
-                                                rows="5" 
+                                                rows={5} 
                                                 placeholder="Masukkan deskripsi hotel" 
                                                 value={deskripsiHotel}
                                                 onChange={(e) => setDeskripsiHotel(e.target.value)}
@@ -801,7 +808,7 @@ export default function AdminPage() {
                                     </thead>
                                     <tbody>
                                         {selectedHotel.rooms && selectedHotel.rooms.length > 0 ? (
-                                            selectedHotel.rooms.map((room) => (
+                                            selectedHotel.rooms.map((room: any) => (
                                                 <tr key={room.id}>
                                                     <td>
                                                         <div className={styles.roomTypeCell}>
@@ -833,7 +840,7 @@ export default function AdminPage() {
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="3" className={styles.emptyTableRow}>Belum ada data tipe kamar untuk hotel ini.</td>
+                                                <td colSpan={3} className={styles.emptyTableRow}>Belum ada data tipe kamar untuk hotel ini.</td>
                                             </tr>
                                         )}
                                     </tbody>
@@ -842,7 +849,7 @@ export default function AdminPage() {
 
                             <div className={styles.roomTotalBanner}>
                                 <FiInfo className={styles.infoIconBanner} />
-                                <span>Total seluruh kamar tersedia: {selectedHotel.rooms ? selectedHotel.rooms.reduce((acc, curr) => acc + curr.available, 0) : 0} kamar</span>
+                                <span>Total seluruh kamar tersedia: {selectedHotel.rooms ? selectedHotel.rooms.reduce((acc: number, curr: any) => acc + curr.available, 0) : 0} kamar</span>
                             </div>
                         </div>
                     )}
@@ -908,8 +915,8 @@ export default function AdminPage() {
                                             <label>Deskripsi Kamar <span className={styles.requiredStar}>*</span></label>
                                             <div className={styles.textareaCounterWrapper}>
                                                 <textarea 
-                                                    rows="8" 
-                                                    maxLength="300"
+                                                    rows={8} 
+                                                    maxLength={300}
                                                     placeholder="Deskripsi kamar, fasilitas utama dan keunggulan lainnya..." 
                                                     value={deskripsiKamar}
                                                     onChange={(e) => setDeskripsiKamar(e.target.value)}
@@ -1104,7 +1111,7 @@ export default function AdminPage() {
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="7" className={styles.emptyTableRow}>Data pengguna tidak ditemukan.</td>
+                                                <td colSpan={7} className={styles.emptyTableRow}>Data pengguna tidak ditemukan.</td>
                                             </tr>
                                         )}
                                     </tbody>

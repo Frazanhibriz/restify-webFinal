@@ -48,6 +48,9 @@ class Hotel extends Model
     
     public function getAverageRatingAttribute()
     {
+        if (array_key_exists('ratings_avg_rating', $this->attributes)) {
+            return round($this->attributes['ratings_avg_rating'] ?? 0, 1);
+        }
         return round($this->ratings()->avg('rating') ?? 0, 1);
     }
 

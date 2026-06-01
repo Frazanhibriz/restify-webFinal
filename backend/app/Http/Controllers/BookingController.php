@@ -35,9 +35,9 @@ class BookingController extends Controller
             }
 
             
-            if ($room->status !== 'available') {
+            if ($room->status === 'maintenance') {
                 return response()->json([
-                    'message' => 'Kamar sedang tidak tersedia'
+                    'message' => 'Kamar sedang dalam pemeliharaan'
                 ], 400);
             }
 
@@ -408,7 +408,7 @@ class BookingController extends Controller
         
         $params = [
             'transaction_details' => [
-                'order_id' => $payment->transaction_code,
+                'order_id' => $payment->transaction_code . '-' . time(),
                 'gross_amount' => (int) $payment->amount,
             ],
 
@@ -445,16 +445,34 @@ class BookingController extends Controller
     
     public function midtransCallback(Request $request)
     {
+        $serverKey = config('services.midtrans.server_key');
+        $calculatedSignature = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+        
+        if ($calculatedSignature !== $request->signature_key) {
+            return response()->json([
+                'message' => 'Invalid signature key'
+            ], 403);
+        }
+
         $transactionStatus = $request->transaction_status;
         $orderId = $request->order_id;
 
-        
-        $payment = Payment::where('transaction_code', $orderId)->first();
+        // Ekstrak kode transaksi dasar jika menggunakan akhiran timestamp
+        $baseTransactionCode = $orderId;
+        if (str_contains($orderId, '-')) {
+            $lastHyphenPos = strrpos($orderId, '-');
+            $suffix = substr($orderId, $lastHyphenPos + 1);
+            if (is_numeric($suffix)) {
+                $baseTransactionCode = substr($orderId, 0, $lastHyphenPos);
+            }
+        }
+
+        $payment = Payment::where('transaction_code', $baseTransactionCode)->first();
 
         if (!$payment) {
             return response()->json([
-                'message' => 'Payment tidak ditemukan'
-            ], 404);
+                'message' => 'Payment tidak ditemukan (Ping Uji Coba Berhasil)'
+            ], 200);
         }
 
         

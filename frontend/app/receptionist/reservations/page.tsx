@@ -37,15 +37,22 @@ export default function ReservationPage() {
         }
     }, [user, authLoading, router]);
 
-    const fetchBookings = async () => {
+    const fetchBookings = async (showLoading = false) => {
         try {
-            setIsLoading(true);
+            if (showLoading) setIsLoading(true);
             const res = await api.get('/receptionist/bookings');
             setBookings(res.data || []);
+            
+            // Silently update the selected reservation detail if user is viewing one
+            setSelectedRes((prev: any) => {
+                if (!prev) return prev;
+                const updated = (res.data || []).find((b: any) => b.id === prev.id);
+                return updated || prev;
+            });
         } catch (error) {
             console.error("Gagal mengambil data booking:", error);
         } finally {
-            setIsLoading(false);
+            if (showLoading) setIsLoading(false);
         }
     };
 
@@ -53,11 +60,11 @@ export default function ReservationPage() {
         let interval: NodeJS.Timeout;
 
         if (user && user.role === 'receptionist') {
-            fetchBookings();
+            fetchBookings(true); // Initial load with spinner
 
-            
+            // Background polling — no loading spinner
             interval = setInterval(() => {
-                fetchBookings();
+                fetchBookings(false);
             }, 5000);
         }
 
@@ -120,11 +127,11 @@ export default function ReservationPage() {
         <div className="min-h-screen bg-white font-sans text-gray-900 pb-12 px-6">
             <header className="w-full border-b border-gray-200">
                <div className="max-w-5xl mx-auto py-5 flex items-center justify-between">
-                   <div className="w-1/3">
-                        <button onClick={handleBack} className="bg-[#FF4500] text-white font-bold text-[15px] px-10 py-2 rounded-full hover:bg-red-600 shadow-sm">
-                            Kembali
-                        </button>
-                   </div>
+                    <div className="w-1/3">
+                         <button onClick={handleBack} className="bg-restify-olive text-white font-bold text-[15px] px-10 py-2 rounded-full hover:opacity-90 transition-opacity shadow-sm">
+                             Kembali
+                         </button>
+                    </div>
                    <div className="w-1/3 flex flex-col items-center">
                        <div className="relative w-36 h-12 mb-2">
                             <Image src="/images/logo-putih.png" alt="Restify Logo" fill sizes="(max-width: 768px) 100vw, 144px" className="object-contain opacity-90" priority />

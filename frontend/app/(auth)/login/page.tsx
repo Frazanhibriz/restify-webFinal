@@ -27,7 +27,7 @@ export default function LoginPage() {
             const { token, user } = response.data;
             
             
-            let role = 'user';
+            let role: 'user' | 'admin' | 'receptionist' = 'user';
             if (typeof user.role === 'string') {
                 role = user.role.toLowerCase();
             } else if (typeof user.role === 'object' && user.role?.name) {

@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import styles from "./HotelDetail.module.css";
 import api from '@/lib/axios';
 import { toast } from 'sonner';
-import { FaMapMarkerAlt, FaStar, FaChevronLeft, FaRegHeart, FaWifi, FaCoffee, FaShower, FaTv, FaUserFriends } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaStar, FaChevronLeft, FaRegHeart, FaHeart, FaWifi, FaCoffee, FaShower, FaTv, FaUserFriends } from 'react-icons/fa';
 import { FiClock, FiShield, FiArrowRight } from 'react-icons/fi';
 
 function HotelDetailContent() {
@@ -45,6 +45,42 @@ function HotelDetailContent() {
   const [showReview, setShowReview] = useState(false);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
+  const [isPaying, setIsPaying] = useState(false);
+
+  const [favorites, setFavorites] = useState<number[]>([]);
+  useEffect(() => {
+    const saved = localStorage.getItem('restify_favorites');
+    if (saved) {
+      try {
+        setFavorites(JSON.parse(saved));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, []);
+
+  const toggleFavorite = (id: number) => {
+    let newFavorites;
+    const isFav = favorites.includes(id);
+    if (isFav) {
+      newFavorites = favorites.filter(favId => favId !== id);
+      toast.success('Hotel dihapus dari daftar favorit.');
+    } else {
+      newFavorites = [...favorites, id];
+      toast.success('Hotel ditambahkan ke daftar favorit!');
+    }
+    setFavorites(newFavorites);
+    localStorage.setItem('restify_favorites', JSON.stringify(newFavorites));
+  };
+
+  const currentRoom = rooms.find(r => r.id === selectedRoomId);
+
+  useEffect(() => {
+    if (currentRoom && guest > currentRoom.capacity) {
+      setGuest(currentRoom.capacity);
+      toast.info(`Jumlah tamu disesuaikan dengan kapasitas kamar (${currentRoom.capacity} orang)`);
+    }
+  }, [selectedRoomId, currentRoom, guest]);
 
   useEffect(() => {
     if (!hotelId) return;
@@ -70,11 +106,13 @@ function HotelDetailContent() {
   }, [hotelId]);
 
   const handlePayment = async () => {
+    if (isPaying) return;
     if (!selectedRoomId || !checkIn || !checkOut) {
       toast.error('Harap lengkapi data pemesanan (kamar, tanggal check-in & check-out).');
       return;
     }
     
+    setIsPaying(true);
     try {
         const bookingRes = await api.post('/user/booking', {
             room_id: selectedRoomId,
@@ -88,18 +126,52 @@ function HotelDetailContent() {
         const payRes = await api.post(`/user/pay/${bookingId}`);
         const snapToken = payRes.data.snap_token;
         
-        (window as any).snap.pay(snapToken, {
+        // Dynamically ensure Snap script is loaded
+        const snapInstance = await new Promise<any>((resolve) => {
+            if ((window as any).snap) {
+                if (typeof (window as any).snap.hide === 'function') {
+                    try { (window as any).snap.hide(); } catch (e) {}
+                }
+                resolve((window as any).snap);
+                return;
+            }
+            const script = document.createElement("script");
+            script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+            script.setAttribute("data-client-key", "Mid-client-XxTfLCZ76GoQZj3Z");
+            script.onload = () => resolve((window as any).snap);
+            script.onerror = () => resolve(null);
+            document.body.appendChild(script);
+        });
+
+        if (!snapInstance) {
+            toast.error("Gagal memuat sistem pembayaran Midtrans. Silakan coba beberapa saat lagi.");
+            setIsPaying(false);
+            return;
+        }
+
+        snapInstance.pay(snapToken, {
             onSuccess: function(){
                 toast.success('Pembayaran berhasil!');
                 setStep('success');
+                setIsPaying(false);
             },
-            onPending: function(){ toast.info('Menunggu pembayaran Anda...'); },
-            onError: function(){ toast.error('Pembayaran gagal!'); },
-            onClose: function(){ toast.warning('Anda menutup popup tanpa menyelesaikan pembayaran'); }
+            onPending: function(){
+                toast.info('Menunggu pembayaran Anda...');
+                setIsPaying(false);
+            },
+            onError: function(){
+                toast.error('Pembayaran gagal!');
+                setIsPaying(false);
+            },
+            onClose: function(){
+                toast.warning('Anda menutup popup tanpa menyelesaikan pembayaran');
+                setIsPaying(false);
+            }
         });
         
     } catch (error: any) {
-        toast.error(error.response?.data?.message || 'Gagal memproses pembayaran. Pastikan Anda sudah login.');
+        toast.error(error.response?.data?.message || error.message || 'Gagal memproses pembayaran. Pastikan Anda sudah login.');
+        setIsPaying(false);
     }
   };
 
@@ -131,7 +203,7 @@ function HotelDetailContent() {
   if (isLoading) return <div className="min-h-screen flex items-center justify-center font-bold text-restify-olive">Memuat detail hotel...</div>;
   if (!hotelData) return <div className="min-h-screen flex items-center justify-center font-bold text-red-500">Hotel tidak ditemukan</div>;
 
-  const currentRoom = rooms.find(r => r.id === selectedRoomId);
+
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24">
@@ -140,8 +212,15 @@ function HotelDetailContent() {
         <button onClick={() => router.back()} className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
             <FaChevronLeft />
         </button>
-        <button className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-red-500 transition-all">
-            <FaRegHeart />
+        <button 
+            onClick={() => toggleFavorite(parseInt(hotelId || '0', 10))}
+            className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:scale-110 active:scale-95 transition-all shadow-sm"
+        >
+            {favorites.includes(parseInt(hotelId || '0', 10)) ? (
+                <FaHeart className="text-red-500 animate-pulse text-lg" />
+            ) : (
+                <FaRegHeart className="text-white hover:text-red-500 text-lg" />
+            )}
         </button>
       </div>
 
@@ -202,22 +281,47 @@ function HotelDetailContent() {
                         <div className="animate-fade-in">
                             <h3 className="text-xl font-bold mb-6">Fasilitas Populer</h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-                                <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl gap-2">
-                                    <FaWifi className="text-restify-olive text-xl" />
-                                    <span className="text-xs font-bold">WiFi Gratis</span>
-                                </div>
-                                <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl gap-2">
-                                    <FaCoffee className="text-restify-olive text-xl" />
-                                    <span className="text-xs font-bold">Sarapan</span>
-                                </div>
-                                <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl gap-2">
-                                    <FaShower className="text-restify-olive text-xl" />
-                                    <span className="text-xs font-bold">Kamar Mandi</span>
-                                </div>
-                                <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl gap-2">
-                                    <FaTv className="text-restify-olive text-xl" />
-                                    <span className="text-xs font-bold">TV Kabel</span>
-                                </div>
+                                {Array.isArray(hotelData.facilities) && hotelData.facilities.length > 0 ? hotelData.facilities.map((fac: string, idx: number) => {
+                                    const icons: Record<string, React.ReactNode> = {
+                                        "wifi": <FaWifi className="text-restify-olive text-xl" />,
+                                        "kolam renang": <span className="text-xl">🏊</span>,
+                                        "restoran": <FaCoffee className="text-restify-olive text-xl" />,
+                                        "sarapan": <FaCoffee className="text-restify-olive text-xl" />,
+                                        "ruang serba guna": <span className="text-xl">🏢</span>,
+                                        "gym": <span className="text-xl">🏋️</span>,
+                                        "parking area": <span className="text-xl">🚗</span>,
+                                        "spa": <span className="text-xl">💆</span>,
+                                        "tv kabel": <FaTv className="text-restify-olive text-xl" />,
+                                        "tv": <FaTv className="text-restify-olive text-xl" />,
+                                        "kamar mandi": <FaShower className="text-restify-olive text-xl" />
+                                    };
+                                    const icon = icons[fac.toLowerCase()] || <span className="text-xl">✨</span>;
+                                    return (
+                                        <div key={idx} className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl gap-2">
+                                            {icon}
+                                            <span className="text-xs font-bold text-center">{fac}</span>
+                                        </div>
+                                    );
+                                }) : (
+                                    <>
+                                        <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl gap-2">
+                                            <FaWifi className="text-restify-olive text-xl" />
+                                            <span className="text-xs font-bold">WiFi Gratis</span>
+                                        </div>
+                                        <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl gap-2">
+                                            <FaCoffee className="text-restify-olive text-xl" />
+                                            <span className="text-xs font-bold">Sarapan</span>
+                                        </div>
+                                        <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl gap-2">
+                                            <FaShower className="text-restify-olive text-xl" />
+                                            <span className="text-xs font-bold">Kamar Mandi</span>
+                                        </div>
+                                        <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl gap-2">
+                                            <FaTv className="text-restify-olive text-xl" />
+                                            <span className="text-xs font-bold">TV Kabel</span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
                             <h3 className="text-xl font-bold mb-4">Deskripsi</h3>
@@ -281,6 +385,186 @@ function HotelDetailContent() {
                         </div>
                     )}
                 </div>
+
+                {/* Pilihan Kamar Section */}
+                <div className="space-y-6 mt-8">
+                    <h3 className="text-2xl font-black text-black">Pilihan Kamar</h3>
+                    {rooms.map((room) => {
+                        const roomImages = [
+                            room.image_url || '/images/room/room_main.jpg',
+                            '/images/room/room_detail1.jpg',
+                            '/images/room/room_detail2.jpg',
+                            '/images/room/room_detail3.jpg',
+                            '/images/room/room_detail4.jpg',
+                            '/images/room/room_detail5.jpg'
+                        ];
+
+                        const fallbackRoomImages = [
+                            '/images/room/room_main.jpg',
+                            '/images/room/room_detail1.jpg',
+                            '/images/room/room_detail2.jpg',
+                            '/images/room/room_detail3.jpg',
+                            '/images/room/room_detail4.jpg',
+                            '/images/room/room_detail5.jpg'
+                        ];
+
+                        return (
+                            <div 
+                                key={room.id} 
+                                onClick={() => setSelectedRoomId(room.id)}
+                                className={`bg-white rounded-[24px] border-2 overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${selectedRoomId === room.id ? 'border-restify-olive' : 'border-gray-100'}`}
+                            >
+                                {/* Main Card Content: Three columns */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100 p-6 gap-6">
+                                    
+                                    {/* Column 1: Title & Gallery */}
+                                    <div className="space-y-4">
+                                        <h4 className="text-xl font-bold text-black">{room.room_type}</h4>
+                                        
+                                        {/* Gallery Grid */}
+                                        <div className="space-y-2">
+                                            <div className="grid grid-cols-3 gap-2">
+                                                {/* Large main image on left */}
+                                                <div className="col-span-2 row-span-2 relative h-32 rounded-xl overflow-hidden">
+                                                    <img 
+                                                        src={roomImages[0]} 
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = fallbackRoomImages[0];
+                                                        }}
+                                                        className="w-full h-full object-cover" 
+                                                        alt="Main Room"
+                                                    />
+                                                </div>
+                                                {/* Stacked 2 small images on right */}
+                                                <div className="relative h-[60px] rounded-lg overflow-hidden">
+                                                    <img 
+                                                        src={roomImages[1]} 
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = fallbackRoomImages[1];
+                                                        }}
+                                                        className="w-full h-full object-cover" 
+                                                        alt="Room detail 1"
+                                                    />
+                                                </div>
+                                                <div className="relative h-[60px] rounded-lg overflow-hidden">
+                                                    <img 
+                                                        src={roomImages[2]} 
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = fallbackRoomImages[2];
+                                                        }}
+                                                        className="w-full h-full object-cover" 
+                                                        alt="Room detail 2"
+                                                    />
+                                                </div>
+                                            </div>
+                                            
+                                            {/* 3 small images below */}
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <div className="relative h-[60px] rounded-lg overflow-hidden">
+                                                    <img 
+                                                        src={roomImages[3]} 
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = fallbackRoomImages[3];
+                                                        }}
+                                                        className="w-full h-full object-cover" 
+                                                        alt="Room detail 3"
+                                                    />
+                                                </div>
+                                                <div className="relative h-[60px] rounded-lg overflow-hidden">
+                                                    <img 
+                                                        src={roomImages[4]} 
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = fallbackRoomImages[4];
+                                                        }}
+                                                        className="w-full h-full object-cover" 
+                                                        alt="Room detail 4"
+                                                    />
+                                                </div>
+                                                <div className="relative h-[60px] rounded-lg overflow-hidden">
+                                                    <img 
+                                                        src={roomImages[5]} 
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = fallbackRoomImages[5];
+                                                        }}
+                                                        className="w-full h-full object-cover" 
+                                                        alt="Room detail 5"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Column 2: Fasilitas */}
+                                    <div className="pl-0 md:pl-6 pt-6 md:pt-0 space-y-4">
+                                        <h4 className="text-xl font-bold text-black">Fasilitas</h4>
+                                        <div className="grid grid-cols-2 gap-3 text-xs text-gray-600">
+                                            {/* Size */}
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-restify-olive font-extrabold text-sm">📐</span>
+                                                <span>{
+                                                    room.facilities?.find((f: string) => f.startsWith("Ukuran:"))?.replace("Ukuran:", "").trim() || "3 × 3 Meter"
+                                                }</span>
+                                            </div>
+                                            
+                                            {/* Bedrooms */}
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-restify-olive font-extrabold text-sm">🛏️</span>
+                                                <span>{
+                                                    room.facilities?.find((f: string) => f.startsWith("Kamar Tidur:"))?.replace("Kamar Tidur:", "").trim() || "2"
+                                                } Kamar tidur</span>
+                                            </div>
+
+                                            {/* Other Facilities */}
+                                            {Array.isArray(room.facilities) && room.facilities.filter((f: string) => !f.startsWith("Ukuran:") && !f.startsWith("Kamar Tidur:")).map((fac: string, idx: number) => {
+                                                const icons: Record<string, string> = {
+                                                    "sarapan": "🍳",
+                                                    "makan siang": "🍲",
+                                                    "makan malam": "🍱",
+                                                    "ekstra bed": "🛏️",
+                                                    "tv": "📺",
+                                                    "ac": "❄️",
+                                                    "wifi": "📶"
+                                                };
+                                                const icon = icons[fac.toLowerCase()] || "✓";
+                                                return (
+                                                    <div key={idx} className="flex items-center gap-2">
+                                                        <span className="text-restify-olive font-extrabold text-sm">{icon}</span>
+                                                        <span>{fac}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Column 3: Deskripsi */}
+                                    <div className="pl-0 md:pl-6 pt-6 md:pt-0 space-y-4">
+                                        <h4 className="text-xl font-bold text-black">Deskripsi</h4>
+                                        <p className="text-xs text-gray-500 leading-relaxed line-clamp-6">
+                                            {room.description || "Kamar superior yang nyaman dengan pemandangan indah, cocok untuk liburan keluarga atau perjalanan bisnis Anda."}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                {/* Footer Bar */}
+                                <div className="bg-[#FAF8EE] px-6 py-4 flex items-center justify-between border-t border-gray-100">
+                                    <div className="flex items-center gap-1.5 text-sm font-bold text-gray-700">
+                                        <span>Harga :</span>
+                                        <span className="text-[#5E6B52] font-black text-base">Rp {parseFloat(room.price).toLocaleString('id-ID')}</span>
+                                        <span className="text-xs text-gray-400 font-normal">/ Malam</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-sm font-bold text-gray-700">
+                                            Tersedia : <span className="text-[#5E6B52] font-black">{room.status === 'available' || room.status !== 'booked' ? '2' : '0'}</span> Kamar
+                                        </span>
+                                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedRoomId === room.id ? 'border-restify-olive' : 'border-gray-200'}`}>
+                                            {selectedRoomId === room.id && <div className="w-3.5 h-3.5 bg-[#5E6B52] rounded-full" />}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
 
             {}
@@ -304,7 +588,14 @@ function HotelDetailContent() {
                     </div>
 
                     <button 
-                        onClick={() => { setShowBooking(true); setStep("form"); }}
+                        onClick={() => {
+                            if (!selectedRoomId) {
+                                toast.warning("Silakan pilih tipe kamar terlebih dahulu di bagian Pilihan Kamar.");
+                                return;
+                            }
+                            setShowBooking(true);
+                            setStep("form");
+                        }}
                         className="w-full bg-restify-olive text-white py-5 rounded-3xl font-black text-lg hover:shadow-2xl hover:shadow-restify-olive/30 transition-all flex items-center justify-center gap-3 active:scale-95"
                     >
                         Booking Sekarang <FiArrowRight />
@@ -325,17 +616,50 @@ function HotelDetailContent() {
           
           {step === "form" && (
             <div className="relative w-full max-w-4xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col md:flex-row animate-fade-in-up h-[90vh] md:h-auto overflow-y-auto">
-              <div className="md:w-1/3 bg-restify-olive p-10 text-white flex flex-col justify-between">
+              <div className="md:w-1/3 bg-restify-olive p-8 text-white flex flex-col justify-between">
                 <div>
                     <h2 className="text-2xl font-black mb-2">Pilih Detail<br/>Pemesanan</h2>
                     <p className="text-white/60 text-sm">Pastikan tanggal dan tipe kamar sudah sesuai.</p>
                 </div>
                 <div className="mt-20">
-                    <div className="bg-white/10 p-4 rounded-2xl flex items-center gap-4 mb-4">
-                        <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><FaUserFriends /></div>
-                        <div>
-                            <span className="text-[10px] uppercase font-bold text-white/50">Tamu</span>
-                            <p className="font-bold text-sm">{guest} Orang</p>
+                    <div className="bg-white/10 p-5 rounded-[24px] flex flex-col gap-4 mb-4">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                                <FaUserFriends className="text-lg" />
+                            </div>
+                            <div className="min-w-0">
+                                <span className="text-[10px] uppercase font-bold text-white/50 block leading-tight">Tamu</span>
+                                <p className="font-extrabold text-base whitespace-nowrap">{guest} Orang</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between bg-white/10 rounded-2xl p-1.5 border border-white/5 shadow-inner gap-2">
+                            <span className="text-xs font-bold text-white/70 pl-2 select-none">Atur Tamu</span>
+                            <div className="flex items-center bg-white/10 rounded-xl p-0.5 border border-white/5 shrink-0">
+                                <button 
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); setGuest(Math.max(1, guest - 1)); }}
+                                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/20 active:scale-95 transition-all text-base font-black select-none cursor-pointer"
+                                >
+                                    -
+                                </button>
+                                <span className="w-6 text-center font-bold text-xs select-none">{guest}</span>
+                                <button 
+                                    type="button"
+                                    onClick={(e) => { 
+                                        e.stopPropagation(); 
+                                        const maxCapacity = currentRoom?.capacity || 10;
+                                        if (guest < maxCapacity) {
+                                            setGuest(guest + 1);
+                                        } else {
+                                            toast.warning(`Kapasitas maksimum kamar ini adalah ${maxCapacity} orang`);
+                                        }
+                                    }}
+                                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/20 active:scale-95 transition-all text-base font-black select-none cursor-pointer"
+                                >
+                                    +
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -354,20 +678,24 @@ function HotelDetailContent() {
                 </div>
 
                 <div className="mb-10">
-                    <label className="block text-xs font-black uppercase text-gray-400 mb-4 tracking-widest">Pilih Tipe Kamar</label>
-                    <div className="space-y-4 max-h-48 overflow-y-auto pr-2 scrollbar-thin">
-                        {rooms.map((r) => (
-                            <div key={r.id} onClick={() => setSelectedRoomId(r.id)} className={`p-5 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${selectedRoomId === r.id ? 'border-restify-olive bg-restify-olive/5 shadow-md' : 'border-gray-50 hover:border-gray-200'}`}>
-                                <div>
-                                    <p className="font-black text-sm">{r.room_type}</p>
-                                    <p className="text-[12px] text-restify-olive font-bold">Rp {parseFloat(r.price).toLocaleString('id-ID')}</p>
-                                </div>
-                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedRoomId === r.id ? 'border-restify-olive' : 'border-gray-200'}`}>
-                                    {selectedRoomId === r.id && <div className="w-2.5 h-2.5 bg-restify-olive rounded-full" />}
-                                </div>
+                    <label className="block text-xs font-black uppercase text-gray-400 mb-4 tracking-widest">Tipe Kamar yang Dipilih</label>
+                    {currentRoom ? (
+                        <div className="p-5 rounded-[24px] border-2 border-restify-olive bg-restify-olive/5 shadow-md flex items-center justify-between">
+                            <div>
+                                <p className="font-black text-base text-black">{currentRoom.room_type}</p>
+                                <p className="text-sm text-restify-olive font-extrabold mt-1">
+                                    Rp {parseFloat(currentRoom.price).toLocaleString('id-ID')} <span className="text-[11px] text-gray-400 font-normal">/ Malam</span>
+                                </p>
                             </div>
-                        ))}
-                    </div>
+                            <span className="bg-[#657657] text-white text-[11px] font-black px-4 py-2 rounded-full uppercase tracking-wider shadow-sm">
+                                Dipilih
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="p-5 rounded-[24px] border-2 border-dashed border-red-200 bg-red-50 text-red-500 text-sm font-bold text-center">
+                            Tidak ada kamar yang dipilih. Silakan pilih tipe kamar terlebih dahulu di halaman utama.
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex gap-4">
@@ -393,7 +721,9 @@ function HotelDetailContent() {
               </div>
 
               <div className="space-y-4">
-                <button onClick={handlePayment} className="w-full bg-restify-olive text-white py-5 rounded-3xl font-black text-lg shadow-xl shadow-restify-olive/20 hover:opacity-90 transition-all">Bayar Sekarang</button>
+                <button onClick={handlePayment} disabled={isPaying} className={`w-full bg-restify-olive text-white py-5 rounded-3xl font-black text-lg shadow-xl shadow-restify-olive/20 hover:opacity-90 transition-all ${isPaying ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                    {isPaying ? 'Memproses...' : 'Bayar Sekarang'}
+                </button>
                 <button onClick={() => setStep("form")} className="w-full py-4 text-gray-400 font-bold text-sm">Kembali Edit Detail</button>
               </div>
             </div>

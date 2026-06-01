@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { FiPlus, FiEdit, FiTrash2, FiImage, FiFileText, FiChevronLeft, FiMinus, FiCheckCircle } from 'react-icons/fi';
+import { FiPlus, FiEdit, FiTrash2, FiImage, FiFileText, FiChevronLeft, FiMinus, FiCheckCircle, FiSearch } from 'react-icons/fi';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 export default function AdminHotelsPage() {
     const getFallbackImage = (id: number | string) => {
@@ -41,6 +42,7 @@ export default function AdminHotelsPage() {
     const [loading, setLoading] = useState(true);
     const [selectedHotel, setSelectedHotel] = useState<any>(null);
     const [rooms, setRooms] = useState<any[]>([]);
+    const [hotelSearchQuery, setHotelSearchQuery] = useState('');
     
     
     const [hotelName, setHotelName] = useState('');
@@ -57,7 +59,36 @@ export default function AdminHotelsPage() {
     const [roomPrice, setRoomPrice] = useState('');
     const [roomCapacity, setRoomCapacity] = useState(2);
     const [roomDesc, setRoomDesc] = useState('');
+    const [roomSize, setRoomSize] = useState('3 × 3 Meter');
+    const [roomBedrooms, setRoomBedrooms] = useState(2);
+    
+    // Custom facilities states
+    const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
+    const [availableFacilities, setAvailableFacilities] = useState<Array<{ key: string, label: string, emoji: string }>>([
+        { key: 'sarapan', label: 'Sarapan', emoji: '🍳' },
+        { key: 'makanSiang', label: 'Makan Siang', emoji: '🍲' },
+        { key: 'makanMalam', label: 'Makan Malam', emoji: '🍱' },
+        { key: 'ekstraBed', label: 'Ekstra Bed', emoji: '🛏️' },
+        { key: 'tv', label: 'Tv', emoji: '📺' },
+        { key: 'ac', label: 'AC', emoji: '❄️' },
+        { key: 'wifi', label: 'Wifi', emoji: '📶' },
+    ]);
+    const [customFacilityName, setCustomFacilityName] = useState('');
+    
     const [editRoomData, setEditRoomData] = useState<any>(null);
+
+    // Custom hotel facilities states
+    const [selectedHotelFacilities, setSelectedHotelFacilities] = useState<string[]>([]);
+    const [availableHotelFacilities, setAvailableHotelFacilities] = useState<Array<{ key: string, label: string, emoji: string }>>([
+        { key: 'kolam_renang', label: 'Kolam Renang', emoji: '🏊' },
+        { key: 'restoran', label: 'Restoran', emoji: '🍳' },
+        { key: 'ruang_serbaguna', label: 'Ruang Serba Guna', emoji: '🏢' },
+        { key: 'wifi', label: 'Wifi', emoji: '📶' },
+        { key: 'gym', label: 'Gym', emoji: '🏋️' },
+        { key: 'parking_area', label: 'Parking Area', emoji: '🚗' },
+        { key: 'spa', label: 'Spa', emoji: '💆' },
+    ]);
+    const [customHotelFacilityName, setCustomHotelFacilityName] = useState('');
 
     
     useEffect(() => {
@@ -68,23 +99,129 @@ export default function AdminHotelsPage() {
             setHotelDescription('');
             setHotelImage(null);
             setHotelQris(null);
+            setSelectedHotelFacilities([]);
+            setAvailableHotelFacilities([
+                { key: 'kolam_renang', label: 'Kolam Renang', emoji: '🏊' },
+                { key: 'restoran', label: 'Restoran', emoji: '🍳' },
+                { key: 'ruang_serbaguna', label: 'Ruang Serba Guna', emoji: '🏢' },
+                { key: 'wifi', label: 'Wifi', emoji: '📶' },
+                { key: 'gym', label: 'Gym', emoji: '🏋️' },
+                { key: 'parking_area', label: 'Parking Area', emoji: '🚗' },
+                { key: 'spa', label: 'Spa', emoji: '💆' },
+            ]);
+            setCustomHotelFacilityName('');
             setEditData(null);
         } else if (view === 'edit' && editData) {
             setHotelName(editData.name || '');
             setHotelCity(editData.city || '');
             setHotelLocation(editData.address || '');
             setHotelDescription(editData.description || '');
+
+            const facilitiesArray = Array.isArray(editData.facilities) ? editData.facilities : [];
+            setSelectedHotelFacilities(facilitiesArray);
+
+            const defaultLabels = ['Kolam Renang', 'Restoran', 'Ruang Serba Guna', 'Wifi', 'Gym', 'Parking Area', 'Spa'];
+            const newAvailable = [
+                { key: 'kolam_renang', label: 'Kolam Renang', emoji: '🏊' },
+                { key: 'restoran', label: 'Restoran', emoji: '🍳' },
+                { key: 'ruang_serbaguna', label: 'Ruang Serba Guna', emoji: '🏢' },
+                { key: 'wifi', label: 'Wifi', emoji: '📶' },
+                { key: 'gym', label: 'Gym', emoji: '🏋️' },
+                { key: 'parking_area', label: 'Parking Area', emoji: '🚗' },
+                { key: 'spa', label: 'Spa', emoji: '💆' },
+            ];
+
+            facilitiesArray.forEach((f: string) => {
+                const isDefault = defaultLabels.some(l => l.toLowerCase() === f.toLowerCase());
+                if (!isDefault) {
+                    const key = f.toLowerCase().replace(/\s+/g, '_');
+                    const emojis: Record<string, string> = {
+                        wifi: '📶',
+                        kolam_renang: '🏊',
+                        restoran: '🍳',
+                        ruang_serbaguna: '🏢',
+                        gym: '🏋️',
+                        parking_area: '🚗',
+                        spa: '💆',
+                        meeting_room: '💼',
+                        bar: '🍷'
+                    };
+                    const emoji = emojis[f.toLowerCase()] || '✨';
+                    newAvailable.push({ key, label: f, emoji });
+                }
+            });
+            setAvailableHotelFacilities(newAvailable);
+            setCustomHotelFacilityName('');
         } else if (view === 'room_add') {
             setRoomType('');
             setRoomPrice('');
             setRoomCapacity(2);
             setRoomDesc('');
+            setRoomSize('3 × 3 Meter');
+            setRoomBedrooms(2);
+            setSelectedFacilities([]);
+            setAvailableFacilities([
+                { key: 'sarapan', label: 'Sarapan', emoji: '🍳' },
+                { key: 'makanSiang', label: 'Makan Siang', emoji: '🍲' },
+                { key: 'makanMalam', label: 'Makan Malam', emoji: '🍱' },
+                { key: 'ekstraBed', label: 'Ekstra Bed', emoji: '🛏️' },
+                { key: 'tv', label: 'Tv', emoji: '📺' },
+                { key: 'ac', label: 'AC', emoji: '❄️' },
+                { key: 'wifi', label: 'Wifi', emoji: '📶' },
+            ]);
+            setCustomFacilityName('');
             setEditRoomData(null);
         } else if (view === 'room_edit' && editRoomData) {
             setRoomType(editRoomData.room_type || '');
             setRoomPrice(editRoomData.price || '');
             setRoomCapacity(editRoomData.capacity || 2);
             setRoomDesc(editRoomData.description || '');
+
+            const facilitiesArray = Array.isArray(editRoomData.facilities) ? editRoomData.facilities : [];
+            const sizeStr = facilitiesArray.find((f: string) => f.startsWith("Ukuran:"))?.replace("Ukuran:", "").trim() || '3 × 3 Meter';
+            const bedVal = parseInt(facilitiesArray.find((f: string) => f.startsWith("Kamar Tidur:"))?.replace("Kamar Tidur:", "").trim() || '2', 10);
+            
+            setRoomSize(sizeStr);
+            setRoomBedrooms(isNaN(bedVal) ? 2 : bedVal);
+            
+            const selFacs = facilitiesArray.filter((f: string) => !f.startsWith("Ukuran:") && !f.startsWith("Kamar Tidur:"));
+            setSelectedFacilities(selFacs);
+
+            const defaultLabels = ['Sarapan', 'Makan Siang', 'Makan Malam', 'Ekstra Bed', 'Tv', 'AC', 'Wifi'];
+            const newAvailable = [
+                { key: 'sarapan', label: 'Sarapan', emoji: '🍳' },
+                { key: 'makanSiang', label: 'Makan Siang', emoji: '🍲' },
+                { key: 'makanMalam', label: 'Makan Malam', emoji: '🍱' },
+                { key: 'ekstraBed', label: 'Ekstra Bed', emoji: '🛏️' },
+                { key: 'tv', label: 'Tv', emoji: '📺' },
+                { key: 'ac', label: 'AC', emoji: '❄️' },
+                { key: 'wifi', label: 'Wifi', emoji: '📶' },
+            ];
+
+            selFacs.forEach((f: string) => {
+                const isDefault = defaultLabels.some(l => l.toLowerCase() === f.toLowerCase());
+                if (!isDefault) {
+                    const key = f.toLowerCase().replace(/\s+/g, '_');
+                    const emojis: Record<string, string> = {
+                        bathtub: '🛁',
+                        jacuzzi: '🛁',
+                        netflix: '🎬',
+                        youtube: '📺',
+                        bar: '🍷',
+                        minibar: '🍷',
+                        kulkas: '🧴',
+                        balkon: '🌇',
+                        pemandangan: '🌇',
+                        brankas: '🔒',
+                        kopi: '☕',
+                        teh: '☕'
+                    };
+                    const emoji = emojis[f.toLowerCase()] || '✨';
+                    newAvailable.push({ key, label: f, emoji });
+                }
+            });
+            setAvailableFacilities(newAvailable);
+            setCustomFacilityName('');
         }
     }, [view, editData, editRoomData]);
 
@@ -118,9 +255,10 @@ export default function AdminHotelsPage() {
             await api.delete(`/admin/hotels/${id}`);
             setHotels(hotels.filter(h => h.id !== id));
             setDeleteId(null);
-        } catch (error) {
+            toast.success("Hotel berhasil dihapus");
+        } catch (error: any) {
             console.error("Gagal menghapus hotel:", error);
-            alert("Gagal menghapus hotel");
+            toast.error(error.response?.data?.message || "Gagal menghapus hotel");
         }
     };
 
@@ -139,7 +277,42 @@ export default function AdminHotelsPage() {
         }
     };
 
+    const handleAddCustomHotelFacility = () => {
+        const name = customHotelFacilityName.trim();
+        if (!name) return;
+
+        const exists = availableHotelFacilities.some(f => f.label.toLowerCase() === name.toLowerCase());
+        if (exists) {
+            toast.warning("Fasilitas ini sudah ada dalam daftar");
+            return;
+        }
+
+        const key = name.toLowerCase().replace(/\s+/g, '_');
+        const emojis: Record<string, string> = {
+            wifi: '📶',
+            kolam_renang: '🏊',
+            restoran: '🍳',
+            ruang_serbaguna: '🏢',
+            gym: '🏋️',
+            parking_area: '🚗',
+            spa: '💆',
+            meeting_room: '💼',
+            bar: '🍷'
+        };
+        const emoji = emojis[name.toLowerCase()] || '✨';
+
+        setAvailableHotelFacilities([...availableHotelFacilities, { key, label: name, emoji }]);
+        setSelectedHotelFacilities([...selectedHotelFacilities, name]);
+        setCustomHotelFacilityName('');
+        toast.success(`Fasilitas "${name}" berhasil ditambahkan`);
+    };
+
     const handleSubmitHotel = async () => {
+        if (!hotelName.trim() || !hotelCity.trim() || !hotelLocation.trim() || !hotelDescription.trim()) {
+            toast.warning("Mohon lengkapi semua bidang wajib (Nama, Kota, Alamat, Deskripsi)");
+            return;
+        }
+
         setIsSubmitting(true);
         try {
             const formData = new FormData();
@@ -147,53 +320,115 @@ export default function AdminHotelsPage() {
             formData.append('city', hotelCity);
             formData.append('address', hotelLocation);
             formData.append('description', hotelDescription);
+            
+            formData.append('latitude', editData?.latitude || '-6.917464');
+            formData.append('longitude', editData?.longitude || '107.619123');
+
             if (hotelImage) formData.append('image', hotelImage);
             if (hotelQris) formData.append('qris_image', hotelQris);
+
+            selectedHotelFacilities.forEach((fac) => {
+                formData.append('facilities[]', fac);
+            });
 
             if (view === 'edit' && editData) {
                 formData.append('_method', 'PUT');
                 await api.post(`/admin/hotels/${editData.id}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                toast.success("Hotel berhasil diperbarui");
             } else {
                 await api.post('/admin/hotels', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                toast.success("Hotel berhasil ditambahkan");
             }
 
             fetchHotels();
             setView('list');
-        } catch (error) {
+        } catch (error: any) {
             console.error("Gagal menyimpan hotel:", error);
-            alert("Gagal menyimpan data hotel.");
+            toast.error(error.response?.data?.message || "Gagal menyimpan data hotel.");
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    const handleAddCustomFacility = () => {
+        const name = customFacilityName.trim();
+        if (!name) return;
+
+        const exists = availableFacilities.some(f => f.label.toLowerCase() === name.toLowerCase());
+        if (exists) {
+            toast.warning("Fasilitas ini sudah ada dalam daftar");
+            return;
+        }
+
+        const key = name.toLowerCase().replace(/\s+/g, '_');
+        const emojis: Record<string, string> = {
+            bathtub: '🛁',
+            jacuzzi: '🛁',
+            netflix: '🎬',
+            youtube: '📺',
+            bar: '🍷',
+            minibar: '🍷',
+            kulkas: '🧴',
+            balkon: '🌇',
+            pemandangan: '🌇',
+            brankas: '🔒',
+            kopi: '☕',
+            teh: '☕'
+        };
+        const emoji = emojis[name.toLowerCase()] || '✨';
+
+        setAvailableFacilities([...availableFacilities, { key, label: name, emoji }]);
+        setSelectedFacilities([...selectedFacilities, name]);
+        setCustomFacilityName('');
+        toast.success(`Fasilitas "${name}" berhasil ditambahkan`);
+    };
+
     const handleSubmitRoom = async () => {
+        if (!roomType.trim() || !roomPrice || !roomDesc.trim()) {
+            toast.warning("Mohon lengkapi semua bidang tipe kamar (Tipe, Harga, Deskripsi)");
+            return;
+        }
+
+        if (Number(roomPrice) <= 0) {
+            toast.warning("Harga kamar harus lebih besar dari 0");
+            return;
+        }
+
         setIsSubmitting(true);
         try {
+            const facList: string[] = [];
+            facList.push(`Ukuran: ${roomSize}`);
+            facList.push(`Kamar Tidur: ${roomBedrooms}`);
+
+            selectedFacilities.forEach(f => facList.push(f));
+
             const data = {
                 hotel_id: selectedHotel.id,
                 room_type: roomType,
                 price: roomPrice,
                 capacity: roomCapacity,
                 description: roomDesc,
+                facilities: facList,
                 status: 'available'
             };
 
             if (view === 'room_edit' && editRoomData) {
                 await api.put(`/admin/rooms/${editRoomData.id}`, data);
+                toast.success("Tipe kamar berhasil diperbarui");
             } else {
                 await api.post('/admin/rooms', data);
+                toast.success("Tipe kamar berhasil ditambahkan");
             }
 
             fetchRooms(selectedHotel.id);
             setView('room_list');
-        } catch (error) {
+        } catch (error: any) {
             console.error("Gagal menyimpan kamar:", error);
-            alert("Gagal menyimpan data kamar.");
+            toast.error(error.response?.data?.message || "Gagal menyimpan data kamar.");
         } finally {
             setIsSubmitting(false);
         }
@@ -203,9 +438,11 @@ export default function AdminHotelsPage() {
         if (!confirm("Hapus kamar ini?")) return;
         try {
             await api.delete(`/admin/rooms/${id}`);
+            toast.success("Tipe kamar berhasil dihapus");
             fetchRooms(selectedHotel.id);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Gagal menghapus kamar:", error);
+            toast.error(error.response?.data?.message || "Gagal menghapus kamar");
         }
     };
 
@@ -219,6 +456,16 @@ export default function AdminHotelsPage() {
     };
 
     const [deleteId, setDeleteId] = useState<number | null>(null);
+
+    const filteredHotels = useMemo(() => {
+        if (!hotelSearchQuery.trim()) return hotels;
+        const q = hotelSearchQuery.toLowerCase();
+        return hotels.filter((h) => 
+            h.name?.toLowerCase().includes(q) || 
+            h.city?.toLowerCase().includes(q) ||
+            h.address?.toLowerCase().includes(q)
+        );
+    }, [hotels, hotelSearchQuery]);
 
     return (
         <div className="min-h-screen bg-[#F8F9FA] font-sans text-gray-900 pb-20">
@@ -251,14 +498,27 @@ export default function AdminHotelsPage() {
             <main className="max-w-6xl mx-auto py-10 px-6 animate-fade-in">
                 {}
                 {view === 'list' && (
+                    <>
+                    <div className="mb-8 max-w-md">
+                        <div className="relative">
+                            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input
+                                type="text"
+                                placeholder="Cari hotel berdasarkan nama atau lokasi..."
+                                value={hotelSearchQuery}
+                                onChange={(e) => setHotelSearchQuery(e.target.value)}
+                                className="w-full pl-11 pr-4 py-3 rounded-2xl border-2 border-gray-200 bg-white text-sm font-medium focus:border-restify-olive focus:outline-none transition-colors"
+                            />
+                        </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {loading ? (
                             <div className="col-span-full text-center py-20 text-restify-olive font-bold">Memuat data hotel...</div>
-                        ) : hotels.length === 0 ? (
+                        ) : filteredHotels.length === 0 ? (
                             <div className="col-span-full text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200 text-gray-400">
-                                Belum ada hotel. Silakan tambah hotel baru.
+                                {hotelSearchQuery ? `Tidak ada hotel untuk "${hotelSearchQuery}"` : 'Belum ada hotel. Silakan tambah hotel baru.'}
                             </div>
-                        ) : hotels.map((hotel) => (
+                        ) : filteredHotels.map((hotel) => (
                             <div key={hotel.id} className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full">
                                 {deleteId === hotel.id ? (
                                     <div className="flex-1 flex flex-col justify-center items-center p-8 bg-red-50">
@@ -301,6 +561,7 @@ export default function AdminHotelsPage() {
                             </div>
                         ))}
                     </div>
+                    </>
                 )}
 
                 {}
@@ -344,6 +605,64 @@ export default function AdminHotelsPage() {
                                         <input type="file" className="hidden" onChange={(e) => setHotelQris(e.target.files?.[0] || null)} accept="image/*" />
                                     </label>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-8 border-t border-gray-100 pt-8">
+                            <label className="block text-xs font-black uppercase text-gray-400 mb-3 tracking-widest">Fasilitas Hotel</label>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-h-56 overflow-y-auto pr-2 scrollbar-thin">
+                                {availableHotelFacilities.map((fac) => {
+                                    const isChecked = selectedHotelFacilities.includes(fac.label);
+                                    return (
+                                        <label 
+                                            key={fac.key} 
+                                            className={`flex items-center justify-between p-3 px-4 bg-gray-50 border-2 rounded-2xl cursor-pointer select-none transition-all hover:bg-gray-100/50 ${
+                                                isChecked 
+                                                    ? 'border-restify-olive bg-restify-olive/5' 
+                                                    : 'border-transparent'
+                                            }`}
+                                        >
+                                            <span className="text-xs font-bold text-gray-700 flex items-center gap-2">
+                                                <span>{fac.emoji}</span>
+                                                <span>{fac.label}</span>
+                                            </span>
+                                            <input 
+                                                type="checkbox" 
+                                                checked={isChecked} 
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedHotelFacilities([...selectedHotelFacilities, fac.label]);
+                                                    } else {
+                                                        setSelectedHotelFacilities(selectedHotelFacilities.filter(f => f !== fac.label));
+                                                    }
+                                                }}
+                                                className="rounded border-gray-300 text-restify-olive focus:ring-restify-olive h-4 w-4 accent-restify-olive cursor-pointer"
+                                            />
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                            <div className="mt-4 flex gap-2 max-w-md">
+                                <input 
+                                    type="text" 
+                                    value={customHotelFacilityName}
+                                    onChange={(e) => setCustomHotelFacilityName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleAddCustomHotelFacility();
+                                        }
+                                    }}
+                                    placeholder="Ketik fasilitas hotel kustom... (cth: Parkir Valet)" 
+                                    className="flex-1 bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:bg-white focus:border-restify-olive transition-all" 
+                                />
+                                <button 
+                                    type="button"
+                                    onClick={handleAddCustomHotelFacility}
+                                    className="bg-restify-olive text-white px-4 rounded-2xl font-black text-xs hover:opacity-90 active:scale-95 transition-all flex items-center justify-center shrink-0"
+                                >
+                                    + Tambah
+                                </button>
                             </div>
                         </div>
 
@@ -399,37 +718,112 @@ export default function AdminHotelsPage() {
 
                 {}
                 {(view === 'room_add' || view === 'room_edit') && (
-                    <div className="max-w-2xl mx-auto bg-white rounded-[40px] p-10 shadow-xl border border-gray-100">
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Tipe Kamar</label>
-                                <input type="text" value={roomType} onChange={(e) => setRoomType(e.target.value)} placeholder="Contoh: Deluxe King Ocean" className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive transition-all" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-6">
+                    <div className="max-w-4xl mx-auto bg-white rounded-[40px] p-10 shadow-xl border border-gray-100 animate-fade-in">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div className="space-y-6">
                                 <div>
-                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Harga / Malam</label>
-                                    <input type="number" value={roomPrice} onChange={(e) => setRoomPrice(e.target.value)} placeholder="Rp 0" className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive transition-all" />
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Tipe Kamar</label>
+                                    <input type="text" value={roomType} onChange={(e) => setRoomType(e.target.value)} placeholder="Contoh: Deluxe King Ocean" className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive transition-all" />
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Kapasitas</label>
-                                    <div className="flex items-center justify-between bg-gray-50 rounded-2xl px-5 py-3 border border-transparent">
-                                        <button onClick={() => setRoomCapacity(Math.max(1, roomCapacity - 1))} className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-restify-olive shadow-sm"><FiMinus /></button>
-                                        <span className="font-black text-lg">{roomCapacity}</span>
-                                        <button onClick={() => setRoomCapacity(roomCapacity + 1)} className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-restify-olive shadow-sm"><FiPlus /></button>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Harga / Malam</label>
+                                        <input type="number" value={roomPrice} onChange={(e) => setRoomPrice(e.target.value)} placeholder="Rp 0" className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive transition-all" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Ukuran Kamar</label>
+                                        <input type="text" value={roomSize} onChange={(e) => setRoomSize(e.target.value)} placeholder="Contoh: 3 × 3 Meter" className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive transition-all" />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Kapasitas Tamu</label>
+                                        <div className="flex items-center justify-between bg-gray-50 rounded-2xl px-5 py-3 border border-transparent">
+                                            <button type="button" onClick={() => setRoomCapacity(Math.max(1, roomCapacity - 1))} className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-restify-olive shadow-sm active:scale-95 transition-all"><FiMinus /></button>
+                                            <span className="font-black text-lg">{roomCapacity}</span>
+                                            <button type="button" onClick={() => setRoomCapacity(roomCapacity + 1)} className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-restify-olive shadow-sm active:scale-95 transition-all"><FiPlus /></button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Kamar Tidur</label>
+                                        <div className="flex items-center justify-between bg-gray-50 rounded-2xl px-5 py-3 border border-transparent">
+                                            <button type="button" onClick={() => setRoomBedrooms(Math.max(1, roomBedrooms - 1))} className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-restify-olive shadow-sm active:scale-95 transition-all"><FiMinus /></button>
+                                            <span className="font-black text-lg">{roomBedrooms}</span>
+                                            <button type="button" onClick={() => setRoomBedrooms(roomBedrooms + 1)} className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-restify-olive shadow-sm active:scale-95 transition-all"><FiPlus /></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div>
-                                <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Deskripsi Fasilitas</label>
-                                <textarea value={roomDesc} onChange={(e) => setRoomDesc(e.target.value)} placeholder="Sebutkan fasilitas kamar..." className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive h-32 resize-none transition-all"></textarea>
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Deskripsi Fasilitas</label>
+                                    <textarea value={roomDesc} onChange={(e) => setRoomDesc(e.target.value)} placeholder="Sebutkan deskripsi fasilitas kamar..." className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive h-32 resize-none transition-all"></textarea>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-3 tracking-widest">Fasilitas Kamar</label>
+                                    <div className="grid grid-cols-2 gap-3 max-h-56 overflow-y-auto pr-2 scrollbar-thin">
+                                        {availableFacilities.map((fac) => {
+                                            const isChecked = selectedFacilities.includes(fac.label);
+                                            return (
+                                                <label 
+                                                    key={fac.key} 
+                                                    className={`flex items-center justify-between p-3 px-4 bg-gray-50 border-2 rounded-2xl cursor-pointer select-none transition-all hover:bg-gray-100/50 ${
+                                                        isChecked 
+                                                            ? 'border-restify-olive bg-restify-olive/5' 
+                                                            : 'border-transparent'
+                                                    }`}
+                                                >
+                                                    <span className="text-xs font-bold text-gray-700 flex items-center gap-2">
+                                                        <span>{fac.emoji}</span>
+                                                        <span>{fac.label}</span>
+                                                    </span>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={isChecked} 
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setSelectedFacilities([...selectedFacilities, fac.label]);
+                                                            } else {
+                                                                setSelectedFacilities(selectedFacilities.filter(f => f !== fac.label));
+                                                            }
+                                                        }}
+                                                        className="rounded border-gray-300 text-restify-olive focus:ring-restify-olive h-4 w-4 accent-restify-olive cursor-pointer"
+                                                    />
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
+                                    <div className="mt-4 flex gap-2">
+                                        <input 
+                                            type="text" 
+                                            value={customFacilityName}
+                                            onChange={(e) => setCustomFacilityName(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleAddCustomFacility();
+                                                }
+                                            }}
+                                            placeholder="Ketik fasilitas kustom... (cth: Bathtub)" 
+                                            className="flex-1 bg-gray-50 border border-transparent rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:bg-white focus:border-restify-olive transition-all" 
+                                        />
+                                        <button 
+                                            type="button"
+                                            onClick={handleAddCustomFacility}
+                                            className="bg-restify-olive text-white px-4 rounded-2xl font-black text-xs hover:opacity-90 active:scale-95 transition-all flex items-center justify-center shrink-0"
+                                        >
+                                            + Tambah
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="mt-12">
+                        <div className="mt-12 text-center">
                             <button 
                                 onClick={handleSubmitRoom}
                                 disabled={isSubmitting}
-                                className="w-full bg-restify-dark text-white font-black text-lg py-5 rounded-3xl hover:shadow-2xl transition-all disabled:opacity-50"
+                                className="bg-restify-dark text-white font-black text-lg px-20 py-4 rounded-3xl hover:shadow-2xl transition-all disabled:opacity-50"
                             >
                                 {isSubmitting ? 'Memproses...' : (view === 'room_add' ? 'Tambah Kamar' : 'Simpan Perubahan')}
                             </button>
