@@ -105,7 +105,7 @@ export default function ResetPasswordPage() {
                                     placeholder="*************"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    className="w-full bg-[#FFFDF0] px-4 py-4 rounded-[12px] text-sm text-gray-800 outline-none placeholder-gray-300 focus:ring-1 focus:ring-[#9FA682] transition-all"
+                                    className="w-full bg-[#FFFDF0] pl-4 pr-12 py-4 rounded-[12px] text-sm text-gray-800 outline-none placeholder-gray-300 focus:ring-1 focus:ring-[#9FA682] transition-all"
                                     required
                                 />
                                 <button
@@ -131,7 +131,7 @@ export default function ResetPasswordPage() {
                                     placeholder="*************"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full bg-[#FFFDF0] px-4 py-4 rounded-[12px] text-sm text-gray-800 outline-none placeholder-gray-300 focus:ring-1 focus:ring-[#9FA682] transition-all"
+                                    className="w-full bg-[#FFFDF0] pl-4 pr-12 py-4 rounded-[12px] text-sm text-gray-800 outline-none placeholder-gray-300 focus:ring-1 focus:ring-[#9FA682] transition-all"
                                     required
                                 />
                                 <button

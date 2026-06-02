@@ -7,6 +7,7 @@ import api from '@/lib/axios';
 import { toast } from 'sonner';
 import { FaMapMarkerAlt, FaStar, FaChevronLeft, FaRegHeart, FaHeart, FaWifi, FaCoffee, FaShower, FaTv, FaUserFriends } from 'react-icons/fa';
 import { FiClock, FiShield, FiArrowRight } from 'react-icons/fi';
+import { calculateDistance, getCityCenter } from '@/lib/distance';
 
 function HotelDetailContent() {
   const getFallbackImage = (id: number | string) => {
@@ -31,6 +32,34 @@ function HotelDetailContent() {
   const [hotelData, setHotelData] = useState<any>(null);
   const [rooms, setRooms] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userCoords, setUserCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+
+  useEffect(() => {
+      if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+              (position) => {
+                  setUserCoords({
+                      latitude: position.coords.latitude,
+                      longitude: position.coords.longitude
+                  });
+              },
+              (error) => {
+                  console.log("Geolocation error:", error);
+                  if (hotelData?.city) {
+                      setUserCoords(getCityCenter(hotelData.city));
+                  } else {
+                      setUserCoords(getCityCenter("Bandung"));
+                  }
+              }
+          );
+      } else {
+          if (hotelData?.city) {
+              setUserCoords(getCityCenter(hotelData.city));
+          } else {
+              setUserCoords(getCityCenter("Bandung"));
+          }
+      }
+  }, [hotelData]);
 
   const [tab, setTab] = useState("tentang");
   const [showBooking, setShowBooking] = useState(false);
@@ -209,7 +238,7 @@ function HotelDetailContent() {
     <div className="min-h-screen bg-[#F8F9FA] pb-24">
       {}
       <div className="absolute top-0 left-0 w-full z-10 px-6 py-6 flex items-center justify-between">
-        <button onClick={() => router.back()} className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
+        <button onClick={() => router.push('/home')} className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
             <FaChevronLeft />
         </button>
         <button 
@@ -245,8 +274,16 @@ function HotelDetailContent() {
                         <span className="text-xs font-medium text-white/80 tracking-widest uppercase">{hotelData.city}</span>
                     </div>
                     <h1 className="text-3xl md:text-5xl font-black mb-1">{hotelData.name}</h1>
-                    <p className="flex items-center gap-1.5 text-white/80 text-sm italic">
+                    <p className="flex items-center gap-1.5 text-white/80 text-sm italic flex-wrap">
                         <FaMapMarkerAlt className="text-restify-olive" /> {hotelData.address}
+                        {hotelData.latitude && hotelData.longitude && userCoords && (
+                            <>
+                                {" • "}
+                                <span className="text-[#A4B396] font-semibold">
+                                    {calculateDistance(userCoords.latitude, userCoords.longitude, parseFloat(hotelData.latitude), parseFloat(hotelData.longitude)).toFixed(1)} km dari Anda
+                                </span>
+                            </>
+                        )}
                     </p>
                 </div>
                 <button

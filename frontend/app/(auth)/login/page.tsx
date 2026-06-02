@@ -114,10 +114,11 @@ export default function LoginPage() {
                                     placeholder="*************"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-[#FFFDF0] px-4 py-3.5 rounded-[12px] text-sm text-gray-800 outline-none placeholder-gray-300 focus:ring-1 focus:ring-[#9FA682] transition-all"
+                                    className="w-full bg-[#FFFDF0] pl-4 pr-12 py-3.5 rounded-[12px] text-sm text-gray-800 outline-none placeholder-gray-300 focus:ring-1 focus:ring-[#9FA682] transition-all"
                                     required
                                     autoComplete="current-password"
                                 />
+
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword((prev) => !prev)}

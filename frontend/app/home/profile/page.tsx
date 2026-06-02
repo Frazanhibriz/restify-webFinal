@@ -14,6 +14,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/axios';
 import { toast } from 'sonner';
+import { notify } from '@/lib/notifications';
 
 
 
@@ -37,7 +38,15 @@ interface Booking {
   rawStatus: string;
   rawPaymentStatus: string;
   transactionCode: string;
+  rating?: {
+    id: number;
+    rating: number;
+    review: string;
+    image_url: string | null;
+  } | null;
 }
+
+
 
 
 
@@ -119,6 +128,25 @@ function BookingDetail({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
+  const [removeImage, setRemoveImage] = useState(false);
+
+  useEffect(() => {
+    if (showReview) {
+      if (booking.rating) {
+        setRating(booking.rating.rating);
+        setReviewText(booking.rating.review || "");
+        setReviewPhotoPreview(booking.rating.image_url);
+        setReviewPhoto(null);
+        setRemoveImage(false);
+      } else {
+        setRating(5);
+        setReviewText("");
+        setReviewPhotoPreview(null);
+        setReviewPhoto(null);
+        setRemoveImage(false);
+      }
+    }
+  }, [showReview, booking.rating]);
 
   const getFriendlyStatus = () => {
     if (booking.rawStatus === 'cancelled') return 'Dibatalkan';
@@ -205,11 +233,13 @@ function BookingDetail({
     if (!file) return;
     setReviewPhoto(file);
     setReviewPhotoPreview(URL.createObjectURL(file));
+    setRemoveImage(false);
   };
 
   const handleRemovePhoto = () => {
     setReviewPhoto(null);
     setReviewPhotoPreview(null);
+    setRemoveImage(true);
   };
 
   const handleSubmitReview = async () => {
@@ -226,15 +256,19 @@ function BookingDetail({
       if (reviewPhoto) {
         formData.append('image', reviewPhoto);
       }
+      if (removeImage) {
+        formData.append('remove_image', '1');
+      }
       await api.post('/user/ratings', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      toast.success("Ulasan berhasil dikirim!");
+      toast.success(booking.rating ? "Ulasan berhasil diperbarui!" : "Ulasan berhasil dikirim!");
       setShowReview(false);
       setReviewText("");
       setRating(5);
       setReviewPhoto(null);
       setReviewPhotoPreview(null);
+      setRemoveImage(false);
       onActionSuccess();
     } catch (error: any) {
       const errors = error.response?.data?.errors;
@@ -373,7 +407,7 @@ function BookingDetail({
                 onClick={() => setShowReview(true)}
                 className="bg-white text-gray-800 rounded-xl px-10 py-2.5 text-xs font-black hover:bg-gray-50 transition-colors shadow-sm"
               >
-                Tulis Ulasan / Rating
+                {booking.rating ? "Edit Ulasan / Rating" : "Tulis Ulasan / Rating"}
               </button>
 
               {}
@@ -386,7 +420,9 @@ function BookingDetail({
                     className="bg-white rounded-[24px] p-6 w-full max-w-sm mx-4 shadow-2xl animate-fade-in"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <h4 className="text-base font-black text-gray-800 mb-1">{booking.hotelName}</h4>
+                    <h4 className="text-base font-black text-gray-800 mb-1">
+                      {booking.rating ? "Edit Ulasan / Rating" : "Tulis Ulasan / Rating"}
+                    </h4>
                     <p className="text-[11px] font-bold text-gray-400 mb-5 uppercase tracking-wide">{booking.roomType}</p>
 
                     {}
@@ -456,7 +492,7 @@ function BookingDetail({
                         disabled={isSubmitting}
                         className="flex-1 py-2.5 rounded-full bg-[#5E6B52] text-white text-xs font-bold hover:bg-[#4a5440] transition-colors disabled:opacity-50"
                       >
-                        {isSubmitting ? "Mengirim..." : "Kirim"}
+                        {isSubmitting ? "Mengirim..." : (booking.rating ? "Simpan" : "Kirim")}
                       </button>
                     </div>
                   </div>
@@ -667,7 +703,6 @@ export default function ProfilePage() {
     try {
       const response = await api.get('/user/booking-history');
       const fetchedData = response.data.data || response.data || [];
-      
       const mapped = fetchedData.map((b: any) => ({
         id: b.id,
         hotelName: b.room?.hotel?.name || 'Hotel',
@@ -685,6 +720,7 @@ export default function ProfilePage() {
         rawPaymentStatus: b.payment_status,
         status: (b.status === 'cancelled' || b.payment_status === 'failed') ? 'completed' : 'active',
         transactionCode: b.payment?.transaction_code || 'TRX-UNKNOWN',
+        rating: b.rating || null,
       }));
       
       setBookings(mapped);
@@ -709,12 +745,13 @@ export default function ProfilePage() {
   useEffect(() => {
     fetchBookingHistory();
 
-    const interval = setInterval(fetchBookingHistory, 5000);
+    const interval = setInterval(fetchBookingHistory, 30000);
     return () => clearInterval(interval);
   }, []);
 
   const handleLogout = async () => {
     await logout();
+    notify.auth.logoutSuccess();
     router.push('/login');
   };
 
@@ -864,12 +901,20 @@ export default function ProfilePage() {
               <h2 className="text-[26px] font-medium mb-12 text-center max-w-[350px] leading-snug">
                 Apakah anda yakin ingin keluar?
               </h2>
-              <button
-                onClick={handleLogout}
-                className="bg-[#E34A42] text-white font-medium text-lg px-20 py-2.5 rounded-2xl hover:bg-red-700 transition-colors shadow-sm font-bold uppercase tracking-wider text-sm"
-              >
-                Iya
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setActiveTab('profil')}
+                  className="bg-[#ACB5A4] text-white font-medium text-lg px-12 py-2.5 rounded-2xl hover:bg-[#8f9888] transition-colors shadow-sm font-bold uppercase tracking-wider text-sm"
+                >
+                  Tidak
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="bg-[#E34A42] text-white font-medium text-lg px-12 py-2.5 rounded-2xl hover:bg-red-700 transition-colors shadow-sm font-bold uppercase tracking-wider text-sm"
+                >
+                  Iya
+                </button>
+              </div>
             </div>
           )}
 
@@ -898,7 +943,7 @@ export default function ProfilePage() {
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Min. 8 karakter (huruf besar, kecil, angka)"
                   required
-                  className="w-full bg-[#FFFDF0] px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 border border-transparent focus:border-[#5E6B52] outline-none transition-colors"
+                  className="w-full bg-[#FFFDF0] pl-4 pr-12 py-3 rounded-xl text-sm font-semibold text-gray-700 border border-transparent focus:border-[#5E6B52] outline-none transition-colors"
                 />
                 <button
                   type="button"
@@ -919,7 +964,7 @@ export default function ProfilePage() {
                   onChange={(e) => setNewPasswordConfirm(e.target.value)}
                   placeholder="Masukkan kembali kata sandi"
                   required
-                  className="w-full bg-[#FFFDF0] px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 border border-transparent focus:border-[#5E6B52] outline-none transition-colors"
+                  className="w-full bg-[#FFFDF0] pl-4 pr-12 py-3 rounded-xl text-sm font-semibold text-gray-700 border border-transparent focus:border-[#5E6B52] outline-none transition-colors"
                 />
                 <button
                   type="button"

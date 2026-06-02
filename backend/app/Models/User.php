@@ -44,7 +44,8 @@ class User extends Authenticatable
 
     public function getRoleAttribute()
     {
-        return $this->role ? $this->role->name : null;
+        $role = $this->getRelationValue('role');
+        return $role ? $role->name : null;
     }
 
     public function role()

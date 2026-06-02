@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { FiCalendar, FiBox, FiLogOut, FiClock, FiCheckCircle, FiUserCheck } from 'react-icons/fi';
 import api from '@/lib/axios';
+import { notify } from '@/lib/notifications';
 
 export default function ReceptionistHomePage() {
   const { user, isLoading, logout } = useAuth();
@@ -52,6 +53,7 @@ export default function ReceptionistHomePage() {
 
   const handleLogout = async () => {
     await logout();
+    notify.auth.logoutSuccess();
     router.push('/login');
   };
 
@@ -105,9 +107,11 @@ export default function ReceptionistHomePage() {
         <div className="text-center mb-8">
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-2 block">Dashboard Management</span>
             <h1 className="text-3xl font-black mb-1 text-restify-dark">Halo, Resepsionis</h1>
-            <div className="inline-block bg-restify-olive/10 text-restify-olive px-4 py-1.5 rounded-full text-xs font-black mt-3">
-                {user?.hotel?.name || "Memuat..."}
-            </div>
+            {user?.hotel?.name && (
+                <div className="inline-block bg-restify-olive/10 text-restify-olive px-4 py-1.5 rounded-full text-xs font-black mt-3 animate-fade-in">
+                    {user.hotel.name}
+                </div>
+            )}
         </div>
 
         {}

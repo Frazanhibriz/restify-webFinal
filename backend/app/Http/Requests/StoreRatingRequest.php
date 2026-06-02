@@ -17,7 +17,8 @@ class StoreRatingRequest extends FormRequest
             'booking_id' => 'required|exists:bookings,id',
             'rating' => 'required|integer|min:1|max:5',
             'review' => 'nullable|string|max:1000',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'remove_image' => 'nullable|boolean'
         ];
     }
 

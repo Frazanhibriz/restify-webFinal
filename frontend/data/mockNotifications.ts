@@ -32,55 +32,53 @@ export interface Notification {
 }
 
 export const MOCK_NOTIFICATIONS: Notification[] = [
-  
   {
     id: 'N001',
     type: 'booking_confirmed',
-    message: 'Reservasi anda di hotel "Puteri Gunung Hotel", sudah dikonfirmasi.',
+    message: 'Reservasi kamar Anda di "Puteri Gunung Hotel" berhasil dikonfirmasi. Selamat berlibur!',
     hotelName: 'Puteri Gunung Hotel',
-    createdAt: '2026-04-26T09:25:00Z',
+    createdAt: new Date(Date.now() - 12 * 60 * 1000).toISOString(), // 12 menit yang lalu
     isRead: false,
   },
   {
     id: 'N002',
     type: 'booking_forwarded',
-    message: 'Reservasi anda sudah kami kirim ke pihak hotel "Puteri Gunung Hotel".',
+    message: 'Detail reservasi Anda sudah kami teruskan ke pihak manajemen "Puteri Gunung Hotel".',
     hotelName: 'Puteri Gunung Hotel',
-    createdAt: '2026-04-26T09:19:00Z',
+    createdAt: new Date(Date.now() - 18 * 60 * 1000).toISOString(), // 18 menit yang lalu
     isRead: false,
   },
   {
     id: 'N003',
     type: 'payment_success',
-    message: 'Pembayaran untuk reservasi di "Puteri Gunung Hotel" telah berhasil.',
+    message: 'Pembayaran reservasi kamar di "Puteri Gunung Hotel" sukses diterima. Terima kasih!',
     hotelName: 'Puteri Gunung Hotel',
-    createdAt: '2026-04-26T09:18:00Z',
+    createdAt: new Date(Date.now() - 19 * 60 * 1000).toISOString(), // 19 menit yang lalu
     isRead: false,
   },
-  
   {
     id: 'N004',
     type: 'review_reminder',
-    message: 'Bagikan pengalaman Anda di "Aryaduta Bandung" dengan menulis ulasan.',
+    message: 'Bagikan pengalaman seru Anda selama menginap di "Aryaduta Bandung" dengan menulis ulasan.',
     hotelName: 'Aryaduta Bandung',
-    createdAt: '2026-03-07T18:48:00Z',
+    createdAt: new Date(Date.now() - 25 * 3600 * 1000).toISOString(), // ~1 hari yang lalu (Kemarin)
     isRead: true,
     reviewLink: '/home/profile',
   },
   {
     id: 'N005',
     type: 'checkout_done',
-    message: 'Check-out Anda dari "Aryaduta Bandung" telah selesai. Terima kasih telah menginap!',
+    message: 'Proses check-out dari "Aryaduta Bandung" selesai. Sampai jumpa di liburan berikutnya!',
     hotelName: 'Aryaduta Bandung',
-    createdAt: '2026-03-07T18:46:00Z',
+    createdAt: new Date(Date.now() - 25 * 3600 * 1000 - 2 * 60 * 1000).toISOString(),
     isRead: true,
   },
   {
     id: 'N006',
     type: 'checkin_success',
-    message: 'Check-in Anda di "Aryaduta Bandung" berhasil. Selamat menikmati waktu menginap!',
+    message: 'Check-in di "Aryaduta Bandung" berhasil. Selamat menikmati waktu istirahat Anda!',
     hotelName: 'Aryaduta Bandung',
-    createdAt: '2026-03-06T15:10:00Z',
+    createdAt: new Date(Date.now() - 3 * 24 * 3600 * 1000).toISOString(), // 3 hari yang lalu
     isRead: true,
   },
 ];

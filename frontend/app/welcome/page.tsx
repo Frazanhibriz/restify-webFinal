@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import styles from "./Welcome.module.css";
 
-export default function welcome() {
+export default function Welcome() {
   const router = useRouter();
 
   return (

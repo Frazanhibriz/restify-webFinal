@@ -57,7 +57,7 @@ class AuthController extends Controller
     {
         $data = $request->validated();
 
-        $user = User::with('role')->where('email', $request->email)->first();
+        $user = User::with(['role', 'hotel'])->where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
@@ -78,7 +78,7 @@ class AuthController extends Controller
     
     public function profile(Request $request)
     {
-        $user = $request->user()->load('role');
+        $user = $request->user()->load(['role', 'hotel']);
 
         return response()->json([
             'user' => [
@@ -92,6 +92,10 @@ class AuthController extends Controller
                 'role' => $user->role->name ?? null,
 
                 'hotel_id' => $user->hotel_id,
+                'hotel' => $user->hotel ? [
+                    'id' => $user->hotel->id,
+                    'name' => $user->hotel->name,
+                ] : null,
 
                 'profile_picture' => $user->profile_picture,
                 'profile_picture_url' => $user->profile_picture

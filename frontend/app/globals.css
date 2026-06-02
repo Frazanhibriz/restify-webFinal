@@ -74,3 +74,21 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #4a5541;
 }
+
+/* Hide default browser password reveal eye icon and clear button in IE/Edge */
+input::-ms-reveal {
+  display: none !important;
+}
+
+input::-ms-clear {
+  display: none !important;
+}
+
+::-ms-reveal {
+  display: none !important;
+}
+
+::-ms-clear {
+  display: none !important;
+}
+

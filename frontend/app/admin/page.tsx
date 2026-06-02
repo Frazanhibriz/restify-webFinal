@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/axios';
 import { toast } from 'sonner';
+import { notify } from '@/lib/notifications';
 
 export default function AdminPage() {
     const router = useRouter();
@@ -455,6 +456,7 @@ export default function AdminPage() {
                     <button 
                         onClick={async () => {
                             await logout();
+                            notify.auth.logoutSuccess();
                             router.push('/login');
                         }} 
                         className={styles.logoutBtn}
@@ -1167,7 +1169,7 @@ export default function AdminPage() {
                                         <div className={styles.formInputWrapperItem}>
                                             <label>Kata Sandi <span className={styles.redStarMark}>*</span></label>
                                             <div style={{ position: 'relative' }}>
-                                                <input type={showPassword ? "text" : "password"} placeholder="Masukkan Kata Sandi" value={passwordPengguna} onChange={(e) => setPasswordPengguna(e.target.value)} required />
+                                                <input type={showPassword ? "text" : "password"} placeholder="Masukkan Kata Sandi" value={passwordPengguna} onChange={(e) => setPasswordPengguna(e.target.value)} required style={{ paddingRight: '40px' }} />
                                                 <button type="button" onClick={() => setShowPassword(!showPassword)} className={styles.inputAdornmentIconBtn}>
                                                     {showPassword ? <FiEye size={16} /> : <FiEyeOff size={16} />}
                                                 </button>

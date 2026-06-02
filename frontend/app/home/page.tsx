@@ -10,6 +10,7 @@ import NotificationPanel from '@/app/components/NotificationPanel';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { calculateDistance, getCityCenter } from '@/lib/distance';
 
 export default function HomePage() {
     const { user } = useAuth();
@@ -33,6 +34,37 @@ export default function HomePage() {
     const [showNotif, setShowNotif] = useState(false);
     const [selectedCity, setSelectedCity] = useState('Bandung');
     const [showCityDropdown, setShowCityDropdown] = useState(false);
+
+    const [userCoords, setUserCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+    const [hasGps, setHasGps] = useState(false);
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setUserCoords({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    });
+                    setHasGps(true);
+                },
+                (error) => {
+                    console.log("Geolocation error:", error);
+                    setHasGps(false);
+                    setUserCoords(getCityCenter(selectedCity));
+                }
+            );
+        } else {
+            setHasGps(false);
+            setUserCoords(getCityCenter(selectedCity));
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!hasGps) {
+            setUserCoords(getCityCenter(selectedCity));
+        }
+    }, [selectedCity, hasGps]);
     
     const [favorites, setFavorites] = useState<number[]>([]);
     
@@ -63,7 +95,7 @@ export default function HomePage() {
         localStorage.setItem('restify_favorites', JSON.stringify(newFavorites));
     };
     
-    const [unreadCount, setUnreadCount] = useState(3);
+    const [unreadCount, setUnreadCount] = useState(0);
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [appliedMin, setAppliedMin] = useState<number | null>(null);
@@ -106,6 +138,8 @@ export default function HomePage() {
                     name: h.name,
                     location: h.city,
                     address: h.address,
+                    latitude: h.latitude ? parseFloat(h.latitude) : null,
+                    longitude: h.longitude ? parseFloat(h.longitude) : null,
                     pricePerDay: parseFloat(h.lowest_price || h.price || h.rooms?.[0]?.price || 0),
                     rating: h.average_rating || 0,
                     imageUrl: h.image_url || '/images/HotelImages/placeholder.jpg',
@@ -202,7 +236,7 @@ export default function HomePage() {
 
                     <div className="hidden md:block">
                         <div className="relative w-32 h-8">
-                            <Image src="/images/logo-putih.png" alt="Restify Logo" fill className="object-contain" priority />
+                            <Image src="/images/logo-putih.png" alt="Restify Logo" fill sizes="(max-width: 768px) 100vw, 128px" className="object-contain" priority />
                         </div>
                     </div>
 
@@ -344,7 +378,17 @@ export default function HomePage() {
                                         <h4 className="font-bold text-xl mb-2 line-clamp-1 group-hover:text-restify-olive transition-colors">{hotel.name}</h4>
                                         <div className="flex items-center gap-2 text-[13px] text-gray-400 mb-6">
                                             <FaMapMarkerAlt className="text-restify-olive shrink-0" />
-                                            <span className="line-clamp-1">{hotel.location}</span>
+                                            <span className="line-clamp-1">
+                                                {hotel.location}
+                                                {hotel.latitude && hotel.longitude && userCoords && (
+                                                    <>
+                                                        {" • "}
+                                                        <span className="text-restify-olive font-semibold">
+                                                            {calculateDistance(userCoords.latitude, userCoords.longitude, hotel.latitude, hotel.longitude).toFixed(1)} km
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </span>
                                         </div>
                                         
                                         <div className="mt-auto flex items-center justify-between">
@@ -376,7 +420,7 @@ export default function HomePage() {
                 </section>
             </div>
         </main>
-        <NotificationPanel isOpen={showNotif} onClose={() => setShowNotif(false)} />
+        <NotificationPanel isOpen={showNotif} onClose={() => setShowNotif(false)} onUnreadCountChange={setUnreadCount} />
         </>
     );
 }

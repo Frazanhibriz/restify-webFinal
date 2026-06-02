@@ -203,7 +203,8 @@ class BookingController extends Controller
 
         $query = Booking::with([
                 'room.hotel',
-                'payment'
+                'payment',
+                'rating'
             ])
             ->where('user_id', $user->id);
         
@@ -255,7 +256,8 @@ class BookingController extends Controller
     {
         $booking = Booking::with([
             'room.hotel',
-            'payment'
+            'payment',
+            'rating'
         ])
         ->where('id', $id)
         ->where('user_id', auth()->id())
