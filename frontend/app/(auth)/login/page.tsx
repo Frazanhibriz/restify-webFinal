@@ -23,7 +23,27 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            const response = await api.post('/login', { email, password });
+            let recaptchaToken = '';
+            try {
+                recaptchaToken = await new Promise<string>((resolve, reject) => {
+                    if (typeof window !== 'undefined' && window.grecaptcha) {
+                        window.grecaptcha.ready(() => {
+                            window.grecaptcha
+                                .execute('6Le_NQktAAAAACGSaQhC9_rMYdzrbIzw1ylEbLBW', { action: 'login' })
+                                .then(resolve)
+                                .catch(reject);
+                        });
+                    } else {
+                        reject(new Error('reCAPTCHA not loaded'));
+                    }
+                });
+            } catch {
+                toast.error('Gagal memuat verifikasi keamanan. Silakan refresh halaman.');
+                setIsLoading(false);
+                return;
+            }
+
+            const response = await api.post('/login', { email, password, recaptcha_token: recaptchaToken });
             const { token, user } = response.data;
             
             

@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'recaptcha' => \App\Http\Middleware\ValidateRecaptcha::class,
         ]);
 
     })

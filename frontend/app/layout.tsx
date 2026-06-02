@@ -53,6 +53,7 @@ export default function RootLayout({
           <Toaster richColors position="top-center" />
         </AuthProvider>
         <Script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key={'Mid-client-XxTfLCZ76GoQZj3Z'} strategy="beforeInteractive" />
+        <Script src="https://www.google.com/recaptcha/api.js?render=6Le_NQktAAAAACGSaQhC9_rMYdzrbIzw1ylEbLBW" strategy="afterInteractive" />
       </body>
     </html>
   );

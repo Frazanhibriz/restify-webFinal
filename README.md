@@ -1,902 +1,231 @@
-# Restify - Hotel Booking Backend API
+# Restify - Aplikasi Hotel Booking Terintegrasi
 
-Restify adalah backend API untuk aplikasi hotel booking berbasis Laravel. Backend ini menyediakan fitur autentikasi, manajemen hotel dan kamar, booking hotel, pembayaran menggunakan Midtrans Snap, sistem receptionist, checkout, rating hotel, serta upload gambar.
+Restify adalah platform manajemen dan pemesanan (booking) hotel end-to-end yang terdiri dari Laravel 12 API sebagai Backend dan Next.js 15 sebagai Frontend. Platform ini menyediakan fitur lengkap mulai dari pencarian hotel, manajemen kamar, pemesanan hotel terintegrasi dengan Midtrans Payment Gateway, sistem manajemen khusus Resepsionis untuk check-in/out, sistem rating dinamis, hingga mekanisme keamanan modern dengan Laravel Sanctum dan Google reCAPTCHA v3.
 
-Project ini dibuat untuk kebutuhan **Artefak TUBES 1 Web**.
-
----
-
-## Tech Stack
-
-* Laravel 12
-* PostgreSQL
-* Laravel Sanctum
-* Midtrans Snap Payment Gateway
-* REST API
-* Postman untuk testing API
+Project ini dibuat khusus untuk memenuhi kebutuhan **Artefak TUBES 1 Web**.
 
 ---
 
-## Informasi Project
+## 🚀 Tech Stack
 
-| Item               | Keterangan                  |
-| ------------------ | --------------------------- |
-| Nama Project       | Restify                     |
-| Jenis Aplikasi     | Backend API Hotel Booking   |
-| Framework          | Laravel 12                  |
-| Database           | PostgreSQL                  |
-| Authentication     | Laravel Sanctum             |
-| API Prefix         | `/api`                      |
-| Local Backend URL  | `http://127.0.0.1:8000`     |
-| Local API Base URL | `http://127.0.0.1:8000/api` |
-| Branch GitHub      | `backend`                   |
+### Backend
+* **Framework**: Laravel 12
+* **Database**: PostgreSQL (port default `5432`)
+* **Security & Auth**: Laravel Sanctum & Google reCAPTCHA v3
+* **Payment Gateway**: Midtrans Snap Sandbox
+* **API Architecture**: REST API
 
----
-
-## File Artefak yang Disediakan
-
-Project ini menyertakan file pendukung untuk kebutuhan pengumpulan tugas.
-
-| File/Folder                                                    | Keterangan                                                                  |
-| -------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `.env.example`                                                 | Contoh konfigurasi environment tanpa secret asli                            |
-| `restify_database.sql`                                         | File export database PostgreSQL                                             |
-| `postman/Restify-Hotel-Booking-API-v3.postman_collection.json` | Postman collection untuk testing API                                        |
-| `README.md`                                                    | Panduan instalasi, konfigurasi, import database, endpoint, dan akun testing |
-
-Folder dan file berikut tidak dikumpulkan atau tidak ikut commit karena termasuk dependency, hasil build, file lokal, atau file rahasia:
-
-* `vendor/`
-* `node_modules/`
-* `build/`
-* `.env`
-* `.env.backup`
-* `.env.production`
-* file testing lokal seperti `public/test-midtrans.html`
-* file lain yang tercantum di `.gitignore`
+### Frontend
+* **Framework**: Next.js 15 (TypeScript)
+* **Styling**: Tailwind CSS & Vanilla CSS
+* **HTTP Client**: Axios
 
 ---
 
-## Struktur Folder Penting
+## 📁 Struktur Folder Utama
 
 ```text
-BE-Restify/
-├── app/
-├── bootstrap/
-├── config/
-├── database/
-│   ├── factories/
-│   ├── migrations/
-│   └── seeders/
-├── postman/
+restify-webFinal/
+├── backend/                  # Source code API Laravel 12
+│   ├── app/                  # Controller, Middleware, Models, Providers
+│   ├── config/               # Berkas konfigurasi aplikasi Laravel
+│   ├── database/             # Migrations, Seeders, Factories
+│   ├── routes/               # Defini endpoint API (api.php)
+│   ├── storage/              # Lokasi berkas upload & logs
+│   ├── .env.example          # Template konfigurasi environment backend
+│   └── artisan               # CLI Tool Laravel
+├── frontend/                 # Source code Frontend Next.js 15
+│   ├── app/                  # Pages, layouts, routing Next.js
+│   ├── context/              # State management
+│   ├── lib/                  # Library pembantu (Axios instance, notifications)
+│   ├── public/               # Asset statis frontend
+│   └── types/                # Tipe TypeScript (grecaptcha, dll)
+├── postman/                  # Postman collection untuk pengujian API
 │   └── Restify-Hotel-Booking-API-v3.postman_collection.json
-├── public/
-├── routes/
-│   └── api.php
-├── storage/
-├── tests/
-├── .env.example
-├── .gitignore
-├── artisan
-├── composer.json
-├── composer.lock
-├── README.md
-└── restify_database.sql
+├── restify_database.sql      # Berkas ekspor database PostgreSQL
+└── README.md                 # Panduan instalasi dan pengujian aplikasi (file ini)
 ```
 
 ---
 
-## Requirement
+## 🛠️ Persyaratan Perangkat Lunak (Requirements)
 
-Sebelum menjalankan project, pastikan perangkat sudah memiliki:
+Sebelum memulai instalasi, pastikan komputer Anda telah terinstal:
+* **PHP** (Sesuai dengan kebutuhan Laravel 12, direkomendasikan PHP >= 8.2)
+* **Composer**
+* **Node.js** (Direkomendasikan Node.js >= 18) & **npm**
+* **PostgreSQL** (Pastikan service pgsql berjalan di port default `5432`)
+* **pgAdmin** atau PostgreSQL Terminal CLI
+* **Ngrok** (Opsional, hanya jika ingin mensimulasikan webhook pembayaran Midtrans secara real-time)
 
-* PHP sesuai requirement Laravel 12
-* Composer
-* PostgreSQL
-* pgAdmin atau terminal PostgreSQL
-* Postman untuk testing API
-* Git
-
----
-
-## Clone Repository
-
-Clone repository dari GitHub:
-
-```bash
-git clone <LINK_GITHUB>
-cd BE-Restify
-git checkout backend
-```
-
-Ganti `<LINK_GITHUB>` dengan link repository project.
+> **Catatan Konfigurasi Khusus (Framework & DBMS)**:
+> * **Framework**: Aplikasi ini dibangun menggunakan framework **Laravel 12** untuk Backend API dan **Next.js 15** untuk Frontend Web. Instruksi konfigurasi dan langkah instalasi dependensi masing-masing framework telah disediakan secara lengkap di bawah.
+> * **DBMS (Database Management System)**: Platform Restify menggunakan **PostgreSQL** yang merupakan RDBMS (Relational Database Management System). **Aplikasi ini tidak menggunakan DBMS non-relasional** (seperti MongoDB atau Redis) untuk penyimpanan data utama, sehingga Anda tidak perlu mengonfigurasi layanan non-relasional apa pun untuk menjalankan aplikasi secara utuh.
 
 ---
 
-## Install Dependency
+## ⚙️ Langkah-Langkah Menjalankan Aplikasi (Step-by-Step Setup)
 
-Karena folder `vendor/` tidak dikumpulkan, dependency Laravel harus di-install ulang.
+Ikuti langkah-langkah di bawah ini secara berurutan untuk menjalankan platform Restify dengan aman dan lancar di lingkungan lokal Anda.
 
-```bash
-composer install
-```
-
----
-
-## Setup Environment
-
-Copy file `.env.example` menjadi `.env`.
-
-Untuk Windows PowerShell:
-
-```bash
-copy .env.example .env
-```
-
-Untuk Git Bash, Linux, atau Mac:
-
-```bash
-cp .env.example .env
-```
-
-Generate Laravel application key:
-
-```bash
-php artisan key:generate
-```
+### Langkah 1: Setup Database PostgreSQL
+1. Buka **pgAdmin** atau terminal PostgreSQL Anda.
+2. Buat sebuah database baru bernama:
+   ```text
+   restify
+   ```
+3. Import file database **`restify_database.sql`** yang berada di root direktori project:
+   * **Menggunakan pgAdmin**:
+     1. Klik kanan database `restify` -> Pilih **Query Tool**.
+     2. Buka berkas `restify_database.sql` di Query Tool tersebut.
+     3. Klik tombol **Execute / Play** (F5). Pastikan seluruh query sukses dieksekusi dan tabel seperti `users`, `hotels`, `rooms`, `bookings`, `payments`, `ratings` telah terbentuk.
+   * **Menggunakan Terminal CLI**:
+     ```bash
+     psql -U postgres -d restify -f restify_database.sql
+     ```
+     *(Masukkan kata sandi PostgreSQL lokal Anda saat diminta).*
 
 ---
 
-## Konfigurasi Environment Backend (Laravel)
-
-Buka file `backend/.env`, lalu sesuaikan konfigurasi aplikasi.
-
-Contoh konfigurasi utama:
-
-```env
-APP_NAME=Restify
-APP_ENV=local
-APP_KEY=base64:... (Generated via key:generate)
-APP_DEBUG=true
-APP_URL=http://127.0.0.1:8000
-```
-
----
-
-## Konfigurasi Database PostgreSQL (Backend)
-
-Project ini menggunakan PostgreSQL.
-
-Contoh konfigurasi database pada file `backend/.env`:
-
-```env
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=restify
-DB_USERNAME=postgres
-DB_PASSWORD=your_database_password
-```
-
-Catatan:
-* `DB_DATABASE` disarankan menggunakan nama `restify`.
-* `DB_USERNAME` sesuaikan dengan username PostgreSQL lokal.
-* `DB_PASSWORD` sesuaikan dengan password PostgreSQL lokal.
-
----
-
-## Konfigurasi Environment Frontend (Next.js)
-
-Masuk ke folder `frontend/` lalu buat file `.env.local` untuk mengarahkan frontend ke server API Backend.
-
-Contoh konfigurasi utama:
-```env
-NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
-```
-
-Catatan:
-* `NEXT_PUBLIC_API_URL` harus mengarah ke alamat endpoint API Laravel backend. Secara default berjalan di port `8000`.
-* File `.env.local` tidak di-commit karena berisi konfigurasi lokal Anda.
+### Langkah 2: Setup & Jalankan Backend (Laravel API)
+1. Buka terminal baru dan masuk ke direktori `backend`:
+   ```bash
+   cd backend
+   ```
+2. Salin template environment menjadi file `.env` aktif:
+   * **Windows PowerShell / Command Prompt**:
+     ```powershell
+     copy .env.example .env
+     ```
+   * **Linux / macOS / Git Bash**:
+     ```bash
+     cp .env.example .env
+     ```
+3. Pasang semua dependensi library PHP:
+   ```bash
+   composer install
+   ```
+4. Buat kunci aplikasi Laravel (App Key):
+   ```bash
+   php artisan key:generate
+   ```
+5. Buka berkas **`backend/.env`** menggunakan editor teks pilihan Anda, kemudian sesuaikan bagian konfigurasi database PostgreSQL Anda:
+   ```env
+   DB_CONNECTION=pgsql
+   DB_HOST=127.0.0.1
+   DB_PORT=5432
+   DB_DATABASE=restify
+   DB_USERNAME=username_postgresql_anda  # Contoh: postgres
+   DB_PASSWORD=password_postgresql_anda  # Contoh: admin123
+   ```
+6. Hubungkan direktori storage agar gambar hotel, kamar, dan ulasan dapat diakses secara publik:
+   ```bash
+   php artisan storage:link
+   ```
+7. Jalankan server lokal API Laravel:
+   ```bash
+   php artisan serve
+   ```
+   *Server backend sekarang aktif dan berjalan di **http://127.0.0.1:8000**.*
 
 ---
 
-## Import Database PostgreSQL
-
-Database sudah disediakan dalam file:
-
-```text
-restify_database.sql
-```
-
-File tersebut merupakan hasil export database PostgreSQL dan berisi struktur tabel serta data.
-
----
-
-### Cara Import Database melalui pgAdmin
-
-Karena file database menggunakan format **Plain SQL**, cara yang aman adalah menggunakan **Query Tool**.
-
-Langkah-langkah:
-
-1. Buka pgAdmin.
-2. Buat database baru dengan nama:
-
-```text
-restify
-```
-
-3. Klik database `restify`.
-4. Buka **Query Tool**.
-5. Buka file `restify_database.sql`.
-6. Jalankan seluruh query.
-7. Pastikan tabel berhasil dibuat, seperti:
-
-   * `users`
-   * `roles`
-   * `hotels`
-   * `rooms`
-   * `bookings`
-   * `payments`
-   * `ratings`
-   * `personal_access_tokens`
-   * tabel pendukung Laravel lainnya
+### Langkah 3: Jalankan Layanan Pendukung (Sangat Direkomendasikan)
+* **Laravel Scheduler (Auto-Cancel Booking)**:
+  Aplikasi ini memiliki scheduler yang akan otomatis membatalkan pemesanan yang tidak dibayar dalam **15 menit**. Buka terminal baru di direktori `backend/` dan jalankan:
+  ```bash
+  php artisan schedule:work
+  ```
+  *Biarkan command ini tetap berjalan selama proses simulasi pemesanan kamar.*
+  
+* **Fitur Reset Kata Sandi (Password Reset)**:
+  Secara default di `.env`, konfigurasi pengirim email diatur ke `MAIL_MAILER=log`. Hal ini sangat praktis untuk kebutuhan presentasi dan pengujian lokal oleh Dosen. Ketika Anda melakukan request "Lupa Kata Sandi", token reset **tidak dikirim ke email asli**, melainkan dicatat secara otomatis ke file log backend:
+  ```text
+  backend/storage/logs/laravel.log
+  ```
+  Dosen atau penguji dapat langsung menyalin token reset dari log tersebut untuk dimasukkan ke form "Reset Kata Sandi" di browser.
 
 ---
 
-### Cara Import Database melalui Terminal PostgreSQL
-
-Jika menggunakan terminal, buat database terlebih dahulu:
-
-```bash
-createdb -U postgres restify
-```
-
-Lalu import file SQL:
-
-```bash
-psql -U postgres -d restify -f restify_database.sql
-```
-
-Jika diminta password, masukkan password PostgreSQL lokal.
-
----
-
-## Alternatif: Menjalankan Migration dan Seeder
-
-Jika ingin membuat ulang database dari migration dan seeder, jalankan:
-
-```bash
-php artisan migrate --seed
-```
-
-Seeder yang tersedia:
-
-* `RoleSeeder`
-* `UserSeeder`
-* `HotelSeeder`
-* `RoomSeeder`
-* `ReceptionistSeeder`
-
-Data seeder mencakup:
-
-* Role `admin`, `user`, dan `receptionist`
-* Akun admin
-* Data hotel
-* Data room
-* Data receptionist
-
-Ketentuan data seeder:
-
-* Hotel berjumlah 15 data:
-
-  * 10 hotel Bandung
-  * 5 hotel Jakarta
-* Hotel Bandung memiliki 2 tipe kamar dan masing-masing tipe memiliki 2 room.
-* Hotel Jakarta memiliki 3 tipe kamar dan masing-masing tipe memiliki 1 room.
-* Setiap hotel memiliki 1 receptionist.
-* Password seed mengikuti aturan minimal 8 karakter, memiliki huruf besar, huruf kecil, dan angka.
+### Langkah 4: Setup & Jalankan Frontend (Next.js)
+1. Buka terminal baru dan arahkan ke direktori `frontend`:
+   ```bash
+   cd frontend
+   ```
+2. Pasang seluruh dependensi node package:
+   ```bash
+   npm install
+   ```
+3. Jalankan server development frontend Next.js:
+   ```bash
+   npm run dev
+   ```
+   *Aplikasi frontend web sekarang aktif dan dapat dibuka langsung melalui browser di **http://localhost:3000**.*
 
 ---
 
-## Storage Link
+## 🔐 Data Akun Pengujian (Testing Credentials)
 
-Project ini memiliki fitur upload gambar, seperti:
+Untuk memudahkan dosen atau penguji dalam menjelajahi fungsionalitas aplikasi berdasarkan hak akses masing-masing peran, silakan gunakan kredensial bawaan berikut:
 
-* image hotel
-* QRIS image hotel
-* image room
-* profile picture
-* foto rating
+### 1. Akun Admin (Manajer Utama)
+* **Peran**: Mengelola data hotel (CRUD), kamar (CRUD), pengguna/staf (CRUD), serta memantau semua daftar pemesanan global.
+* **Email**: `admin@restify.com`
+* **Password**: `Admin1234`
 
-Agar file upload dapat diakses dari public URL, jalankan:
+### 2. Akun Resepsionis (Receptionist)
+* **Peran**: Meninjau pemesanan masuk khusus hotel mereka, menyetujui/menolak pesanan, memproses check-in tamu saat datang di tempat, dan mengubah status kamar ke selesai dibersihkan.
+* **Email**: `receptionist.flores@gmail.com`
+* **Password**: `Recep1234`
 
-```bash
-php artisan storage:link
-```
-
-Jika gambar tidak tampil, jalankan ulang command tersebut.
-
----
-
-## Menjalankan Server Aplikasi
-
-Untuk menjalankan aplikasi secara utuh, Anda perlu menjalankan server backend Laravel dan server frontend Next.js secara bersamaan.
-
-### 1. Menjalankan Server Backend (Laravel)
-Masuk ke folder `backend/` lalu jalankan command berikut di terminal:
-```bash
-php artisan serve
-```
-Server backend akan berjalan di:
-```text
-http://127.0.0.1:8000
-```
-
-### 2. Menjalankan Server Frontend (Next.js)
-Buka terminal baru, masuk ke folder `frontend/` lalu jalankan command berikut:
-```bash
-npm run dev
-```
-Server frontend akan berjalan di:
-```text
-http://localhost:3000
-```
+### 3. Akun Tamu (User / Customer)
+* **Peran**: Menjelajahi hotel, memesan kamar secara real-time, membayar via Midtrans Snap, check-out mandiri, serta memberikan ulasan/rating.
+* **Akses**: Silakan daftar akun baru secara instan melalui antarmuka pendaftaran (Register) pada web, atau gunakan akun dummy yang sudah tersedia:
+  * **Email**: `user@restify.com`
+  * **Password**: `User1234`
 
 ---
 
-## Menjalankan Scheduler (Auto-Cancel Booking)
+## 🛡️ Fitur Keamanan & Pembayaran Utama
 
-Aplikasi memiliki fitur otomatis membatalkan pemesanan yang tidak dibayar dalam **15 menit** (mengubah status booking menjadi `cancelled` dan status payment menjadi `failed`).
+### 1. Google reCAPTCHA v3
+Sistem registrasi dan login Anda telah dilindungi dari serangan spam bot menggunakan Google reCAPTCHA v3. Kunci situs (Site Key) dan kunci rahasia (Secret Key) resmi untuk domain `localhost` sudah terkonfigurasi secara terintegrasi baik di frontend maupun berkas `backend/.env.example` bawaan. Tidak diperlukan langkah konfigurasi reCAPTCHA tambahan untuk pengujian lokal.
 
-Untuk menjalankan scheduler ini secara lokal, buka terminal baru di direktori `backend/` dan jalankan command:
-
-```bash
-php artisan schedule:work
-```
-
-*   **Penting:** Command ini akan mengecek masa aktif booking setiap menit secara background. Pastikan command ini tetap berjalan selama simulasi pemesanan.
-
----
-
-## Konfigurasi Midtrans
-
-Project ini menggunakan Midtrans Snap untuk proses pembayaran.
-
-Contoh konfigurasi pada file `backend/.env`:
-
-```env
-MIDTRANS_SERVER_KEY=your_midtrans_server_key
-MIDTRANS_CLIENT_KEY=your_midtrans_client_key
-MIDTRANS_IS_PRODUCTION=false
-MIDTRANS_IS_SANITIZED=true
-MIDTRANS_IS_3DS=true
-```
-
-Catatan:
-*   Gunakan Midtrans Sandbox untuk testing.
-*   Jangan commit key asli Midtrans ke GitHub.
-*   Key asli hanya disimpan di file `.env` lokal.
+### 2. Midtrans Payment Gateway (Simulasi Pembayaran)
+Pembayaran pemesanan hotel didukung oleh Midtrans Snap Sandbox.
+1. Saat Tamu melakukan pemesanan dan mengklik tombol bayar, popup lembar pembayaran Snap akan muncul di layar.
+2. Anda dapat menggunakan metode simulasi seperti Simulator Kartu Kredit / QRIS di Midtrans Sandbox MAP untuk menyelesaikan pembayaran fiktif.
+3. **Simulasi Webhook Real-time (Opsional)**: Jika Anda ingin agar status pemesanan di web langsung berubah menjadi **Paid (Lunas)** seketika setelah pembayaran sukses di popup, gunakan **Ngrok** untuk meneruskan port 8000 lokal Anda:
+   ```bash
+   ngrok http 8000
+   ```
+   Salin URL HTTPS publik dari Ngrok (misal `https://xxxx.ngrok-free.app`), buka dashboard Midtrans MAP Sandbox Anda, masuk ke **Settings > Merchant Base URL**, lalu isi **Payment Notification URL** dengan:
+   ```text
+   https://xxxx.ngrok-free.app/api/midtrans/callback
+   ```
 
 ---
 
-## Simulasi Pembayaran Real-Time dengan Ngrok (Tunneling Webhook)
+## 🧪 Panduan Pengujian API via Postman
 
-Untuk mensimulasikan status pembayaran secara real-time dari Midtrans ke server lokal Anda (webhook callback), Anda harus menggunakan **Ngrok** untuk melakukan port forwarding / tunneling.
-
-### Langkah-langkah Simulasi Webhook:
-
-1.  **Jalankan Ngrok:**
-    Buka terminal baru di komputer Anda, lalu jalankan command untuk meneruskan port backend Laravel (`8000`):
-    ```bash
-    ngrok http 8000
-    ```
-2.  **Dapatkan URL Public:**
-    Salin URL public forwarding HTTPS yang diberikan oleh Ngrok (contoh: `https://abcd-123-456.ngrok-free.app`).
-3.  **Konfigurasi di Dashboard Midtrans Sandbox:**
-    *   Buka portal **[Midtrans MAP Sandbox](https://dashboard.sandbox.midtrans.com/)**.
-    *   Masuk ke menu **Settings > Merchant Base URL**.
-    *   Isi **Payment Notification URL** dengan URL Ngrok Anda ditambah path callback API, contoh:
-        ```text
-        https://abcd-123-456.ngrok-free.app/api/midtrans/callback
-        ```
-    *   Klik **Save**.
-4.  **Uji Coba Pembayaran:**
-    Ketika Anda melakukan pemesanan di frontend, sistem akan membuat Snap Token. Lakukan pembayaran simulasi di halaman popup Snap menggunakan simulator kartu kredit / QRIS Midtrans. Begitu pembayaran sukses, Midtrans akan mengirim callback ke URL public Ngrok Anda, dan status pesanan di dashboard user maupun receptionist akan berubah menjadi **Paid / Lunas** secara real-time!
+Bagi penguji yang ingin memverifikasi respons API backend secara terpisah, sebuah berkas Postman Collection lengkap telah disertakan:
+* **Lokasi Berkas**: `postman/Restify-Hotel-Booking-API-v3.postman_collection.json`
+* **Cara Penggunaan**:
+  1. Buka aplikasi **Postman**.
+  2. Klik tombol **Import** -> Pilih berkas JSON koleksi di atas.
+  3. Gunakan endpoint Login untuk memperoleh token autentikasi Sanctum.
+  4. Salin token dari respons, dan tempelkan ke tab **Authorization** (pilih tipe **Bearer Token**) pada endpoint terproteksi lainnya yang ingin diuji.
 
 ---
 
-## Akun Testing
-
-Berikut akun testing yang dapat digunakan untuk mencoba aplikasi.
-
-| Role         | Email                           | Password    |
-| ------------ | ------------------------------- | ----------- |
-| Admin        | `admin@restify.com`             | `Admin1234` |
-| Receptionist | `receptionist.flores@gmail.com` | `Recep1234` |
-| User         | `user@restify.com`              | `User1234`  |
-
-Catatan:
-
-* Akun admin berasal dari seeder.
-* Akun receptionist berasal dari seeder.
-* Jika akun user belum tersedia pada database import, user dapat dibuat melalui endpoint register.
-* Untuk memenuhi ketentuan tugas, disarankan akun user dummy `user@restify.com` sudah tersedia pada database yang diexport.
-
----
-
-## Role dan Hak Akses
-
-### Admin
-
-Admin dapat melakukan:
-
-* CRUD hotel
-* CRUD room
-* CRUD user
-* Melihat semua booking
-* Mengelola data master aplikasi
-
-Ketentuan khusus admin:
-
-* Admin tidak boleh membuat admin baru.
-* Admin seeded tidak boleh dihapus.
-* Role admin seeded tidak boleh diubah.
-
----
-
-### User
-
-User dapat melakukan:
-
-* Register
-* Login
-* Logout
-* Melihat profile
-* Melihat daftar hotel
-* Melihat detail hotel
-* Melihat daftar room berdasarkan hotel
-* Membuat booking
-* Melihat riwayat booking
-* Melihat detail booking
-* Membatalkan booking
-* Melihat detail payment
-* Melakukan pembayaran dengan Midtrans Snap
-* Checkout
-* Memberikan rating setelah checkout completed
-* Upload profile picture
-
----
-
-### Receptionist
-
-Receptionist dapat melakukan:
-
-* Melihat daftar booking
-* Confirm booking
-* Decline booking
-* Check-in
-* Update status kamar
-
----
-
-## Fitur Utama
-
-### Authentication
-
-* Register
-* Login
-* Logout
-* Profile
-* Forgot Password
-* Reset Password
-* Throttle login
-* Throttle register
-* Throttle forgot password
-
----
-
-### Hotel
-
-* Get all hotels
-* Get hotel detail
-* Search hotel
-* Filter city
-* Filter harga
-* Sorting
-* Pagination
-* Facilities hotel dalam bentuk JSON array
-* Upload image hotel
-* Upload QRIS image hotel
-
----
-
-### Room
-
-* Get all rooms
-* Get room detail
-* Rooms by hotel
-* Filter room type
-* Filter status
-* Filter price
-* Pagination
-* Facilities room dalam bentuk JSON array
-* Upload image room
-
----
-
-### Booking
-
-* Create booking
-* Booking history
-* Booking detail
-* Cancel booking
-* Pencegahan double booking atau race condition menggunakan database transaction dan `lockForUpdate`
-* Booking pending memiliki `expired_at` selama 15 menit
-* Auto cancel expired booking melalui Laravel scheduler
-
----
-
-### Payment
-
-* Midtrans Snap token
-* Payment callback
-* Payment detail
-* Status pembayaran:
-
-  * `pending`
-  * `paid`
-  * `failed`
-
----
-
-### Receptionist System
-
-* Booking list
-* Confirm booking
-* Decline booking
-* Check-in
-* Update room status
-
----
-
-### Rating
-
-* Rating hanya bisa diberikan setelah checkout completed
-* Satu booking hanya bisa memberi satu rating
-* Rating dapat memiliki foto ulasan
-* Foto rating memiliki `image_url`
-
----
-
-### Profile
-
-* User dapat upload profile picture
-* User model memiliki `profile_picture_url`
-
----
-
-## Endpoint Penting
-
-Base URL lokal:
-
-```text
-http://127.0.0.1:8000/api
-```
-
-Untuk endpoint protected, gunakan header:
-
-```text
-Authorization: Bearer {token}
-Accept: application/json
-Content-Type: application/json
-```
-
----
-
-### Public Endpoint
-
-| Method | Endpoint               | Keterangan                        |
-| ------ | ---------------------- | --------------------------------- |
-| POST   | `/register`            | Register user                     |
-| POST   | `/login`               | Login user                        |
-| POST   | `/forgot-password`     | Request lupa password             |
-| POST   | `/reset-password`      | Reset password                    |
-| GET    | `/hotels`              | Melihat semua hotel               |
-| GET    | `/hotels/{id}`         | Melihat detail hotel              |
-| GET    | `/hotels/{id}/ratings` | Melihat rating hotel              |
-| GET    | `/hotels/{id}/rooms`   | Melihat room berdasarkan hotel    |
-| POST   | `/midtrans/callback`   | Callback pembayaran dari Midtrans |
-
----
-
-### Auth Endpoint
-
-Endpoint berikut membutuhkan token Sanctum.
-
-| Method | Endpoint        | Keterangan                             |
-| ------ | --------------- | -------------------------------------- |
-| POST   | `/logout`       | Logout user                            |
-| GET    | `/profile`      | Melihat profile user yang sedang login |
-| GET    | `/booking/{id}` | Melihat detail booking berdasarkan ID  |
-
----
-
-### Admin Endpoint
-
-Endpoint berikut membutuhkan token Sanctum dan role `admin`.
-
-Prefix:
-
-```text
-/admin
-```
-
-| Method    | Endpoint             | Keterangan            |
-| --------- | -------------------- | --------------------- |
-| GET       | `/admin/hotels`      | Melihat semua hotel   |
-| POST      | `/admin/hotels`      | Membuat hotel         |
-| GET       | `/admin/hotels/{id}` | Melihat detail hotel  |
-| PUT/PATCH | `/admin/hotels/{id}` | Update hotel          |
-| DELETE    | `/admin/hotels/{id}` | Hapus hotel           |
-| GET       | `/admin/rooms`       | Melihat semua room    |
-| POST      | `/admin/rooms`       | Membuat room          |
-| GET       | `/admin/rooms/{id}`  | Melihat detail room   |
-| PUT/PATCH | `/admin/rooms/{id}`  | Update room           |
-| DELETE    | `/admin/rooms/{id}`  | Hapus room            |
-| GET       | `/admin/users`       | Melihat semua user    |
-| POST      | `/admin/users`       | Membuat user          |
-| GET       | `/admin/users/{id}`  | Melihat detail user   |
-| PUT/PATCH | `/admin/users/{id}`  | Update user           |
-| DELETE    | `/admin/users/{id}`  | Hapus user            |
-| GET       | `/admin/bookings`    | Melihat semua booking |
-
----
-
-### User Endpoint
-
-Endpoint berikut membutuhkan token Sanctum dan role `user`.
-
-Prefix:
-
-```text
-/user
-```
-
-| Method | Endpoint                    | Keterangan                            |
-| ------ | --------------------------- | ------------------------------------- |
-| POST   | `/user/booking`             | Membuat booking                       |
-| POST   | `/user/cancel-booking/{id}` | Membatalkan booking                   |
-| GET    | `/user/booking-history`     | Melihat riwayat booking               |
-| GET    | `/user/payment/{id}`        | Melihat detail payment                |
-| POST   | `/user/pay/{id}`            | Membayar booking dengan Midtrans Snap |
-| POST   | `/user/checkout/{id}`       | Checkout booking                      |
-| POST   | `/user/ratings`             | Submit rating                         |
-| POST   | `/user/upload-profile`      | Upload profile picture                |
-
----
-
-### Receptionist Endpoint
-
-Endpoint berikut membutuhkan token Sanctum dan role `receptionist`.
-
-Prefix:
-
-```text
-/receptionist
-```
-
-| Method | Endpoint                           | Keterangan             |
-| ------ | ---------------------------------- | ---------------------- |
-| GET    | `/receptionist/bookings`           | Melihat daftar booking |
-| POST   | `/receptionist/confirm-booking`    | Confirm booking        |
-| POST   | `/receptionist/check-in`           | Check-in booking       |
-| POST   | `/receptionist/decline-booking`    | Decline booking        |
-| POST   | `/receptionist/update-room-status` | Update status kamar    |
-
----
-
-## Testing API dengan Postman
-
-Postman collection tersedia pada folder:
-
-```text
-postman/Restify-Hotel-Booking-API-v3.postman_collection.json
-```
-
-Cara menggunakan:
-
-1. Buka Postman.
-2. Klik **Import**.
-3. Pilih file collection dari folder `postman`.
-4. Jalankan endpoint login untuk mendapatkan token.
-5. Gunakan token pada tab Authorization dengan tipe Bearer Token.
-6. Jalankan endpoint sesuai role akun yang digunakan.
-
-Rekomendasi variable Postman:
-
-```text
-base_url = http://127.0.0.1:8000/api
-token = isi_token_setelah_login
-```
-
----
-
-## Alur Testing Singkat
-
-### 1. Testing Admin
-
-1. Login menggunakan akun admin.
-2. Copy token dari response login.
-3. Gunakan token sebagai Bearer Token.
-4. Test endpoint:
-
-   * `GET /admin/hotels`
-   * `POST /admin/hotels`
-   * `GET /admin/rooms`
-   * `GET /admin/users`
-   * `GET /admin/bookings`
-
----
-
-### 2. Testing User
-
-1. Login menggunakan akun user atau register user baru.
-2. Copy token dari response login.
-3. Gunakan token sebagai Bearer Token.
-4. Test endpoint:
-
-   * `GET /hotels`
-   * `GET /hotels/{id}`
-   * `GET /hotels/{id}/rooms`
-   * `POST /user/booking`
-   * `GET /user/booking-history`
-   * `POST /user/pay/{id}`
-   * `POST /user/checkout/{id}`
-   * `POST /user/ratings`
-
----
-
-### 3. Testing Receptionist
-
-1. Login menggunakan akun receptionist.
-2. Copy token dari response login.
-3. Gunakan token sebagai Bearer Token.
-4. Test endpoint:
-
-   * `GET /receptionist/bookings`
-   * `POST /receptionist/confirm-booking`
-   * `POST /receptionist/check-in`
-   * `POST /receptionist/decline-booking`
-   * `POST /receptionist/update-room-status`
-
----
-
-## Troubleshooting
-
-### Dependency belum terinstall
-
-Jalankan:
-
-```bash
-composer install
-```
-
----
-
-### APP_KEY kosong
-
-Jalankan:
-
-```bash
-php artisan key:generate
-```
-
----
-
-### Gambar tidak tampil
-
-Jalankan:
-
-```bash
-php artisan storage:link
-```
-
----
-
-### Database error
-
-Pastikan konfigurasi `.env` sudah benar:
-
-```env
-DB_CONNECTION=pgsql
-DB_DATABASE=restify
-DB_USERNAME=postgres
-DB_PASSWORD=your_database_password
-```
-
-Pastikan juga file `restify_database.sql` sudah berhasil di-import ke database `restify`.
-
----
-
-### Endpoint protected gagal diakses
-
-Pastikan request menggunakan header:
-
-```text
-Authorization: Bearer {token}
-Accept: application/json
-```
-
----
-
-### Akses ditolak
-
-Pastikan akun yang digunakan memiliki role yang sesuai.
-
-Contoh:
-
-* Endpoint `/admin/...` hanya untuk role `admin`.
-* Endpoint `/user/...` hanya untuk role `user`.
-* Endpoint `/receptionist/...` hanya untuk role `receptionist`.
-
----
-
-### Scheduler tidak berjalan
-
-Jalankan:
-
-```bash
-php artisan schedule:work
-```
-
-Scheduler diperlukan untuk menjalankan proses auto cancel expired booking.
-
----
-
-## Checklist Pengumpulan
-
-Sebelum dikumpulkan, pastikan:
-
-* Source code sudah paling update.
-* Branch `backend` sudah dipush ke GitHub.
-* File `.env` tidak ikut commit.
-* Folder `vendor/` tidak ikut commit.
-* Folder `node_modules/` tidak ikut commit.
-* Folder `build/` tidak ikut commit.
-* File testing lokal seperti `public/test-midtrans.html` tidak ikut commit.
-* File `.env.example` tersedia.
-* File `restify_database.sql` tersedia.
-* File Postman collection tersedia di folder `postman/`.
-* Database dapat di-import tanpa error.
-* README sudah berisi konfigurasi aplikasi.
-* README sudah berisi akun testing untuk setiap role.
-* README sudah berisi endpoint penting.
-* Project dapat dijalankan menggunakan `php artisan serve`.
-
----
-
-## Catatan Pengumpulan
-
-Project dikumpulkan tanpa folder dependency seperti:
-
-* `vendor/`
-* `node_modules/`
-* `build/`
-
-Project juga tidak menyertakan file rahasia seperti:
-
-* `.env`
-
-Database PostgreSQL sudah diexport dalam file:
-
-```text
-restify_database.sql
-```
-
-Postman collection tersedia dalam folder:
-
-```text
-postman/
-```
-
-Akun testing per role sudah dicantumkan pada bagian **Akun Testing**.
+## ⚡ Pemecahan Masalah (Troubleshooting)
+
+* **Gambar Hotel / Kamar Rusak (Broken Image)**:
+  Pastikan Anda telah menjalankan perintah `php artisan storage:link` di folder `backend`. Jika masih bermasalah, hapus folder pintasan `public/storage` lama Anda dan jalankan perintah tersebut kembali.
+* **Database Connection Refused**:
+  Pastikan service PostgreSQL di komputer Anda sudah berjalan aktif di port `5432` dan kata sandi di berkas `backend/.env` telah dikonfigurasi dengan benar sesuai database lokal Anda.
+* **Verifikasi reCAPTCHA Gagal**:
+  Pastikan file konfigurasi `.env` Anda sudah ter-update dengan kunci reCAPTCHA yang benar dan Anda telah membersihkan cache konfigurasi Laravel setelah mengedit file `.env` dengan menjalankan:
+  ```bash
+  php artisan config:clear
+  ```

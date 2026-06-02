@@ -38,12 +38,33 @@ export default function RegisterPage() {
         setIsLoading(true);
 
         try {
+            let recaptchaToken = '';
+            try {
+                recaptchaToken = await new Promise<string>((resolve, reject) => {
+                    if (typeof window !== 'undefined' && window.grecaptcha) {
+                        window.grecaptcha.ready(() => {
+                            window.grecaptcha
+                                .execute('6Le_NQktAAAAACGSaQhC9_rMYdzrbIzw1ylEbLBW', { action: 'register' })
+                                .then(resolve)
+                                .catch(reject);
+                        });
+                    } else {
+                        reject(new Error('reCAPTCHA not loaded'));
+                    }
+                });
+            } catch {
+                toast.error('Gagal memuat verifikasi keamanan. Silakan refresh halaman.');
+                setIsLoading(false);
+                return;
+            }
+
             await api.post('/register', { 
                 name, 
                 email, 
                 password,
                 password_confirmation: password,
-                role: 'user'
+                role: 'user',
+                recaptcha_token: recaptchaToken
             });
 
             notify.auth.registerSuccess();

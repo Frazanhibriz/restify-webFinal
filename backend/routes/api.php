@@ -10,8 +10,8 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\UserController;
 
 
-Route::post('/register', [AuthController::class,'register'])->middleware('throttle:register');
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::post('/register', [AuthController::class,'register'])->middleware(['throttle:register', 'recaptcha']);
+Route::post('/login', [AuthController::class, 'login'])->middleware(['throttle:login', 'recaptcha']);
 
 
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:forgot-password');
