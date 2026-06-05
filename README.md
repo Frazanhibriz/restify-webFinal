@@ -149,12 +149,7 @@ Ikuti langkah-langkah di bawah ini secara berurutan untuk menjalankan platform R
   ```
   *Biarkan command ini tetap berjalan selama proses simulasi pemesanan kamar.*
   
-* **Fitur Reset Kata Sandi (Password Reset)**:
-  Secara default di `.env`, konfigurasi pengirim email diatur ke `MAIL_MAILER=log`. Hal ini sangat praktis untuk kebutuhan presentasi dan pengujian lokal oleh Dosen. Ketika Anda melakukan request "Lupa Kata Sandi", token reset **tidak dikirim ke email asli**, melainkan dicatat secara otomatis ke file log backend:
-  ```text
-  backend/storage/logs/laravel.log
-  ```
-  Dosen atau penguji dapat langsung menyalin token reset dari log tersebut untuk dimasukkan ke form "Reset Kata Sandi" di browser.
+
 
 ---
 
@@ -205,7 +200,7 @@ Sistem registrasi dan login Anda telah dilindungi dari serangan spam bot menggun
 ### 2. Midtrans Payment Gateway (Simulasi Pembayaran)
 Pembayaran pemesanan hotel didukung oleh Midtrans Snap Sandbox.
 1. Saat Tamu melakukan pemesanan dan mengklik tombol bayar, popup lembar pembayaran Snap akan muncul di layar.
-2. Anda dapat menggunakan metode simulasi seperti Simulator Kartu Kredit / QRIS di Midtrans Sandbox MAP untuk menyelesaikan pembayaran fiktif.
+2. Anda dapat menggunakan metode simulasi Virtual Account (Bank Transfer BNI, BRI, Mandiri, atau Permata) di Simulator Midtrans Sandbox untuk menyelesaikan pembayaran fiktif dengan menyalin kode bayar / nomor VA yang muncul.
 3. **Simulasi Webhook Real-time (Opsional)**: Jika Anda ingin agar status pemesanan di web langsung berubah menjadi **Paid (Lunas)** seketika setelah pembayaran sukses di popup, gunakan **Ngrok** untuk meneruskan port 8000 lokal Anda:
    ```bash
    ngrok http 8000
