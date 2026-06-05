@@ -3,30 +3,17 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MOCK_NOTIFICATIONS } from '@/data/mockNotifications';
 import { FaMapMarkerAlt, FaStar, FaRegHeart, FaHeart } from 'react-icons/fa';
 import { FiChevronDown, FiBell, FiSearch, FiFilter } from 'react-icons/fi';
 import NotificationPanel from '@/app/components/NotificationPanel';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
-import { toast } from 'sonner';
 import { calculateDistance, getCityCenter } from '@/lib/distance';
+import { getFallbackImage } from '@/lib/utils';
+import { useFavorites } from '@/hooks/useFavorites';
 
 export default function HomePage() {
     const { user } = useAuth();
-    const getFallbackImage = (id: number) => {
-        const images = [
-            '/images/HotelImages/Puteri-Gunung-Hotel.jpg',
-            '/images/HotelImages/Hotel-Savoy-Homann-Bandung.jpg',
-            '/images/HotelImages/Ivory-Hotel-Bandung.jpg',
-            '/images/HotelImages/Mutiara-Hotel-and-Convention-Bandung.jpg',
-            '/images/HotelImages/Urbanview-Hotel-Grand-Malabar-Bandung.jpg',
-            '/images/HotelImages/aryaduta-bandung.jpg',
-            '/images/HotelImages/Hilton-Bandung.jpg',
-            '/images/HotelImages/Mercure-Bandung-City-Centre.jpg'
-        ];
-        return images[id % images.length];
-    };
 
     const [searchInput, setSearchInput] = useState('');
     const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
@@ -66,62 +53,13 @@ export default function HomePage() {
         }
     }, [selectedCity, hasGps]);
     
-    const [favorites, setFavorites] = useState<number[]>([]);
-    
-    useEffect(() => {
-        const saved = localStorage.getItem('restify_favorites');
-        if (saved) {
-            try {
-                setFavorites(JSON.parse(saved));
-            } catch (e) {
-                console.error(e);
-            }
-        }
-    }, []);
-
-    const toggleFavorite = (hotelId: number, e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        let newFavorites;
-        const isFav = favorites.includes(hotelId);
-        if (isFav) {
-            newFavorites = favorites.filter(id => id !== hotelId);
-            toast.success('Hotel dihapus dari daftar favorit.');
-        } else {
-            newFavorites = [...favorites, hotelId];
-            toast.success('Hotel ditambahkan ke daftar favorit!');
-        }
-        setFavorites(newFavorites);
-        localStorage.setItem('restify_favorites', JSON.stringify(newFavorites));
-    };
+    const { favorites, toggleFavorite } = useFavorites();
     
     const [unreadCount, setUnreadCount] = useState(0);
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [appliedMin, setAppliedMin] = useState<number | null>(null);
     const [appliedMax, setAppliedMax] = useState<number | null>(null);
-
-    useEffect(() => {
-        const fetchUnreadNotifications = async () => {
-            try {
-                const response = await api.get('/user/booking-history');
-                const bookings = response.data.data || response.data || [];
-                let count = 0;
-                bookings.forEach((b: any) => {
-                    if (b.payment_status === 'paid' && b.status === 'pending') count++;
-                    if (b.status === 'confirmed') count++;
-                    if (b.status === 'checked_in') count++;
-                    if (b.status === 'completed') count++;
-                });
-                setUnreadCount(count > 0 ? count : 3);
-            } catch {
-                setUnreadCount(3);
-            }
-        };
-        fetchUnreadNotifications();
-        const interval = setInterval(fetchUnreadNotifications, 30000);
-        return () => clearInterval(interval);
-    }, []);
 
     const [hotels, setHotels] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -351,6 +289,7 @@ export default function HomePage() {
                                         <img 
                                             src={hotel.imageUrl} 
                                             alt={hotel.name} 
+                                            loading="lazy"
                                             onError={(e) => {
                                                 (e.target as HTMLImageElement).src = getFallbackImage(hotel.id);
                                             }}

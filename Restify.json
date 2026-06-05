@@ -1,0 +1,71 @@
+{
+  "name": "OTP_Restify",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "61c2954c-8125-4afb-9a44-3438eb385db0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e61ee13e-a0d4-40aa-b654-40d40a746ec7",
+      "name": "Webhook",
+      "webhookId": "61c2954c-8125-4afb-9a44-3438eb385db0"
+    },
+    {
+      "parameters": {
+        "fromEmail": "adamleon090805@gmail.com",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "OTP Restify",
+        "emailFormat": "text",
+        "text": "={{ $json.body.code }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a27c36de-426d-4f9e-b711-3b1a9a105950",
+      "name": "Send email",
+      "webhookId": "17b2d8fa-2fd1-4a64-a1ac-708928bf9904",
+      "credentials": {
+        "smtp": {
+          "id": "G5eHRQ0fjcclp4fK",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c49cc8cb-95fe-443b-b736-08a7927413ab",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "06f979fbc28ff57246d2c6192d09ef4d742234fae42482cb13dadf9b03d2fc6c"
+  },
+  "id": "DMrLjQWb9d4QDQHb",
+  "tags": []
+}

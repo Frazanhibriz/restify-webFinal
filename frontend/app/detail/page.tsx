@@ -8,23 +8,10 @@ import { toast } from 'sonner';
 import { FaMapMarkerAlt, FaStar, FaChevronLeft, FaRegHeart, FaHeart, FaWifi, FaCoffee, FaShower, FaTv, FaUserFriends } from 'react-icons/fa';
 import { FiClock, FiShield, FiArrowRight } from 'react-icons/fi';
 import { calculateDistance, getCityCenter } from '@/lib/distance';
+import { getFallbackImage } from '@/lib/utils';
+import { useFavorites } from '@/hooks/useFavorites';
 
 function HotelDetailContent() {
-  const getFallbackImage = (id: number | string) => {
-    const images = [
-        '/images/HotelImages/Puteri-Gunung-Hotel.jpg',
-        '/images/HotelImages/Hotel-Savoy-Homann-Bandung.jpg',
-        '/images/HotelImages/Ivory-Hotel-Bandung.jpg',
-        '/images/HotelImages/Mutiara-Hotel-and-Convention-Bandung.jpg',
-        '/images/HotelImages/Urbanview-Hotel-Grand-Malabar-Bandung.jpg',
-        '/images/HotelImages/aryaduta-bandung.jpg',
-        '/images/HotelImages/Hilton-Bandung.jpg',
-        '/images/HotelImages/Mercure-Bandung-City-Centre.jpg'
-    ];
-    const numId = typeof id === 'number' ? id : parseInt(id, 10) || 0;
-    return images[numId % images.length];
-  };
-
   const searchParams = useSearchParams();
   const router = useRouter();
   const hotelId = searchParams.get("id");
@@ -76,31 +63,7 @@ function HotelDetailContent() {
   const [reviewText, setReviewText] = useState("");
   const [isPaying, setIsPaying] = useState(false);
 
-  const [favorites, setFavorites] = useState<number[]>([]);
-  useEffect(() => {
-    const saved = localStorage.getItem('restify_favorites');
-    if (saved) {
-      try {
-        setFavorites(JSON.parse(saved));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }, []);
-
-  const toggleFavorite = (id: number) => {
-    let newFavorites;
-    const isFav = favorites.includes(id);
-    if (isFav) {
-      newFavorites = favorites.filter(favId => favId !== id);
-      toast.success('Hotel dihapus dari daftar favorit.');
-    } else {
-      newFavorites = [...favorites, id];
-      toast.success('Hotel ditambahkan ke daftar favorit!');
-    }
-    setFavorites(newFavorites);
-    localStorage.setItem('restify_favorites', JSON.stringify(newFavorites));
-  };
+  const { favorites, toggleFavorite } = useFavorites();
 
   const currentRoom = rooms.find(r => r.id === selectedRoomId);
 
@@ -155,27 +118,14 @@ function HotelDetailContent() {
         const payRes = await api.post(`/user/pay/${bookingId}`);
         const snapToken = payRes.data.snap_token;
         
-        // Dynamically ensure Snap script is loaded
-        const snapInstance = await new Promise<any>((resolve) => {
-            if ((window as any).snap) {
-                if (typeof (window as any).snap.hide === 'function') {
-                    try { (window as any).snap.hide(); } catch (e) {}
-                }
-                resolve((window as any).snap);
-                return;
-            }
-            const script = document.createElement("script");
-            script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-            script.setAttribute("data-client-key", "Mid-client-XxTfLCZ76GoQZj3Z");
-            script.onload = () => resolve((window as any).snap);
-            script.onerror = () => resolve(null);
-            document.body.appendChild(script);
-        });
-
+        const snapInstance = (window as any).snap;
         if (!snapInstance) {
-            toast.error("Gagal memuat sistem pembayaran Midtrans. Silakan coba beberapa saat lagi.");
+            toast.error("Sistem pembayaran sedang bersiap. Silakan coba sesaat lagi.");
             setIsPaying(false);
             return;
+        }
+        if (typeof snapInstance.hide === 'function') {
+            try { snapInstance.hide(); } catch (e) {}
         }
 
         snapInstance.pay(snapToken, {
@@ -370,6 +320,7 @@ function HotelDetailContent() {
                         <div className="grid grid-cols-2 gap-4 animate-fade-in">
                             <img 
                                 src={hotelData.image_url} 
+                                loading="lazy"
                                 onError={(e) => {
                                     (e.target as HTMLImageElement).src = getFallbackImage(hotelId || 1);
                                 }}
@@ -379,11 +330,13 @@ function HotelDetailContent() {
                                 <img 
                                     src={getFallbackImage((parseInt(hotelId || '1', 10) + 1))} 
                                     alt="Detail Hotel 2"
+                                    loading="lazy"
                                     className="w-full h-22 object-cover rounded-2xl shadow-sm" 
                                 />
                                 <img 
                                     src={getFallbackImage((parseInt(hotelId || '1', 10) + 2))} 
                                     alt="Detail Hotel 3"
+                                    loading="lazy"
                                     className="w-full h-22 object-cover rounded-2xl shadow-sm" 
                                 />
                             </div>
@@ -399,7 +352,7 @@ function HotelDetailContent() {
                             {hotelData.ratings?.length > 0 ? hotelData.ratings.map((r: any) => (
                                 <div key={r.id} className="p-6 bg-gray-50 rounded-[24px] border border-gray-100">
                                 <div className="flex items-center gap-4 mb-3">
-                                    <img src={r.user?.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.name || 'User')}&background=random`} className="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover" />
+                                    <img src={r.user?.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.name || 'User')}&background=random`} loading="lazy" className="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover" />
                                     <div>
                                     <strong className="block text-sm">{r.user?.name}</strong>
                                     <div className="flex text-yellow-500 text-[10px]">{"★".repeat(r.rating)}</div>
@@ -412,6 +365,7 @@ function HotelDetailContent() {
                                     <img
                                     src={r.image_url}
                                     alt="Foto ulasan"
+                                    loading="lazy"
                                     className="w-full max-h-56 object-cover rounded-2xl mt-1 border border-gray-100"
                                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                                     />
@@ -465,6 +419,7 @@ function HotelDetailContent() {
                                                 <div className="col-span-2 row-span-2 relative h-32 rounded-xl overflow-hidden">
                                                     <img 
                                                         src={roomImages[0]} 
+                                                        loading="lazy"
                                                         onError={(e) => {
                                                             (e.target as HTMLImageElement).src = fallbackRoomImages[0];
                                                         }}
@@ -476,6 +431,7 @@ function HotelDetailContent() {
                                                 <div className="relative h-[60px] rounded-lg overflow-hidden">
                                                     <img 
                                                         src={roomImages[1]} 
+                                                        loading="lazy"
                                                         onError={(e) => {
                                                             (e.target as HTMLImageElement).src = fallbackRoomImages[1];
                                                         }}
@@ -486,6 +442,7 @@ function HotelDetailContent() {
                                                 <div className="relative h-[60px] rounded-lg overflow-hidden">
                                                     <img 
                                                         src={roomImages[2]} 
+                                                        loading="lazy"
                                                         onError={(e) => {
                                                             (e.target as HTMLImageElement).src = fallbackRoomImages[2];
                                                         }}
@@ -500,6 +457,7 @@ function HotelDetailContent() {
                                                 <div className="relative h-[60px] rounded-lg overflow-hidden">
                                                     <img 
                                                         src={roomImages[3]} 
+                                                        loading="lazy"
                                                         onError={(e) => {
                                                             (e.target as HTMLImageElement).src = fallbackRoomImages[3];
                                                         }}
@@ -510,6 +468,7 @@ function HotelDetailContent() {
                                                 <div className="relative h-[60px] rounded-lg overflow-hidden">
                                                     <img 
                                                         src={roomImages[4]} 
+                                                        loading="lazy"
                                                         onError={(e) => {
                                                             (e.target as HTMLImageElement).src = fallbackRoomImages[4];
                                                         }}
@@ -520,6 +479,7 @@ function HotelDetailContent() {
                                                 <div className="relative h-[60px] rounded-lg overflow-hidden">
                                                     <img 
                                                         src={roomImages[5]} 
+                                                        loading="lazy"
                                                         onError={(e) => {
                                                             (e.target as HTMLImageElement).src = fallbackRoomImages[5];
                                                         }}

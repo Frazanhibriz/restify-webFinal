@@ -214,6 +214,8 @@ export default function AdminPage() {
         sarapan: false, tv: false, makanSiang: false, penyejukUdara: false,
         makanMalam: false, wifi: false, kulkas: false, tempatTidurTambahan: false
     });
+    const [roomImage, setRoomImage] = useState<File | null>(null);
+    const [roomImagePreview, setRoomImagePreview] = useState<string | null>(null);
     
         const [hotels, setHotels] = useState<any[]>([
             { 
@@ -361,6 +363,8 @@ export default function AdminPage() {
             sarapan: false, tv: false, makanSiang: false, penyejukUdara: false,
             makanMalam: false, wifi: false, kulkas: false, tempatTidurTambahan: false
         });
+        setRoomImage(null);
+        setRoomImagePreview(null);
         setEditingRoom(null);
     };
 
@@ -374,6 +378,8 @@ export default function AdminPage() {
         setJumlahKamarTidur(room.kamarTidur || 1);
         setJumlahKamarTersediaForm(room.available || 1);
         setFasilitasKamar({ ...room.facilities });
+        setRoomImage(null);
+        setRoomImagePreview(room.image || null);
         setActiveTab('tambahKamar');
     };
 
@@ -387,7 +393,8 @@ export default function AdminPage() {
                     updatedRooms = h.rooms.map((r: any) => r.id === editingRoom.id ? {
                         ...r, name: namaKamar, price: Number(hargaKamar), size: Number(ukuranKamar),
                         description: deskripsiKamar, available: jumlahKamarTersediaForm,
-                        kamarMandi: jumlahKamarMandi, kamarTidur: jumlahKamarTidur, facilities: fasilitasKamar
+                        kamarMandi: jumlahKamarMandi, kamarTidur: jumlahKamarTidur, facilities: fasilitasKamar,
+                        image: roomImagePreview || r.image
                     } : r);
                     toast.success("Kamar berhasil diperbarui");
                 } else {
@@ -395,7 +402,7 @@ export default function AdminPage() {
                         id: Date.now(), name: namaKamar, price: Number(hargaKamar), size: Number(ukuranKamar),
                         description: deskripsiKamar, available: jumlahKamarTersediaForm,
                         kamarMandi: jumlahKamarMandi, kamarTidur: jumlahKamarTidur, facilities: fasilitasKamar,
-                        image: '/images/Restify_BG2.png'
+                        image: roomImagePreview || '/images/Restify_BG2.png'
                     };
                     updatedRooms = [...h.rooms, newRoom];
                     toast.success("Kamar berhasil ditambahkan");
@@ -1014,12 +1021,39 @@ export default function AdminPage() {
                                         <h3 className={styles.boxSectionTitle} style={{ marginBottom: '14px' }}>
                                             🖼️ Media Kamar
                                         </h3>
-                                        <div className={styles.dragDropZoneBox} style={{ minHeight: '230px' }}>
+                                        <label className={styles.dragDropZoneBox} style={{ minHeight: '230px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                             <FiUploadCloud className={styles.uploadCloudIcon} />
-                                            <p className={styles.mainUploadText}>Klik atau drag file ke sini</p>
+                                            <p className={styles.mainUploadText}>Klik untuk upload file</p>
                                             <p className={styles.subUploadText}>Format: JPG, PNG (Max, 10MB)</p>
-                                            <button type="button" className={styles.miniSelectFileBtn}>Pilih File</button>
-                                        </div>
+                                            <span className="text-[10px] text-gray-500 mt-2">
+                                                {roomImage ? roomImage.name : (roomImagePreview ? 'Foto terpilih' : 'Belum ada file')}
+                                            </span>
+                                            <input 
+                                                type="file" 
+                                                className="hidden" 
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0] || null;
+                                                    setRoomImage(file);
+                                                    if (file) {
+                                                        setRoomImagePreview(URL.createObjectURL(file));
+                                                    }
+                                                }} 
+                                                accept="image/*" 
+                                            />
+                                        </label>
+                                        {roomImagePreview && (
+                                            <div className="mt-3 relative rounded-2xl overflow-hidden border border-gray-200" style={{ position: 'relative' }}>
+                                                <img src={roomImagePreview} alt="Preview foto kamar" className="w-full h-40 object-cover" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { setRoomImage(null); setRoomImagePreview(null); }}
+                                                    className="absolute top-2 right-2 bg-red-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:bg-red-600 transition-colors shadow-md"
+                                                    style={{ position: 'absolute', top: '8px', right: '8px' }}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 

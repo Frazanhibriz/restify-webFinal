@@ -24,11 +24,21 @@ class ValidateRecaptcha
         }
 
         try {
-            $response = Http::timeout(5)->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                'secret'   => config('recaptcha.secret_key'),
-                'response' => $token,
-                'remoteip' => $request->ip(),
-            ]);
+            $response = Http::timeout(5)
+                ->withOptions([
+                    'curl' => [
+                        CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                        CURLOPT_SSL_VERIFYPEER => !app()->environment('local'),
+                    ]
+                ])
+
+                ->asForm()
+                ->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret'   => config('recaptcha.secret_key'),
+                    'response' => $token,
+                    'remoteip' => $request->ip(),
+                ]);
+
 
             $result = $response->json();
 

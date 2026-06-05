@@ -10,7 +10,7 @@ const config: Config = {
         extend: {
             colors: {
                 restify: {
-                    olive: '#6B7F60',
+                    olive: '#5E6B52',
                     cream: '#FFFDF0',
                     'text-dark': '#1A1A1A',
                     'text-gray': '#717171',

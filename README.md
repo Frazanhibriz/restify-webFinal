@@ -109,15 +109,26 @@ Ikuti langkah-langkah di bawah ini secara berurutan untuk menjalankan platform R
    ```bash
    php artisan key:generate
    ```
-5. Buka berkas **`backend/.env`** menggunakan editor teks pilihan Anda, kemudian sesuaikan bagian konfigurasi database PostgreSQL Anda:
-   ```env
-   DB_CONNECTION=pgsql
-   DB_HOST=127.0.0.1
-   DB_PORT=5432
-   DB_DATABASE=restify
-   DB_USERNAME=username_postgresql_anda  # Contoh: postgres
-   DB_PASSWORD=password_postgresql_anda  # Contoh: admin123
-   ```
+5. Buka berkas **`backend/.env`** menggunakan editor teks pilihan Anda, kemudian sesuaikan bagian konfigurasi environment berikut:
+   * **Konfigurasi Database PostgreSQL**:
+     ```env
+     DB_CONNECTION=pgsql
+     DB_HOST=127.0.0.1
+     DB_PORT=5432
+     DB_DATABASE=restify
+     DB_USERNAME=username_postgresql_anda  # Contoh: postgres
+     DB_PASSWORD=password_postgresql_anda  # Contoh: admin123
+     ```
+   * **Konfigurasi Midtrans Sandbox** (Dapatkan API Keys di Dashboard Midtrans Sandbox):
+     ```env
+     MIDTRANS_SERVER_KEY=server_key_sandbox_anda
+     MIDTRANS_CLIENT_KEY=client_key_sandbox_anda
+     ```
+   * **Konfigurasi Google reCAPTCHA v3** (Gunakan Secret Key yang sesuai dengan domain localhost):
+     ```env
+     RECAPTCHA_SECRET_KEY=secret_key_recaptcha_v3_anda
+     ```
+
 6. Hubungkan direktori storage agar gambar hotel, kamar, dan ulasan dapat diakses secara publik:
    ```bash
    php artisan storage:link
@@ -203,6 +214,56 @@ Pembayaran pemesanan hotel didukung oleh Midtrans Snap Sandbox.
    ```text
    https://xxxx.ngrok-free.app/api/midtrans/callback
    ```
+
+---
+
+## 📧 Konfigurasi Workflow n8n (Lupa Kata Sandi)
+
+Aplikasi ini menggunakan integrasi **n8n** sebagai sistem pengirim kode verifikasi (OTP) untuk alur reset/lupa kata sandi pengguna secara otomatis. Ikuti langkah-langkah di bawah ini untuk mengonfigurasinya:
+
+### Langkah 1: Instal n8n
+Buka terminal baru pada komputer Anda dan pasang n8n dengan menjalankan perintah berikut:
+```bash
+npm install n8n
+```
+*(Catatan: Anda juga bisa memasangnya secara global menggunakan `npm install -g n8n`)*
+
+### Langkah 2: Jalankan n8n
+Jalankan service n8n secara lokal di komputer Anda:
+```bash
+npx n8n
+```
+*n8n akan berjalan secara lokal di port `5678`. Anda dapat membukanya melalui browser di **http://localhost:5678**.*
+
+### Langkah 3: Import Workflow
+1. Masuk ke halaman dashboard n8n Anda di browser.
+2. Buat workflow baru (klik **Add workflow**).
+3. Klik ikon menu (tiga titik di kanan atas) -> Pilih **Import from file**.
+4. Pilih file workflow **`Restify.json`** yang terletak di root direktori project ini.
+
+### Langkah 4: Setup Kredensial Node
+Pada workflow n8n yang telah di-import, klik dua kali pada node pengirim email (SMTP / Gmail node) dan konfigurasikan kredensialnya dengan format berikut:
+* **Email**: email bapak (alamat email Gmail pengirim Anda)
+* **Password**: Password aplikasi Google Anda (dibuat melalui: https://myaccount.google.com/apppasswords)
+* **Host**: `smtp.gmail.com`
+* **Port**: Samain sama aja ama default (biasanya `465` untuk SSL atau `587` untuk TLS)
+
+### Langkah 5: Publish Workflow & Salin URL Webhook
+1. Aktifkan workflow dengan mengklik tombol **Publish** / **Active** di pojok kanan atas dashboard n8n Anda.
+2. Klik dua kali pada node **Webhook** awal di workflow n8n Anda.
+3. Masuk ke tab **Webhook URLs** -> Salin tautan **Production URL** (bukan Test URL).
+
+### Langkah 6: Masukkan Link Production URL ke Auth Controller
+1. Buka berkas backend `backend/app/Http/Controllers/AuthController.php`.
+2. Cari baris kode pemanggilan HTTP Post n8n di line `185`.
+3. Ganti URL webhook bawaan dengan **Production URL** n8n yang baru saja Anda salin pada baris berikut:
+   ```php
+   $response = \Illuminate\Support\Facades\Http::post('http://localhost:5678/webhook/61c2954c-8125-4afb-9a44-3438eb385db0', [ // Ganti URL ini dengan Link Production Anda
+       'email' => $request->email,
+       'code' => $code
+   ]);
+   ```
+
 
 ---
 

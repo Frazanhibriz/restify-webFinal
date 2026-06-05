@@ -61,6 +61,8 @@ export default function AdminHotelsPage() {
     const [roomDesc, setRoomDesc] = useState('');
     const [roomSize, setRoomSize] = useState('3 × 3 Meter');
     const [roomBedrooms, setRoomBedrooms] = useState(2);
+    const [roomImage, setRoomImage] = useState<File | null>(null);
+    const [roomImagePreview, setRoomImagePreview] = useState<string | null>(null);
     
     // Custom facilities states
     const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
@@ -159,6 +161,8 @@ export default function AdminHotelsPage() {
             setRoomDesc('');
             setRoomSize('3 × 3 Meter');
             setRoomBedrooms(2);
+            setRoomImage(null);
+            setRoomImagePreview(null);
             setSelectedFacilities([]);
             setAvailableFacilities([
                 { key: 'sarapan', label: 'Sarapan', emoji: '🍳' },
@@ -176,6 +180,8 @@ export default function AdminHotelsPage() {
             setRoomPrice(editRoomData.price || '');
             setRoomCapacity(editRoomData.capacity || 2);
             setRoomDesc(editRoomData.description || '');
+            setRoomImage(null);
+            setRoomImagePreview(editRoomData.image_url || null);
 
             const facilitiesArray = Array.isArray(editRoomData.facilities) ? editRoomData.facilities : [];
             const sizeStr = facilitiesArray.find((f: string) => f.startsWith("Ukuran:"))?.replace("Ukuran:", "").trim() || '3 × 3 Meter';
@@ -406,21 +412,29 @@ export default function AdminHotelsPage() {
 
             selectedFacilities.forEach(f => facList.push(f));
 
-            const data = {
-                hotel_id: selectedHotel.id,
-                room_type: roomType,
-                price: roomPrice,
-                capacity: roomCapacity,
-                description: roomDesc,
-                facilities: facList,
-                status: 'available'
-            };
+            const formData = new FormData();
+            formData.append('hotel_id', selectedHotel.id.toString());
+            formData.append('room_type', roomType);
+            formData.append('price', roomPrice);
+            formData.append('capacity', roomCapacity.toString());
+            formData.append('description', roomDesc);
+            formData.append('status', 'available');
+            facList.forEach(f => formData.append('facilities[]', f));
+
+            if (roomImage) {
+                formData.append('image', roomImage);
+            }
 
             if (view === 'room_edit' && editRoomData) {
-                await api.put(`/admin/rooms/${editRoomData.id}`, data);
+                formData.append('_method', 'PUT');
+                await api.post(`/admin/rooms/${editRoomData.id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
                 toast.success("Tipe kamar berhasil diperbarui");
             } else {
-                await api.post('/admin/rooms', data);
+                await api.post('/admin/rooms', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
                 toast.success("Tipe kamar berhasil ditambahkan");
             }
 
@@ -758,6 +772,35 @@ export default function AdminHotelsPage() {
                                 <div>
                                     <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Deskripsi Fasilitas</label>
                                     <textarea value={roomDesc} onChange={(e) => setRoomDesc(e.target.value)} placeholder="Sebutkan deskripsi fasilitas kamar..." className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive h-32 resize-none transition-all"></textarea>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Foto Kamar</label>
+                                    <label className="flex items-center gap-3 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-4 cursor-pointer hover:border-restify-olive transition-all group">
+                                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 group-hover:text-restify-olive"><FiImage /></div>
+                                        <div className="flex flex-col">
+                                            <span className="text-xs font-black uppercase tracking-tighter">Upload Foto</span>
+                                            <span className="text-[10px] text-gray-400 line-clamp-1">{roomImage ? roomImage.name : (roomImagePreview ? 'Foto saat ini tersimpan' : 'Belum ada file')}</span>
+                                        </div>
+                                        <input type="file" className="hidden" onChange={(e) => {
+                                            const file = e.target.files?.[0] || null;
+                                            setRoomImage(file);
+                                            if (file) {
+                                                setRoomImagePreview(URL.createObjectURL(file));
+                                            }
+                                        }} accept="image/*" />
+                                    </label>
+                                    {roomImagePreview && (
+                                        <div className="mt-3 relative rounded-2xl overflow-hidden border border-gray-200">
+                                            <img src={roomImagePreview} alt="Preview foto kamar" className="w-full h-40 object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => { setRoomImage(null); setRoomImagePreview(null); }}
+                                                className="absolute top-2 right-2 bg-red-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:bg-red-600 transition-colors shadow-md"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-xs font-black uppercase text-gray-400 mb-3 tracking-widest">Fasilitas Kamar</label>

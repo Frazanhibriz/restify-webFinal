@@ -26,6 +26,7 @@ export default function ReservationPage() {
     const [bookings, setBookings] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [transactionCodeInput, setTransactionCodeInput] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         if (!authLoading) {
@@ -140,7 +141,20 @@ export default function ReservationPage() {
                            {view === 'list' ? 'Daftar Reservasi' : `Detail Reservasi`}
                        </h1>
                    </div>
-                   <div className="w-1/3"></div>
+                   <div className="w-1/3 flex justify-end">
+                       {view === 'list' && (
+                           <div className="relative">
+                               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                               <input
+                                   type="text"
+                                   placeholder="Cari nama tamu..."
+                                   value={searchQuery}
+                                   onChange={(e) => setSearchQuery(e.target.value)}
+                                   className="pl-9 pr-4 py-2 border border-gray-300 rounded-full text-sm outline-none focus:border-restify-olive focus:ring-1 focus:ring-restify-olive/30 transition-all w-56 bg-white"
+                               />
+                           </div>
+                       )}
+                   </div>
                </div>
             </header>
 
@@ -160,7 +174,9 @@ export default function ReservationPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {bookings.map((res, idx) => (
+                                {bookings
+                                    .filter((b) => b.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+                                    .map((res, idx) => (
                                     <tr key={res.id} className="hover:bg-gray-50 transition-colors text-center">
                                         <td className="border border-gray-200 py-4 font-bold">{idx + 1}</td>
                                         <td className="border border-gray-200 py-4 pl-4 text-left font-bold">{res.user?.name}</td>
@@ -178,8 +194,10 @@ export default function ReservationPage() {
                                         </td>
                                     </tr>
                                 ))}
-                                {bookings.length === 0 && (
-                                    <tr><td colSpan={5} className="py-10 text-gray-500 italic">Belum ada reservasi masuk.</td></tr>
+                                {bookings.filter((b) => b.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                                    <tr><td colSpan={5} className="py-10 text-gray-500 italic">
+                                        {searchQuery ? 'Tidak ada reservasi yang cocok.' : 'Belum ada reservasi masuk.'}
+                                    </td></tr>
                                 )}
                             </tbody>
                         </table>

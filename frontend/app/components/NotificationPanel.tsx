@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { RiArrowRightLine, RiCheckDoubleLine } from 'react-icons/ri';
 import {
@@ -17,30 +17,30 @@ interface NotificationPanelProps {
   onUnreadCountChange?: (count: number) => void;
 }
 
+// Load read status from localStorage
+const getReadNotifIds = (): string[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const saved = localStorage.getItem('restify_read_notif_ids');
+    return saved ? JSON.parse(saved) : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+// Save read status to localStorage
+const saveReadNotifIds = (ids: string[]) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('restify_read_notif_ids', JSON.stringify(ids));
+  } catch (e) {}
+};
+
 export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange }: NotificationPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  // Load read status from localStorage
-  const getReadNotifIds = (): string[] => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const saved = localStorage.getItem('restify_read_notif_ids');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  };
-
-  // Save read status to localStorage
-  const saveReadNotifIds = (ids: string[]) => {
-    if (typeof window === 'undefined') return;
-    try {
-      localStorage.setItem('restify_read_notif_ids', JSON.stringify(ids));
-    } catch (e) {}
-  };
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const response = await api.get('/user/booking-history');
       const bookings = response.data.data || response.data || [];
@@ -107,7 +107,7 @@ export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange
             hotelName: hotelName,
             createdAt: b.updated_at || b.created_at || new Date().toISOString(),
             isRead: readIds.includes(idRev) ? true : false,
-            reviewLink: '/home/profile',
+            reviewLink: '/home/riwayat',
           });
         }
         
@@ -144,16 +144,29 @@ export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange
       }));
       setNotifications(processedMock);
     }
-  };
+  }, []);
 
-  // Fetch notifications on mount and poll every 5s to keep the header count accurate in real-time
+  // Fetch notifications on mount to populate the initial unread count
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       fetchNotifications();
     }, 0);
-    const interval = setInterval(fetchNotifications, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearTimeout(timer);
+  }, [fetchNotifications]);
+
+  // Poll for notifications every 30s only when the notification panel is open
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        fetchNotifications();
+      }, 0);
+      const interval = setInterval(fetchNotifications, 30000);
+      return () => {
+        clearTimeout(timer);
+        clearInterval(interval);
+      };
+    }
+  }, [isOpen, fetchNotifications]);
 
   // Lock body scroll when panel is open to prevent parent page scroll leak
   useEffect(() => {

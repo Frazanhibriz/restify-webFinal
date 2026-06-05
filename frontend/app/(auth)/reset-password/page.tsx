@@ -73,7 +73,7 @@ export default function ResetPasswordPage() {
                     <div className="text-center mb-10">
                         <h1 className="text-2xl font-bold mb-3 tracking-wide">Reset Kata Sandi</h1>
                         <p className="text-[#A7A7A7] text-[13px] font-medium tracking-wide max-w-[280px] mx-auto leading-relaxed">
-                            Masukkan kata sandi baru untuk akun Anda
+                            Masukkan kode reset dan kata sandi baru untuk akun Anda
                         </p>
                     </div>
 
@@ -81,12 +81,12 @@ export default function ResetPasswordPage() {
 
                         <div className="mb-5">
                             <label htmlFor="reset-token" className="block text-xs font-bold text-gray-800 mb-2">
-                                Token Reset
+                                Kode Reset
                             </label>
                             <input
                                 id="reset-token"
                                 type="text"
-                                placeholder="Masukkan token reset..."
+                                placeholder="Masukkan kode reset..."
                                 value={token}
                                 onChange={(e) => setToken(e.target.value)}
                                 className="w-full bg-[#FFFDF0] px-4 py-4 rounded-[12px] text-sm text-gray-800 outline-none placeholder-gray-300 focus:ring-1 focus:ring-[#9FA682] transition-all"

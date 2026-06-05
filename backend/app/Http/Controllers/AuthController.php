@@ -170,21 +170,43 @@ class AuthController extends Controller
             ], 404);
         }
 
-        $token = Str::random(60);
+        $code = Str::random(6);
 
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $request->email],
             [
                 'email' => $request->email,
-                'token' => Hash::make($token),
+                'token' => Hash::make($code),
                 'created_at' => now()
             ]
         );
+                                                                //Peletakan Endpoint N8N
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(5)
+                ->withOptions([
+                    'curl' => [
+                        CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                        CURLOPT_SSL_VERIFYPEER => !app()->environment('local'),
+                    ]
+                ])
 
-        \Illuminate\Support\Facades\Log::info("Password reset token generated for {$request->email}: {$token}");
+                ->post('http://localhost:5678/webhook/61c2954c-8125-4afb-9a44-3438eb385db0', [
+                    'email' => $request->email,
+                    'code' => $code
+                ]);
+
+            
+            if (!$response->successful()) {
+                \Illuminate\Support\Facades\Log::error("Failed to send code to n8n: " . $response->body());
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Error sending code to n8n: " . $e->getMessage());
+        }
+
+        \Illuminate\Support\Facades\Log::info("Password reset token generated for {$request->email}: {$code}");
 
         return response()->json([
-            'message' => 'Token reset password berhasil dibuat (silakan cek log Laravel)'
+            'message' => 'Kode reset password berhasil dikirim.'
         ]);
     }
 
@@ -199,13 +221,24 @@ class AuthController extends Controller
 
         if (!$reset) {
             return response()->json([
-                'message' => 'Token reset tidak ditemukan'
+                'message' => 'Kode reset tidak ditemukan atau sudah kedaluwarsa'
             ], 404);
+        }
+
+        // Enforce 15 minutes expiration for OTP
+        if (now()->subMinutes(15)->gt($reset->created_at)) {
+            DB::table('password_reset_tokens')
+                ->where('email', $request->email)
+                ->delete();
+
+            return response()->json([
+                'message' => 'Kode reset sudah kedaluwarsa (berlaku 15 menit)'
+            ], 400);
         }
 
         if (!Hash::check($request->token, $reset->token)) {
             return response()->json([
-                'message' => 'Token tidak valid'
+                'message' => 'Kode reset tidak valid'
             ], 400);
         }
 

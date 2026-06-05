@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
                     <div className="text-center mb-10">
                         <h1 className="text-2xl font-bold mb-3 tracking-wide">Lupa Kata Sandi</h1>
                         <p className="text-[#A7A7A7] text-[13px] font-medium tracking-wide max-w-[280px] mx-auto leading-relaxed">
-                            Masukkan email Anda untuk menerima link reset password
+                            Masukkan email Anda untuk menerima kode reset password
                         </p>
                     </div>
 
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
                             disabled={isLoading}
                             className="w-full bg-[#9DA884] text-white font-bold text-sm py-4 rounded-xl hover:bg-[#86926e] transition-shadow shadow-sm active:scale-[0.99] mb-8 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
                         >
-                            {isLoading ? 'Memuat...' : 'Kirim Link Reset'}
+                            {isLoading ? 'Memuat...' : 'Kirim Kode Reset'}
                         </button>
 
                         <div className="text-center">

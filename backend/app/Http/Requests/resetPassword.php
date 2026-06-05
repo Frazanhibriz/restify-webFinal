@@ -34,7 +34,7 @@ class resetPassword extends FormRequest
             'email.required' => 'Email wajib diisi',
             'email.email' => 'Format email tidak valid',
 
-            'token.required' => 'Token wajib diisi',
+            'token.required' => 'Kode reset wajib diisi',
 
             'password.required' => 'Password wajib diisi',
             'password.confirmed' => 'Konfirmasi password tidak cocok',

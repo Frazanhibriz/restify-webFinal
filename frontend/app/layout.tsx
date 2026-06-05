@@ -31,29 +31,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <style dangerouslySetInnerHTML={{ __html: `
-          input::-ms-reveal {
-            display: none !important;
-          }
-          input::-ms-clear {
-            display: none !important;
-          }
-          ::-ms-reveal {
-            display: none !important;
-          }
-          ::-ms-clear {
-            display: none !important;
-          }
-        `}} />
-      </head>
+      <head />
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <AuthProvider>
           {children}
           <Toaster richColors position="top-center" />
         </AuthProvider>
         <Script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key={'Mid-client-XxTfLCZ76GoQZj3Z'} strategy="beforeInteractive" />
-        <Script src="https://www.google.com/recaptcha/api.js?render=6Le_NQktAAAAACGSaQhC9_rMYdzrbIzw1ylEbLBW" strategy="afterInteractive" />
       </body>
     </html>
   );

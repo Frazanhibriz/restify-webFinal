@@ -63,7 +63,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     hotelName: 'Aryaduta Bandung',
     createdAt: new Date(Date.now() - 25 * 3600 * 1000).toISOString(), // ~1 hari yang lalu (Kemarin)
     isRead: true,
-    reviewLink: '/home/profile',
+    reviewLink: '/home/riwayat',
   },
   {
     id: 'N005',

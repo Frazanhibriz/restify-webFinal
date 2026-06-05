@@ -396,6 +396,14 @@ class BookingController extends Controller
         Config::$isProduction = config('services.midtrans.is_production');
         Config::$isSanitized = true;
         Config::$is3ds = true;
+        Config::$curlOptions = [
+            CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+            CURLOPT_SSL_VERIFYPEER => !app()->environment('local'),
+            CURLOPT_HTTPHEADER => [], // Prevent Midtrans SDK "Undefined array key 10023" bug
+        ];
+
+
+
 
         
         $payment = $booking->payment;

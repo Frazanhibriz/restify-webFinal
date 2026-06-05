@@ -29,9 +29,10 @@ export default function LoginPage() {
                     if (typeof window !== 'undefined' && window.grecaptcha) {
                         window.grecaptcha.ready(() => {
                             window.grecaptcha
-                                .execute('6Le_NQktAAAAACGSaQhC9_rMYdzrbIzw1ylEbLBW', { action: 'login' })
+                                .execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6Le_NQktAAAAACGSaQhC9_rMYdzrbIzw1ylEbLBW', { action: 'login' })
                                 .then(resolve)
                                 .catch(reject);
+
                         });
                     } else {
                         reject(new Error('reCAPTCHA not loaded'));

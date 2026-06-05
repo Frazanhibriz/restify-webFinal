@@ -64,7 +64,7 @@ export const notify = {
         logoutSuccess: () =>
             toast.success('Anda berhasil keluar dari akun.'),
         resetLinkSent: () =>
-            toast.success('Link reset password telah dikirim ke email Anda.'),
+            toast.success('Kode reset password telah dikirim ke email Anda.'),
         passwordResetSuccess: () =>
             toast.success('Kata sandi berhasil direset. Silakan login kembali.'),
         passwordMismatch: () =>
