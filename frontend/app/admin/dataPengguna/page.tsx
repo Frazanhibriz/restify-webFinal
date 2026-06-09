@@ -41,7 +41,8 @@ export default function Page() {
   const fetchUsers = async () => {
     try {
       const response = await api.get('/admin/users');
-      setData(response.data);
+      const fetchedUsers = Array.isArray(response.data) ? response.data : (response.data.data || []);
+      setData(fetchedUsers);
     } catch (error) {
       console.error("Gagal mengambil data pengguna:", error);
     } finally {
