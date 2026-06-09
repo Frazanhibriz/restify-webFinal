@@ -30,7 +30,7 @@ export default function ReceptionistHomePage() {
     try {
       if (showLoading) setStatsLoading(true);
       const res = await api.get('/receptionist/bookings');
-      const bookings: any[] = res.data || [];
+      const bookings: any[] = res.data.data || res.data || [];
       setStats({
         pending: bookings.filter((b) => b.status === 'pending').length,
         confirmed: bookings.filter((b) => b.status === 'confirmed').length,

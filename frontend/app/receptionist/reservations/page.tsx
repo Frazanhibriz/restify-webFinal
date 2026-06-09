@@ -42,12 +42,13 @@ export default function ReservationPage() {
         try {
             if (showLoading) setIsLoading(true);
             const res = await api.get('/receptionist/bookings');
-            setBookings(res.data || []);
+            const bookingsArray = res.data.data || res.data || [];
+            setBookings(bookingsArray);
             
             // Silently update the selected reservation detail if user is viewing one
             setSelectedRes((prev: any) => {
                 if (!prev) return prev;
-                const updated = (res.data || []).find((b: any) => b.id === prev.id);
+                const updated = bookingsArray.find((b: any) => b.id === prev.id);
                 return updated || prev;
             });
         } catch (error) {
