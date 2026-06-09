@@ -10,6 +10,7 @@ import {
   groupNotifications,
 } from '@/data/mockNotifications';
 import api from '@/lib/axios';
+import { useAuth } from '@/context/AuthContext';
 
 interface NotificationPanelProps {
   isOpen: boolean;
@@ -39,8 +40,18 @@ const saveReadNotifIds = (ids: string[]) => {
 export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange }: NotificationPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { user } = useAuth();
 
   const fetchNotifications = useCallback(async () => {
+    if (!user || user.role !== 'user') {
+      const readIds = getReadNotifIds();
+      const processedMock = MOCK_NOTIFICATIONS.map(n => ({
+        ...n,
+        isRead: readIds.includes(n.id) ? true : n.isRead
+      }));
+      setNotifications(processedMock);
+      return;
+    }
     try {
       const response = await api.get('/user/booking-history');
       const bookings = response.data.data || response.data || [];
@@ -144,7 +155,7 @@ export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange
       }));
       setNotifications(processedMock);
     }
-  }, []);
+  }, [user]);
 
   // Fetch notifications on mount to populate the initial unread count
   useEffect(() => {
