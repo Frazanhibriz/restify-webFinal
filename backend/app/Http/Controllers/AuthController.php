@@ -40,7 +40,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'phone' => $user->phone,
                 'role_id' => $user->role_id,
-                'role' => $user->role->name ?? 'user',
+                'role' => $user->role ?? 'user',
                 'hotel_id' => $user->hotel_id,
                 'profile_picture' => $user->profile_picture,
                 'profile_picture_url' => $user->profile_picture
@@ -75,7 +75,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'phone' => $user->phone,
                 'role_id' => $user->role_id,
-                'role' => $user->role->name ?? 'user',
+                'role' => $user->role ?? 'user',
                 'hotel_id' => $user->hotel_id,
                 'hotel' => $user->hotel ? [
                     'id' => $user->hotel->id,
@@ -104,8 +104,8 @@ class AuthController extends Controller
                 'phone' => $user->phone ?? null,
 
                 'role_id' => $user->role_id,
-                'role_name' => $user->role->name ?? null,
-                'role' => $user->role->name ?? null,
+                'role_name' => $user->role ?? null,
+                'role' => $user->role ?? null,
 
                 'hotel_id' => $user->hotel_id,
                 'hotel' => $user->hotel ? [
