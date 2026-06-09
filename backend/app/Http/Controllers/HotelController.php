@@ -119,7 +119,9 @@ class HotelController extends Controller
     {
         $hotel = Hotel::with([
             'rooms',
-            'ratings.user'
+            'ratings' => function ($query) {
+                $query->with('user')->latest()->limit(10);
+            }
         ])
             ->withAvg('ratings', 'rating')
             ->find($id);

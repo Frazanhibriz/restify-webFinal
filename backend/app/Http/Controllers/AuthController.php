@@ -69,7 +69,23 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login berhasil',
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'role_id' => $user->role_id,
+                'role' => $user->role->name ?? 'user',
+                'hotel_id' => $user->hotel_id,
+                'hotel' => $user->hotel ? [
+                    'id' => $user->hotel->id,
+                    'name' => $user->hotel->name,
+                ] : null,
+                'profile_picture' => $user->profile_picture,
+                'profile_picture_url' => $user->profile_picture
+                    ? asset('storage/' . $user->profile_picture)
+                    : null,
+            ],
             'token' => $token
         ]);
     }
@@ -158,9 +174,6 @@ class AuthController extends Controller
     
     public function forgotPassword(ForgotPasswordRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email'
-        ]);
 
         $user = User::where('email', $request->email)->first();
 
@@ -203,7 +216,7 @@ class AuthController extends Controller
             \Illuminate\Support\Facades\Log::error("Error sending code to n8n: " . $e->getMessage());
         }
 
-        \Illuminate\Support\Facades\Log::info("Password reset token generated for {$request->email}: {$code}");
+        // OTP code intentionally NOT logged for security reasons
 
         return response()->json([
             'message' => 'Kode reset password berhasil dikirim.'

@@ -10,16 +10,18 @@ use Illuminate\Http\Request;
 class ReceptionistController extends Controller
 {
     
-    public function bookingList()
+    public function bookingList(Request $request)
     {
         $hotelId = auth()->user()->hotel_id;
 
-        $bookings = Booking::whereHas('room', function ($query) use ($hotelId) {
+        $query = Booking::whereHas('room', function ($query) use ($hotelId) {
                 $query->where('hotel_id', $hotelId);
             })
             ->with(['user', 'room.hotel', 'payment'])
-            ->latest()
-            ->get();
+            ->latest();
+
+        $perPage = $request->get('per_page', 15);
+        $bookings = $query->paginate($perPage);
 
         return response()->json($bookings);
     }

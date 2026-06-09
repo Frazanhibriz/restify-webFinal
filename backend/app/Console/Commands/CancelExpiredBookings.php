@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use App\Models\Booking;
+use App\Models\Payment;
 use Illuminate\Console\Command;
 
 class CancelExpiredBookings extends Command
@@ -14,26 +15,28 @@ class CancelExpiredBookings extends Command
 
     public function handle()
     {
-        $expiredBookings = Booking::where('payment_status', 'pending')
+        // Get IDs of expired bookings before updating
+        $expiredBookingIds = Booking::where('payment_status', 'pending')
             ->where('expired_at', '<=', Carbon::now())
-            ->get();
+            ->pluck('id');
 
-        foreach ($expiredBookings as $booking) {
+        if ($expiredBookingIds->isEmpty()) {
+            $this->info('No expired bookings found.');
+            return;
+        }
 
-            
-            $booking->update([
+        // Batch update bookings
+        Booking::whereIn('id', $expiredBookingIds)
+            ->update([
                 'status' => 'cancelled',
                 'payment_status' => 'failed'
             ]);
 
-            
-            if ($booking->payment) {
-                $booking->payment->update([
-                    'status' => 'failed'
-                ]);
-            }
-        }
+        // Batch update related payments
+        Payment::whereIn('booking_id', $expiredBookingIds)
+            ->where('status', 'pending')
+            ->update(['status' => 'failed']);
 
-        $this->info('Expired bookings cancelled successfully.');
+        $this->info("Cancelled {$expiredBookingIds->count()} expired bookings.");
     }
 }

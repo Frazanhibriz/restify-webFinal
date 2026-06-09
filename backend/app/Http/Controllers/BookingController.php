@@ -485,6 +485,13 @@ class BookingController extends Controller
             ], 200);
         }
 
+        // Idempotency: jika payment sudah dalam status final, skip processing
+        if ($payment->status === 'paid' || $payment->status === 'failed') {
+            return response()->json([
+                'message' => 'Callback sudah diproses sebelumnya'
+            ]);
+        }
+
         
         $booking = $payment->booking;
 
@@ -633,6 +640,12 @@ class BookingController extends Controller
         if (!$booking) {
             return response()->json([
                 'message' => 'Booking tidak ditemukan'
+            ], 404);
+        }
+
+        if (!$booking->payment) {
+            return response()->json([
+                'message' => 'Data payment tidak ditemukan'
             ], 404);
         }
 

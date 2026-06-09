@@ -64,7 +64,9 @@ class ValidateRecaptcha
 
         } catch (\Exception $e) {
             Log::error('reCAPTCHA error: ' . $e->getMessage());
-            return $next($request);
+            return response()->json([
+                'message' => 'Verifikasi keamanan gagal. Silakan coba lagi.'
+            ], 503);
         }
 
         return $next($request);
