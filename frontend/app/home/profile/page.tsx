@@ -24,6 +24,7 @@ export default function ProfilePage() {
   
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
+  const [editPhone, setEditPhone] = useState("");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
   
@@ -39,6 +40,7 @@ export default function ProfilePage() {
       setProfilePic(user.profile_picture_url || null);
       setEditName(user.name || "");
       setEditEmail(user.email || "");
+      setEditPhone(user.phone || "");
     }
   }, [user]);
 
@@ -73,15 +75,16 @@ export default function ProfilePage() {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editName.trim() || !editEmail.trim()) {
-      toast.error("Nama dan email tidak boleh kosong.");
+    if (!editName.trim() || !editEmail.trim() || !editPhone.trim()) {
+      toast.error("Nama, email, dan nomor telepon tidak boleh kosong.");
       return;
     }
     setIsUpdatingProfile(true);
     try {
       await api.post('/user/update-profile', {
         name: editName,
-        email: editEmail
+        email: editEmail,
+        phone: editPhone
       });
       toast.success("Profil berhasil diperbarui!");
       
@@ -239,6 +242,11 @@ export default function ProfilePage() {
               <div className="mb-4">
                 <label className="block text-xs font-bold text-gray-800 mb-2">Email</label>
                 <input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} required
+                  className="w-full bg-[#FFFDF0] px-4 py-3 border border-transparent rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-[#5E6B52] transition-colors" />
+              </div>
+              <div className="mb-4">
+                <label className="block text-xs font-bold text-gray-800 mb-2">Nomor Telepon</label>
+                <input type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} required
                   className="w-full bg-[#FFFDF0] px-4 py-3 border border-transparent rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-[#5E6B52] transition-colors" />
               </div>
               <div className="mb-1">

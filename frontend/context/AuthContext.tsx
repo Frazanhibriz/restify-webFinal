@@ -7,6 +7,7 @@ interface User {
   id: number;
   name: string;
   email: string;
+  phone?: string;
   role: string;
   profile_picture_url?: string;
   hotel_id?: number | null;

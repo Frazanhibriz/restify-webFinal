@@ -14,6 +14,7 @@ export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [agree, setAgree] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +23,7 @@ export default function RegisterPage() {
         e.preventDefault();
 
         
-        if (!name || !email || !password) {
+        if (!name || !email || !phone || !password) {
             notify.auth.fieldRequired();
             return;
         }
@@ -62,6 +63,7 @@ export default function RegisterPage() {
             await api.post('/register', { 
                 name, 
                 email, 
+                phone,
                 password,
                 password_confirmation: password,
                 role: 'user',
@@ -138,6 +140,23 @@ export default function RegisterPage() {
                                 className="w-full bg-[#FFFDF0] px-4 py-3.5 rounded-[12px] text-sm text-gray-800 outline-none placeholder-gray-300 focus:ring-1 focus:ring-[#9FA682] transition-all"
                                 required
                                 autoComplete="email"
+                            />
+                        </div>
+
+                        {/* Nomor Telepon */}
+                        <div className="mb-5">
+                            <label htmlFor="register-phone" className="block text-xs font-bold text-gray-800 mb-2">
+                                Nomor Telepon
+                            </label>
+                            <input
+                                id="register-phone"
+                                type="tel"
+                                placeholder="08xxxxxxxxxx"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                className="w-full bg-[#FFFDF0] px-4 py-3.5 rounded-[12px] text-sm text-gray-800 outline-none placeholder-gray-300 focus:ring-1 focus:ring-[#9FA682] transition-all"
+                                required
+                                autoComplete="tel"
                             />
                         </div>
 
