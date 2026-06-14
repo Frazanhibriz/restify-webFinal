@@ -1,6 +1,6 @@
 # Restify - Aplikasi Hotel Booking Terintegrasi
 
-Restify adalah platform manajemen dan pemesanan (booking) hotel end-to-end yang terdiri dari Laravel 12 API sebagai Backend dan Next.js 15 sebagai Frontend. Platform ini menyediakan fitur lengkap mulai dari pencarian hotel, manajemen kamar, pemesanan hotel terintegrasi dengan Midtrans Payment Gateway, sistem manajemen khusus Resepsionis untuk check-in/out, sistem rating dinamis, hingga mekanisme keamanan modern dengan Laravel Sanctum dan Google reCAPTCHA v3.
+Restify adalah platform manajemen dan pemesanan (booking) hotel end-to-end yang terdiri dari Laravel 12 API sebagai Backend dan Next.js 15 sebagai Frontend. Platform ini menyediakan fitur lengkap mulai dari pencarian hotel, manajemen kamar, pemesanan hotel terintegrasi dengan Midtrans Payment Gateway, sistem manajemen khusus Resepsionis untuk check-in/out, sistem rating dinamis, fitur penghapusan akun mandiri oleh user (aman & terisolasi), hingga mekanisme keamanan modern dengan Laravel Sanctum dan Google reCAPTCHA v3.
 
 Project ini dibuat khusus untuk memenuhi kebutuhan **Artefak TUBES 1 Web**.
 
@@ -185,7 +185,7 @@ Untuk memudahkan dosen atau penguji dalam menjelajahi fungsionalitas aplikasi be
 * **Password**: `Recep1234`
 
 ### 3. Akun Tamu (User / Customer)
-* **Peran**: Menjelajahi hotel, memesan kamar secara real-time, membayar via Midtrans Snap, check-out mandiri, serta memberikan ulasan/rating.
+* **Peran**: Menjelajahi hotel, memesan kamar secara real-time, membayar via Midtrans Snap, check-out mandiri, memberikan ulasan/rating, serta menghapus akun secara mandiri (aman dari manipulasi oleh user lain).
 * **Akses**: Silakan daftar akun baru secara instan melalui antarmuka pendaftaran (Register) pada web, atau gunakan akun dummy yang sudah tersedia:
   * **Email**: `user@restify.com`
   * **Password**: `User1234`
