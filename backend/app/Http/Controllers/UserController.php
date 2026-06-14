@@ -171,4 +171,34 @@ class UserController extends Controller
             'message' => 'User berhasil dihapus'
         ]);
     }
+
+    public function deleteOwnAccount(Request $request)
+    {
+        $user = $request->user();
+
+        // Mencegah admin menghapus akun melalui endpoint ini
+        if ($user->role_id == 1) {
+            return response()->json([
+                'message' => 'Admin tidak dapat dihapus'
+            ], 403);
+        }
+
+        // Hapus file foto profil jika ada
+        if ($user->profile_picture) {
+            $oldPath = public_path('storage/' . $user->profile_picture);
+            if (file_exists($oldPath)) {
+                @unlink($oldPath);
+            }
+        }
+
+        // Revoke token access
+        $user->tokens()->delete();
+
+        // Hapus record user (cascade delete akan menghapus booking & rating secara otomatis)
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Akun Anda berhasil dihapus'
+        ]);
+    }
 }

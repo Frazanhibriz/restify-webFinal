@@ -61,6 +61,7 @@ Route::middleware(['auth:sanctum','role:user'])
     Route::post('/ratings', [RatingController::class,'store']);
     Route::post('/upload-profile', [AuthController::class, 'uploadProfile']);
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
+    Route::delete('/delete-account', [UserController::class, 'deleteOwnAccount']);
 }); 
 
 

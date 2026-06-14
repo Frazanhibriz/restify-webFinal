@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { notify } from '@/lib/notifications';
 
 
-type ActiveTab = 'profil' | 'logout';
+type ActiveTab = 'profil' | 'logout' | 'deleteAccount';
 
 export default function ProfilePage() {
   const { user, login, logout } = useAuth();
@@ -26,6 +26,7 @@ export default function ProfilePage() {
   const [editEmail, setEditEmail] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -164,6 +165,21 @@ export default function ProfilePage() {
     router.push('/login');
   };
 
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await api.delete('/user/delete-account');
+      toast.success("Akun Anda berhasil dihapus.");
+      await logout(true);
+      router.push('/login');
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Gagal menghapus akun.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="w-full relative min-h-[calc(100vh-140px)] md:h-[calc(100vh-140px)] flex items-center justify-center p-4 py-8 mb-10 overflow-y-auto md:overflow-hidden">
 
@@ -200,6 +216,14 @@ export default function ProfilePage() {
                 ${activeTab === 'logout' ? 'bg-[#E34A42] text-white' : 'bg-[#F2A299] text-white hover:bg-[#de8478]'}`}
             >
               Logout
+            </button>
+
+            <button
+              onClick={() => setActiveTab('deleteAccount')}
+              className={`w-full py-3.5 rounded-full font-bold text-[14px] transition-all shadow-sm
+                ${activeTab === 'deleteAccount' ? 'bg-red-700 text-white' : 'bg-red-400 text-white hover:bg-red-500'}`}
+            >
+              Hapus Akun
             </button>
           </div>
         </div>
@@ -291,6 +315,32 @@ export default function ProfilePage() {
                   className="bg-[#E34A42] text-white font-medium text-lg px-12 py-2.5 rounded-2xl hover:bg-red-700 transition-colors shadow-sm font-bold uppercase tracking-wider text-sm"
                 >
                   Iya
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'deleteAccount' && (
+            <div className="w-full h-full flex flex-col items-center justify-center pb-10 animate-fade-in flex-1">
+              <h2 className="text-[26px] font-medium mb-4 text-center max-w-[400px] leading-snug text-gray-800">
+                Hapus Akun Anda?
+              </h2>
+              <p className="text-gray-500 text-center max-w-[380px] mb-12 text-sm leading-relaxed">
+                Tindakan ini tidak dapat dibatalkan. Semua data profil, pemesanan, dan aktivitas Anda akan dihapus secara permanen dari sistem kami.
+              </p>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setActiveTab('profil')}
+                  className="bg-[#ACB5A4] text-white font-medium text-lg px-12 py-2.5 rounded-2xl hover:bg-[#8f9888] transition-colors shadow-sm font-bold uppercase tracking-wider text-sm"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={isDeleting}
+                  className="bg-[#E34A42] text-white font-medium text-lg px-12 py-2.5 rounded-2xl hover:bg-red-700 transition-colors shadow-sm font-bold uppercase tracking-wider text-sm disabled:opacity-50"
+                >
+                  {isDeleting ? "Menghapus..." : "Ya, Hapus Akun"}
                 </button>
               </div>
             </div>

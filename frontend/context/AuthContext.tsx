@@ -18,7 +18,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   login: (token: string, user: User) => void;
-  logout: () => void;
+  logout: (skipApiCall?: boolean) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -78,9 +78,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(normalizeUser(userData));
   };
 
-  const logout = async () => {
+  const logout = async (skipApiCall = false) => {
     try {
-      if (token) {
+      if (token && !skipApiCall) {
         await api.post("/logout");
       }
     } catch (error) {
