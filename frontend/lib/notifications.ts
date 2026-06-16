@@ -14,7 +14,7 @@ export const notify = {
             toast.error('Email ini sudah terdaftar. Silakan gunakan email lain atau masuk ke akun Anda.'),
 
         passwordTooWeak: () =>
-            toast.error('Kata sandi terlalu pendek. Gunakan minimal 6 karakter agar lebih aman.'),
+            toast.error('Kata sandi terlalu pendek. Gunakan minimal 8 karakter agar lebih aman.'),
 
         fieldRequired: () =>
             toast.error('Mohon lengkapi semua kolom yang tersedia sebelum melanjutkan.'),

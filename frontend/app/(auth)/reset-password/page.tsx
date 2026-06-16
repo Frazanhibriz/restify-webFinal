@@ -30,6 +30,14 @@ export default function ResetPasswordPage() {
             return;
         }
 
+        const hasUppercase = /[A-Z]/.test(newPassword);
+        const hasLowercase = /[a-z]/.test(newPassword);
+        const hasNumber = /[0-9]/.test(newPassword);
+        if (!hasUppercase || !hasLowercase || !hasNumber) {
+            toast.warning("Kata sandi wajib mengandung huruf besar, huruf kecil, dan angka");
+            return;
+        }
+
         setIsLoading(true);
 
         const email = typeof window !== 'undefined' ? sessionStorage.getItem('reset_email') || '' : '';

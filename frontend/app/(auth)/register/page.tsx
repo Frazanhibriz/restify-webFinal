@@ -27,8 +27,15 @@ export default function RegisterPage() {
             notify.auth.fieldRequired();
             return;
         }
-        if (password.length < 6) {
+        if (password.length < 8) {
             notify.auth.passwordTooWeak();
+            return;
+        }
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasNumber = /[0-9]/.test(password);
+        if (!hasUppercase || !hasLowercase || !hasNumber) {
+            toast.warning("Kata sandi wajib mengandung huruf besar, huruf kecil, dan angka");
             return;
         }
         if (!agree) {

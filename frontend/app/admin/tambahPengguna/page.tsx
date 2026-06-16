@@ -40,8 +40,16 @@ export default function Page() {
       return;
     }
 
-    if (password.length < 6) {
-      toast.warning("Kata sandi harus minimal 6 karakter");
+    if (password.length < 8) {
+      toast.warning("Kata sandi harus minimal 8 karakter");
+      return;
+    }
+
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (!hasUppercase || !hasLowercase || !hasNumber) {
+      toast.warning("Kata sandi wajib mengandung huruf besar, huruf kecil, dan angka");
       return;
     }
 
@@ -111,7 +119,7 @@ export default function Page() {
           <label>Kata Sandi</label>
           <input
             type="password"
-            placeholder="Password (min 6 karakter)"
+            placeholder="Password (min 8 karakter, huruf besar/kecil/angka)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

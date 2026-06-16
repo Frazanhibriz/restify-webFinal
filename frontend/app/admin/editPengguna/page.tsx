@@ -59,9 +59,18 @@ function EditPenggunaContent() {
       return;
     }
 
-    if (password && password.length < 6) {
-      toast.warning("Kata sandi baru harus minimal 6 karakter");
-      return;
+    if (password) {
+      if (password.length < 8) {
+        toast.warning("Kata sandi baru harus minimal 8 karakter");
+        return;
+      }
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasLowercase = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      if (!hasUppercase || !hasLowercase || !hasNumber) {
+        toast.warning("Kata sandi baru wajib mengandung huruf besar, huruf kecil, dan angka");
+        return;
+      }
     }
 
     if (roleId === 3 && !hotelId) {
@@ -135,7 +144,7 @@ function EditPenggunaContent() {
           <label>Kata Sandi (Kosongkan jika tidak ingin diubah)</label>
           <input
             type="password"
-            placeholder="Password baru"
+            placeholder="Password baru (min 8 karakter, huruf besar/kecil/angka)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
