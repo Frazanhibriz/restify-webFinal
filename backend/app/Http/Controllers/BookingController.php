@@ -54,8 +54,7 @@ class BookingController extends Controller
 
             
             $isBooked = Booking::where('room_id', $room->id)
-
-                
+                ->whereNotIn('status', ['cancelled', 'completed'])
                 ->where(function ($query) {
 
                     $query->where('payment_status', 'paid')
