@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -113,6 +113,147 @@ function BookingDetail({
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [removeImage, setRemoveImage] = useState(false);
+
+  const { user } = useAuth();
+
+  const handleDownloadReceipt = () => {
+    const printWindow = window.open('', '_blank', 'width=860,height=1000');
+    if (!printWindow) {
+      toast.error("Gagal membuka jendela cetak. Pastikan pop-up dibolehkan.");
+      return;
+    }
+
+    const checkInDate  = new Date(booking.checkIn);
+    const checkOutDate = new Date(booking.checkOut);
+    const nights = Math.max(1, Math.round((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)));
+
+    const fmtDate = (d: Date) => d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+    const fmtRp   = (n: number) => 'Rp\u00a0' + n.toLocaleString('id-ID');
+
+    const txCode        = booking.transactionCode || '-';
+    const hotelNm       = booking.hotelName || '-';
+    const roomTp        = booking.roomType  || '-';
+    const checkInStr    = fmtDate(checkInDate);
+    const checkOutStr   = fmtDate(checkOutDate);
+    const issuedStr     = new Date().toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const cName         = user?.name  || '-';
+    const cEmail        = user?.email || '-';
+    const cPhone        = user?.phone || '-';
+    const pricePerNight = nights > 0 ? Math.round(booking.subtotal / nights) : booking.subtotal;
+    const guestTxt      = booking.guestCount + ' Orang' + (booking.extraBed ? ' + Extra Bed' : '');
+
+    const html = [
+      '<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"/>',
+      '<title>Bukti Reservasi Restify - ' + txCode + '</title>',
+      '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">',
+      '<style>',
+      '* { margin:0; padding:0; box-sizing:border-box; }',
+      'body { font-family:"Inter",sans-serif; background:#f0f2ed; color:#2c3327; padding:32px 16px; }',
+      '.page { max-width:740px; margin:0 auto; background:#fff; border-radius:20px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.12); }',
+      '.banner { background:linear-gradient(135deg,#3d4a33 0%,#5e6b52 60%,#7a8c6a 100%); padding:32px 40px 28px; display:flex; justify-content:space-between; align-items:flex-end; }',
+      '.logo-text { font-size:32px; font-weight:900; color:#fff; letter-spacing:2px; }',
+      '.logo-sub  { font-size:11px; color:rgba(255,255,255,.65); font-style:italic; margin-top:4px; }',
+      '.tag { display:inline-block; background:rgba(255,255,255,.15); border:1.5px solid rgba(255,255,255,.35); color:#fff; font-size:13px; font-weight:800; letter-spacing:3px; padding:5px 14px; border-radius:40px; }',
+      '.code-line { font-size:11px; color:rgba(255,255,255,.7); margin-top:8px; font-weight:600; text-align:right; }',
+      '.status-strip { background:#f7f8f5; border-bottom:1px solid #e4e8df; padding:14px 40px; display:flex; justify-content:space-between; align-items:center; }',
+      '.badge { display:inline-flex; align-items:center; gap:7px; background:#e8f5e9; border:1.5px solid #81c784; color:#2e7d32; font-weight:800; font-size:12px; padding:5px 14px; border-radius:40px; }',
+      '.dot { width:8px; height:8px; border-radius:50%; background:#2e7d32; }',
+      '.body { padding:32px 40px; }',
+      '.sec-head { font-size:10px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#5e6b52; margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid #e4e8df; }',
+      '.two-col { display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-bottom:28px; }',
+      '.row { display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; border-bottom:1px dashed #eef0ec; font-size:12px; gap:8px; }',
+      '.row:last-child { border-bottom:none; }',
+      '.lbl { color:#70786c; flex-shrink:0; } .val { font-weight:700; text-align:right; word-break:break-word; }',
+      '.tbl-wrap { margin-bottom:24px; border-radius:12px; overflow:hidden; border:1px solid #e4e8df; }',
+      'table { width:100%; border-collapse:collapse; font-size:12px; }',
+      'thead { background:#5e6b52; color:#fff; }',
+      'thead th { padding:10px 14px; font-weight:700; text-align:left; font-size:11px; }',
+      'thead th:last-child { text-align:right; }',
+      'tbody tr:nth-child(even) { background:#f7f8f5; }',
+      'tbody td { padding:11px 14px; border-bottom:1px solid #eef0ec; }',
+      'tbody td:last-child { text-align:right; font-weight:700; }',
+      '.totals { display:flex; flex-direction:column; align-items:flex-end; gap:6px; margin-bottom:28px; }',
+      '.t-row { display:flex; gap:24px; font-size:12px; }',
+      '.t-lbl { color:#70786c; } .t-val { font-weight:700; min-width:150px; text-align:right; }',
+      '.t-div { width:300px; border:none; border-top:1.5px solid #e4e8df; margin:4px 0; }',
+      '.grand { display:flex; align-items:center; gap:20px; background:linear-gradient(135deg,#3d4a33,#5e6b52); color:#fff; padding:14px 20px; border-radius:12px; margin-top:4px; }',
+      '.grand-lbl { font-size:13px; font-weight:700; letter-spacing:1px; flex:1; }',
+      '.grand-val { font-size:22px; font-weight:900; }',
+      '.footer { background:#f7f8f5; border-top:1.5px solid #e4e8df; padding:20px 40px; text-align:center; }',
+      '.footer .m1 { font-size:12px; font-weight:700; color:#3d4a33; margin-bottom:4px; }',
+      '.footer .m2 { font-size:10px; color:#70786c; }',
+      '.footer .fdiv { border:none; border-top:1px dashed #d0d6cb; margin:14px 0; }',
+      '.footer .legal { font-size:9px; color:#9aa395; }',
+      '@media print { body{background:#fff;padding:0;} .page{border-radius:0;box-shadow:none;max-width:100%;} }',
+      '</style></head><body>',
+      '<div class="page">',
+      '<div class="banner">',
+      '  <div><div class="logo-text">RESTIFY</div><div class="logo-sub">Your Trusted Hotel Booking Partner</div></div>',
+      '  <div style="text-align:right"><div class="tag">E-RECEIPT</div><div class="code-line">No. Transaksi: ' + txCode + '</div></div>',
+      '</div>',
+      '<div class="status-strip">',
+      '  <div>',
+      '    <div style="font-size:10px;color:#70786c;font-weight:700;margin-bottom:5px;">STATUS PEMBAYARAN</div>',
+      '    <div class="badge"><div class="dot"></div>LUNAS / TERBAYAR</div>',
+      '  </div>',
+      '  <div>',
+      '    <div style="font-size:10px;color:#70786c;text-align:right;">TANGGAL DITERBITKAN</div>',
+      '    <div style="font-size:12px;font-weight:700;text-align:right;">' + issuedStr + '</div>',
+      '  </div>',
+      '</div>',
+      '<div class="body">',
+      '<div class="two-col">',
+      '  <div>',
+      '    <div class="sec-head">Detail Pemesan</div>',
+      '    <div class="row"><span class="lbl">Nama</span><span class="val">' + cName + '</span></div>',
+      '    <div class="row"><span class="lbl">Email</span><span class="val">' + cEmail + '</span></div>',
+      '    <div class="row"><span class="lbl">Telepon</span><span class="val">' + cPhone + '</span></div>',
+      '  </div>',
+      '  <div>',
+      '    <div class="sec-head">Detail Reservasi</div>',
+      '    <div class="row"><span class="lbl">Hotel</span><span class="val">' + hotelNm + '</span></div>',
+      '    <div class="row"><span class="lbl">Tipe Kamar</span><span class="val">' + roomTp + '</span></div>',
+      '    <div class="row"><span class="lbl">Check-in</span><span class="val">' + checkInStr + '</span></div>',
+      '    <div class="row"><span class="lbl">Check-out</span><span class="val">' + checkOutStr + '</span></div>',
+      '    <div class="row"><span class="lbl">Durasi</span><span class="val">' + nights + ' Malam</span></div>',
+      '    <div class="row"><span class="lbl">Tamu</span><span class="val">' + guestTxt + '</span></div>',
+      '  </div>',
+      '</div>',
+      '<div class="sec-head">Rincian Pembayaran</div>',
+      '<div class="tbl-wrap">',
+      '  <table>',
+      '    <thead><tr><th>Deskripsi Layanan</th><th>Harga / Malam</th><th>Durasi</th><th>Subtotal</th></tr></thead>',
+      '    <tbody><tr>',
+      '      <td><strong>' + roomTp + '</strong><br><span style="color:#70786c;font-size:11px;">' + hotelNm + '</span></td>',
+      '      <td>' + fmtRp(pricePerNight) + '</td>',
+      '      <td>' + nights + ' Malam</td>',
+      '      <td>' + fmtRp(booking.subtotal) + '</td>',
+      '    </tr></tbody>',
+      '  </table>',
+      '</div>',
+      '<div class="totals">',
+      '  <div class="t-row"><span class="t-lbl">Subtotal</span><span class="t-val">' + fmtRp(booking.subtotal) + '</span></div>',
+      '  <div class="t-row"><span class="t-lbl">Pajak &amp; Biaya (10%)</span><span class="t-val">' + fmtRp(booking.taxAndFee) + '</span></div>',
+      '  <hr class="t-div"/>',
+      '  <div class="grand"><span class="grand-lbl">GRAND TOTAL</span><span class="grand-val">' + fmtRp(booking.total) + '</span></div>',
+      '</div>',
+      '</div>',
+      '<div class="footer">',
+      '  <div class="m1">&#x1F64F; Terima kasih telah memilih Restify! Semoga menginap Anda menyenangkan.</div>',
+      '  <div class="m2">Tunjukkan e-receipt ini kepada resepsionis saat check-in.</div>',
+      '  <hr class="fdiv"/>',
+      '  <div class="legal">Dokumen diterbitkan secara digital oleh sistem Restify. &copy; 2025 Restify. Seluruh hak cipta dilindungi.</div>',
+      '</div>',
+      '</div>',
+      '<script>window.onload=function(){window.print();setTimeout(function(){window.close();},800);}<\/script>',
+      '</body></html>'
+    ].join('\n');
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
+
 
   useEffect(() => {
     if (showReview) {
@@ -313,7 +454,17 @@ function BookingDetail({
         </div>
 
         {}
-        <div className="mt-4 flex flex-col items-center gap-3">
+        <div className="mt-4 flex flex-col items-center gap-3 w-full">
+          {booking.rawStatus !== 'completed' && booking.rawStatus !== 'cancelled' && booking.rawPaymentStatus !== 'failed' && (
+            <button
+              onClick={handleDownloadReceipt}
+              className="w-full bg-white/20 border border-white/30 text-white rounded-xl py-3 text-xs font-black hover:bg-white/30 transition-colors flex items-center justify-center gap-2"
+            >
+              <RiFileTextLine className="text-[14px]" />
+              Unduh Bukti Pembayaran (PDF)
+            </button>
+          )}
+
           {}
           {booking.rawPaymentStatus === 'pending' && booking.rawStatus === 'pending' && (
             <div className="flex w-full gap-3">

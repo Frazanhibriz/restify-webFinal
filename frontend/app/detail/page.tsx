@@ -10,11 +10,14 @@ import { FiClock, FiShield, FiArrowRight } from 'react-icons/fi';
 import { calculateDistance, getCityCenter } from '@/lib/distance';
 import { getFallbackImage } from '@/lib/utils';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useAuth } from '@/context/AuthContext';
+
 
 function HotelDetailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const hotelId = searchParams.get("id");
+  const { user, token } = useAuth();
 
   const [hotelData, setHotelData] = useState<any>(null);
   const [rooms, setRooms] = useState<any[]>([]);
@@ -99,6 +102,20 @@ function HotelDetailContent() {
 
   const handlePayment = async () => {
     if (isPaying) return;
+    
+    // Guard: check if user is logged in
+    if (!token || !user) {
+      toast.error('Anda harus login terlebih dahulu untuk melakukan pemesanan.');
+      router.push('/login');
+      return;
+    }
+    
+    // Guard: only regular users can book
+    if (user.role !== 'user') {
+      toast.error(`Akun ${user.role} tidak dapat melakukan pemesanan. Silakan login dengan akun tamu.`);
+      return;
+    }
+    
     if (!selectedRoomId || !checkIn || !checkOut) {
       toast.error('Harap lengkapi data pemesanan (kamar, tanggal check-in & check-out).');
       return;
@@ -149,10 +166,17 @@ function HotelDetailContent() {
         });
         
     } catch (error: any) {
-        toast.error(error.response?.data?.message || error.message || 'Gagal memproses pembayaran. Pastikan Anda sudah login.');
+        const errMsg = error.response?.data?.message || error.message || 'Gagal memproses pembayaran.';
+        const yourRole = error.response?.data?.your_role;
+        if (yourRole && yourRole !== 'user') {
+            toast.error(`Akses ditolak: Anda login sebagai ${yourRole}. Harap login dengan akun tamu.`);
+        } else {
+            toast.error(errMsg);
+        }
         setIsPaying(false);
     }
   };
+
 
   const handleSubmitReview = async () => {
     try {
@@ -586,6 +610,15 @@ function HotelDetailContent() {
 
                     <button 
                         onClick={() => {
+                            if (!token || !user) {
+                                toast.error('Silakan login terlebih dahulu untuk melakukan pemesanan.');
+                                router.push('/login');
+                                return;
+                            }
+                            if (user.role !== 'user') {
+                                toast.error(`Akun ${user.role} tidak dapat melakukan pemesanan kamar. Gunakan akun tamu.`);
+                                return;
+                            }
                             if (!selectedRoomId) {
                                 toast.warning("Silakan pilih tipe kamar terlebih dahulu di bagian Pilihan Kamar.");
                                 return;

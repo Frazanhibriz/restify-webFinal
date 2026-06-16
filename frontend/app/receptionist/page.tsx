@@ -20,9 +20,12 @@ export default function ReceptionistHomePage() {
     if (!isLoading) {
       if (!user) {
         router.push('/login');
-      } else if (user.role !== 'receptionist') {
+      } else if (user.role === 'admin') {
+        router.push('/admin');
+      } else if (user.role === 'user') {
         router.push('/home');
       }
+      // receptionist is allowed to stay
     }
   }, [user, isLoading, router]);
 

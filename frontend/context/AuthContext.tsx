@@ -24,6 +24,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Helper: set a cookie with optional expiry in days
+function setCookie(name: string, value: string, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+}
+
+// Helper: delete a cookie
+function deleteCookie(name: string) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+}
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -58,13 +69,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setToken(storedToken);
         try {
           const response = await api.get("/profile");
-          setUser(normalizeUser(response.data.user));
+          const normalized = normalizeUser(response.data.user);
+          setUser(normalized);
+          // Sync cookies with fresh profile data for middleware
+          setCookie('auth_token', storedToken);
+          setCookie('user_role', normalized.role);
         } catch (error) {
           console.warn("Failed to load profile", error);
           localStorage.removeItem("token");
+          deleteCookie('auth_token');
+          deleteCookie('user_role');
           setToken(null);
           setUser(null);
         }
+      } else {
+        // No token — clear cookies too
+        deleteCookie('auth_token');
+        deleteCookie('user_role');
       }
       setIsLoading(false);
     };
@@ -73,9 +94,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = (newToken: string, userData: any) => {
+    const normalized = normalizeUser(userData);
     localStorage.setItem("token", newToken);
     setToken(newToken);
-    setUser(normalizeUser(userData));
+    setUser(normalized);
+    // Set cookies so Next.js middleware can read them for route protection
+    setCookie('auth_token', newToken);
+    setCookie('user_role', normalized.role);
   };
 
   const logout = async (skipApiCall = false) => {
@@ -87,6 +112,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Failed to logout on server", error);
     } finally {
       localStorage.removeItem("token");
+      deleteCookie('auth_token');
+      deleteCookie('user_role');
       setToken(null);
       setUser(null);
     }

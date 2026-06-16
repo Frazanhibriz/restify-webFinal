@@ -89,9 +89,12 @@ export default function AdminPage() {
         if (!isLoading) {
             if (!user) {
                 router.push('/login');
-            } else if (user.role !== 'admin') {
+            } else if (user.role === 'receptionist') {
+                router.push('/receptionist');
+            } else if (user.role === 'user') {
                 router.push('/home');
             }
+            // admin is allowed to stay
         }
     }, [user, isLoading, router]);
 
