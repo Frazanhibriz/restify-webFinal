@@ -21,10 +21,10 @@ Project ini dibuat khusus untuk memenuhi kebutuhan **Artefak TUBES 1 Web**.
 ### Frontend
 | Teknologi | Keterangan |
 |---|---|
-| **Next.js 15 (TypeScript)** | Framework React untuk SSR & CSR |
+| **Next.js Proxy** | Server-side route protection berbasis role (Next.js 16+) |
 | **Tailwind CSS + Vanilla CSS** | Styling & design system |
 | **Axios** | HTTP client dengan interceptor token otomatis |
-| **Next.js Middleware** | Server-side route protection berbasis role |
+| **Next.js Proxy Config** | Server-side route protection berbasis role |
 | **Sonner** | Sistem notifikasi toast |
 
 ---
@@ -39,12 +39,12 @@ Project ini dibuat khusus untuk memenuhi kebutuhan **Artefak TUBES 1 Web**.
 - **Role-Based Access Control** (Admin / Resepsionis / Tamu)
 
 ### 🔒 Proteksi Rute Berbasis Peran (Role Guard)
-- **Next.js Middleware** (`middleware.ts`) memproteksi rute di sisi server:
+- **Next.js Proxy** (`proxy.ts`) memproteksi rute di sisi server:
   - `/home/*` → hanya untuk role `user`
   - `/admin/*` → hanya untuk role `admin`
   - `/receptionist/*` → hanya untuk role `receptionist`
 - **Client-side guard** di setiap layout — redirect otomatis jika role salah
-- Cookie `auth_token` + `user_role` disinkronisasi saat login/logout untuk keamanan berlapis
+- Cookie `auth_token` + `user_role` disinkronisasi saat login/logout (dengan flag `Secure` untuk perlindungan)
 - Pesan error yang informatif jika akses ditolak (termasuk role yang dimiliki)
 
 ### 🏨 Pencarian & Detail Hotel
@@ -116,7 +116,7 @@ restify-webFinal/
 │   │   ├── home/                   # Beranda, Riwayat, Favorit, Profil
 │   │   └── receptionist/           # Panel Resepsionis
 │   ├── context/AuthContext.tsx     # State management auth + cookie management
-│   ├── middleware.ts               # Next.js middleware — server-side role guard
+│   ├── proxy.ts                    # Next.js proxy — server-side role guard (Next.js 16+)
 │   ├── lib/                        # Axios instance, notifications, utils
 │   └── types/                      # Tipe TypeScript (grecaptcha, dll.)
 ├── postman/                        # Postman collection pengujian API
@@ -334,16 +334,11 @@ postman/Restify-Hotel-Booking-API-v3.postman_collection.json
 
 ## 📋 Changelog Terbaru
 
-### v2.1.0 — Juni 2025
-- ✅ **Role Guard berlapis**: Next.js middleware (server-side) + client-side guard di setiap layout
-- ✅ **Cookie-based role management**: `auth_token` & `user_role` cookie untuk proteksi middleware
-- ✅ **E-Receipt PDF premium**: Template didesain ulang dengan gradient header, badge status, tabel rincian, dan grand total box — semua data diinject dengan benar (bug template mentah diperbaiki)
-- ✅ **Rating dengan foto ulasan**: User dapat melampirkan foto saat memberikan ulasan
-- ✅ **Fix "Access Denied" saat booking**: Validasi role dilakukan di frontend sebelum API call, dengan pesan error yang informatif
-- ✅ **RoleMiddleware diperbarui**: Selalu load relasi `role` dari DB, logging detail untuk debugging
-- ✅ **Redirect yang benar antar panel**: Admin ke `/admin`, Resepsionis ke `/receptionist`, Tamu ke `/home`
-- ✅ **Tombol PDF hanya tampil saat belum bayar**: Setelah `completed`/`checked_out`, tombol PDF disembunyikan agar tampilan bersih
+### v2.2.0 — Juni 2026 (Optimasi & Perbaikan Keamanan Terbaru)
+- ✅ **Perbaikan Fitur Checkout Mandiri**: Mendaftarkan route API `POST /user/checkout/{id}` yang sebelumnya terlewat di backend (`routes/api.php`), sehingga checkout dari aplikasi mobile berjalan sukses tanpa issue.
+- ✅ **Migrasi Next.js 16 (Turbopack)**: Memperbarui file konvensi dari `middleware.ts` ke `proxy.ts` serta fungsi ekspornya untuk mematuhi regulasi Next.js 16 terbaru dan membersihkan log warning build.
+- ✅ **Pengamanan Transmisi Cookie**: Menambahkan atribut `Secure` pada cookie token otentikasi (`auth_token`) dan cookie peran (`user_role`) di frontend untuk proteksi enkripsi SSL/TLS.
 
 ---
 
-*Dibuat dengan ❤️ untuk TUBES Web — Restify v2.1.0*
+*Dibuat dengan ❤️ untuk TUBES Web — Restify v2.2.0*

@@ -54,6 +54,7 @@ Route::middleware(['auth:sanctum','role:user'])
 
     Route::post('/booking', [BookingController::class,'store']);
     Route::post('/cancel-booking/{id}', [BookingController::class, 'cancel']);
+    Route::post('/checkout/{id}', [BookingController::class, 'checkout']);
     Route::get('/booking-history', [BookingController::class,'history']);
     Route::get('/payment/{id}', [BookingController::class,'paymentDetail']);
     Route::post('/pay/{id}', [BookingController::class,'pay']);

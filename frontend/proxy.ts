@@ -24,7 +24,7 @@ const ROLE_ROUTES: Record<string, string> = {
 // Public routes (no auth required)
 const PUBLIC_ROUTES = ['/', '/login', '/register', '/forgot-password', '/reset-password', '/landing2', '/welcome', '/detail', '/map'];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public routes
