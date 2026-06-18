@@ -148,7 +148,7 @@ export default function HomePage() {
                                 className="flex items-center gap-1 cursor-pointer select-none"
                             >
                                 <h2 className="text-sm font-bold text-black">
-                                    {selectedCity === 'Bandung' ? 'Bandung, Indonesia' : 'Jakarta, Indonesia'}
+                                    {selectedCity}, Indonesia
                                 </h2>
                                 <FiChevronDown className="text-sm text-restify-olive" />
                             </div>
@@ -166,6 +166,18 @@ export default function HomePage() {
                                         className={`w-full text-left px-5 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors ${selectedCity === 'Jakarta' ? 'text-restify-olive' : 'text-gray-700'}`}
                                     >
                                         Jakarta, Indonesia
+                                    </button>
+                                    <button 
+                                        onClick={() => { setSelectedCity('Bali'); setShowCityDropdown(false); }}
+                                        className={`w-full text-left px-5 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors ${selectedCity === 'Bali' ? 'text-restify-olive' : 'text-gray-700'}`}
+                                    >
+                                        Bali, Indonesia
+                                    </button>
+                                    <button 
+                                        onClick={() => { setSelectedCity('Yogyakarta'); setShowCityDropdown(false); }}
+                                        className={`w-full text-left px-5 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors ${selectedCity === 'Yogyakarta' ? 'text-restify-olive' : 'text-gray-700'}`}
+                                    >
+                                        Yogyakarta, Indonesia
                                     </button>
                                 </div>
                             )}

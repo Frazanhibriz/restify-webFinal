@@ -25,6 +25,13 @@ export function getCityCenter(city: string): { latitude: number; longitude: numb
     if (c.includes("jakarta")) {
         return { latitude: -6.2087634, longitude: 106.845599 };
     }
+    if (c.includes("bali")) {
+        return { latitude: -8.6500, longitude: 115.2167 };
+    }
+    if (c.includes("yogyakarta") || c.includes("jogja")) {
+        return { latitude: -7.7956, longitude: 110.3695 };
+    }
     // Default to Bandung center
     return { latitude: -6.9174639, longitude: 107.6191228 };
 }
+
