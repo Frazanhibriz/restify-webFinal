@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setCookie('auth_token', storedToken);
           setCookie('user_role', normalized.role);
         } catch (error) {
-          console.warn("Failed to load profile", error);
+          console.log("No active session or token expired.");
           localStorage.removeItem("token");
           deleteCookie('auth_token');
           deleteCookie('user_role');
