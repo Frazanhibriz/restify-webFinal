@@ -137,6 +137,43 @@ class HotelSeeder extends Seeder
                 'qris_image' => null,
             ],
 
+            [
+                'name' => 'The Trans Luxury Hotel',
+                'address' => 'Jl. Gatot Subroto No.289, Cibangkong, Kec. Batununggal, Kota Bandung, Jawa Barat 40273',
+                'city' => 'Bandung',
+                'latitude' => -6.925800,
+                'longitude' => 107.636900,
+                'description' => 'Hotel bintang 5 kelas dunia di Bandung dengan pelayanan mewah, dekat dengan Trans Studio Mall.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Gym', 'Spa', 'Restaurant', 'Parking Area'],
+                'image' => 'images/HotelImages/The-Trans-Luxury-Hotel.jpeg',
+                'qris_image' => null,
+            ],
+
+            [
+                'name' => 'Hilton Hotel Bandung',
+                'address' => 'Jl. H.O.S. Cokroaminoto No.41-43, Arjuna, Kec. Cicendo, Kota Bandung, Jawa Barat 40172',
+                'city' => 'Bandung',
+                'latitude' => -6.913300,
+                'longitude' => 107.599000,
+                'description' => 'Hotel modern nan elegan dengan kolam renang outdoor yang luas dan pelayanan bintang 5 di pusat Kota Bandung.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Gym', 'Restaurant', 'Meeting Room'],
+                'image' => 'images/HotelImages/Hilton-Bandung.jpg',
+                'qris_image' => null,
+            ],
+
+            [
+                'name' => 'Hotel Savoy Homann Bandung',
+                'address' => 'Jl. Asia Afrika No.112, Cikawao, Kec. Lengkong, Kota Bandung, Jawa Barat 40261',
+                'city' => 'Bandung',
+                'latitude' => -6.921300,
+                'longitude' => 107.610800,
+                'description' => 'Hotel legendaris dengan desain art-deco bersejarah di Jalan Asia Afrika, tempat menginap para tokoh Konferensi Asia Afrika.',
+                'facilities' => ['Wifi', 'Restaurant', 'Cafe', 'Parking Area', 'Laundry'],
+                'image' => 'images/HotelImages/Hotel-Savoy-Homann-Bandung.jpg',
+                'qris_image' => null,
+            ],
+
+
 
             /*
             |--------------------------------------------------------------------------
