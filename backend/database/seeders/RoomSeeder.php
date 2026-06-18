@@ -33,7 +33,7 @@ class RoomSeeder extends Seeder
                         'capacity' => 2,
                         'description' => 'Kamar premium dengan pemandangan kota Bandung yang menakjubkan dan fasilitas bintang lima.',
                         'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast', 'Mini Bar'],
-                        'image' => 'rooms/superior-room.jpg',
+                        'image' => 'rooms/premier-room.jpg',
                     ]);
 
                     // Type 2: Presidential Suite
@@ -45,7 +45,7 @@ class RoomSeeder extends Seeder
                         'capacity' => 4,
                         'description' => 'Suite termewah dengan ruang tamu pribadi, fasilitas premium, dan pelayanan eksklusif.',
                         'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Bathtub', 'Jacuzzi', 'Breakfast', 'Kitchenette'],
-                        'image' => 'rooms/executive-room.jpg',
+                        'image' => 'rooms/presidential-suite.jpg',
                     ]);
                 } else if ($hotel->name === 'Hilton Hotel Bandung') {
                     // Type 1: Deluxe King Room
@@ -57,7 +57,7 @@ class RoomSeeder extends Seeder
                         'capacity' => 2,
                         'description' => 'Kamar deluxe yang luas dengan ranjang King size super nyaman dan interior elegan.',
                         'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast', 'Work Desk'],
-                        'image' => 'rooms/deluxe-room.jpg',
+                        'image' => 'rooms/deluxe-king.jpg',
                     ]);
 
                     // Type 2: Executive Suite
@@ -69,7 +69,7 @@ class RoomSeeder extends Seeder
                         'capacity' => 3,
                         'description' => 'Suite eksekutif dengan akses ke club lounge, ruang tamu terpisah, dan kamar mandi marmer mewah.',
                         'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Bathtub', 'Breakfast', 'Executive Lounge Access'],
-                        'image' => 'rooms/executive-room.jpg',
+                        'image' => 'rooms/executive-suite.jpg',
                     ]);
                 } else if ($hotel->name === 'Hotel Savoy Homann Bandung') {
                     // Type 1: Homann Executive Room
@@ -81,7 +81,7 @@ class RoomSeeder extends Seeder
                         'capacity' => 2,
                         'description' => 'Kamar bergaya art-deco klasik dengan sentuhan modern untuk kenyamanan ekstra selama menginap.',
                         'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast', 'Coffee Maker'],
-                        'image' => 'rooms/deluxe-room.jpg',
+                        'image' => 'rooms/homann-executive.jpg',
                     ]);
 
                     // Type 2: Homann Suite
@@ -93,7 +93,7 @@ class RoomSeeder extends Seeder
                         'capacity' => 3,
                         'description' => 'Suite luas bersejarah dengan ornamen klasik art-deco yang elegan dan ruang duduk terpisah.',
                         'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Bathtub', 'Breakfast', 'Sofa Bed'],
-                        'image' => 'rooms/superior-room.jpg',
+                        'image' => 'rooms/homann-suite.jpg',
                     ]);
                 } else {
                     // Type 1: Deluxe Room, 2 kamar

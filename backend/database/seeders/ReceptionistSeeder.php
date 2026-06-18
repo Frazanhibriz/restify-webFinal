@@ -63,6 +63,21 @@ class ReceptionistSeeder extends Seeder
                 'email' => 'receptionist.setiabudi@gmail.com',
             ],
 
+            'The Trans Luxury Hotel' => [
+                'name' => 'Receptionist Trans Luxury',
+                'email' => 'receptionist.transluxury@gmail.com',
+            ],
+
+            'Hilton Hotel Bandung' => [
+                'name' => 'Receptionist Hilton',
+                'email' => 'receptionist.hilton@gmail.com',
+            ],
+
+            'Hotel Savoy Homann Bandung' => [
+                'name' => 'Receptionist Savoy Homann',
+                'email' => 'receptionist.savoyhomann@gmail.com',
+            ],
+
             
             'Menteng City Hotel' => [
                 'name' => 'Receptionist Menteng City',

@@ -12,7 +12,7 @@ class ReceptionistSeeder extends Seeder
     public function run(): void
     {
         $receptionists = [
-            // BANDUNG
+            
             'Flores Gallery Hotel' => [
                 'name' => 'Receptionist Flores Gallery',
                 'email' => 'receptionist.flores@gmail.com',
@@ -63,7 +63,22 @@ class ReceptionistSeeder extends Seeder
                 'email' => 'receptionist.setiabudi@gmail.com',
             ],
 
-            // JAKARTA
+            'The Trans Luxury Hotel' => [
+                'name' => 'Receptionist Trans Luxury',
+                'email' => 'receptionist.transluxury@gmail.com',
+            ],
+
+            'Hilton Hotel Bandung' => [
+                'name' => 'Receptionist Hilton',
+                'email' => 'receptionist.hilton@gmail.com',
+            ],
+
+            'Hotel Savoy Homann Bandung' => [
+                'name' => 'Receptionist Savoy Homann',
+                'email' => 'receptionist.savoyhomann@gmail.com',
+            ],
+
+            
             'Menteng City Hotel' => [
                 'name' => 'Receptionist Menteng City',
                 'email' => 'receptionist.mentengcity@gmail.com',
