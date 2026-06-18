@@ -6,7 +6,7 @@ Project ini dibuat khusus untuk memenuhi kebutuhan **Artefak TUBES 1 Web**.
 
 ---
 
-## 🚀 Tech Stack
+## Tech Stack
 
 ### Backend
 | Teknologi | Keterangan |
@@ -29,16 +29,16 @@ Project ini dibuat khusus untuk memenuhi kebutuhan **Artefak TUBES 1 Web**.
 
 ---
 
-## ✨ Fitur Utama
+## Fitur Utama
 
-### 👤 Manajemen Pengguna & Autentikasi
+### Manajemen Pengguna & Autentikasi
 - **Registrasi & Login** dengan proteksi Google reCAPTCHA v3
 - **Lupa Kata Sandi** via OTP email (integrasi n8n workflow)
 - **Edit Profil** — nama, email, nomor telepon, foto profil
 - **Hapus Akun Mandiri** — user dapat menghapus akunnya sendiri secara aman
 - **Role-Based Access Control** (Admin / Resepsionis / Tamu)
 
-### 🔒 Proteksi Rute Berbasis Peran (Role Guard)
+### Proteksi Rute Berbasis Peran (Role Guard)
 - **Next.js Proxy** (`proxy.ts`) memproteksi rute di sisi server:
   - `/home/*` → hanya untuk role `user`
   - `/admin/*` → hanya untuk role `admin`
@@ -47,25 +47,25 @@ Project ini dibuat khusus untuk memenuhi kebutuhan **Artefak TUBES 1 Web**.
 - Cookie `auth_token` + `user_role` disinkronisasi saat login/logout (dengan flag `Secure` untuk perlindungan)
 - Pesan error yang informatif jika akses ditolak (termasuk role yang dimiliki)
 
-### 🏨 Pencarian & Detail Hotel
+### Pencarian & Detail Hotel
 - Daftar hotel dengan filter lokasi, harga, dan rating
 - Halaman detail hotel — galeri foto, fasilitas, tipe kamar tersedia
 - Peta lokasi hotel
 - Fitur Favorit (simpan hotel ke daftar favorit)
 
-### 📅 Pemesanan Kamar (Booking)
+### Pemesanan Kamar (Booking)
 - Pilih tipe kamar, tanggal check-in/check-out, jumlah tamu, extra bed
 - Validasi ketersediaan kamar real-time (mencegah double booking)
 - Auto-cancel pemesanan yang tidak dibayar dalam **15 menit**
-- Status tracking pemesanan: `Pending → Confirmed → Checked-In → Completed`
+- Status tracking pemesanan: `Pending -> Confirmed -> Checked-In -> Completed`
 
-### 💳 Pembayaran (Midtrans Snap)
+### Pembayaran (Midtrans Snap)
 - Popup Midtrans Snap langsung di halaman booking
 - Mendukung simulasi Virtual Account, Transfer Bank, dll.
 - Webhook otomatis memperbarui status pembayaran
 - Validasi bahwa hanya akun dengan role `user` yang dapat melakukan pembayaran
 
-### 🧾 Bukti Pembayaran (E-Receipt PDF)
+### Bukti Pembayaran (E-Receipt PDF)
 - Tombol **Unduh PDF** tersedia di halaman riwayat pemesanan (kondisi `paid`)
 - Template PDF premium dengan desain profesional:
   - Header gradient olive dengan kode transaksi
@@ -75,25 +75,25 @@ Project ini dibuat khusus untuk memenuhi kebutuhan **Artefak TUBES 1 Web**.
   - Footer dengan pesan terima kasih dan informasi legal
 - Data diinject secara dinamis (tidak ada template mentah)
 
-### ⭐ Rating & Ulasan
+### Rating & Ulasan
 - Beri rating bintang (1-5) dan teks ulasan setelah check-out
 - **Upload foto ulasan** langsung dari form rating
 - Hapus/ubah ulasan yang sudah diberikan
 - Rating ditampilkan di halaman detail hotel
 
-### 🛎️ Panel Resepsionis
+### Panel Resepsionis
 - Dashboard statistik: pesanan menunggu, belum check-in, sedang check-in
 - Kelola reservasi: konfirmasi, proses check-in, selesaikan check-out
 - Manajemen data kamar hotel sendiri
 
-### 🔧 Panel Admin
+### Panel Admin
 - Dashboard statistik: total hotel, kamar, pengguna
 - CRUD Hotel & Kamar
 - CRUD Pengguna (Admin, Resepsionis, Tamu)
 
 ---
 
-## 📁 Struktur Folder Utama
+## Struktur Folder Utama
 
 ```text
 restify-webFinal/
@@ -127,7 +127,7 @@ restify-webFinal/
 
 ---
 
-## 🛠️ Persyaratan Perangkat Lunak
+## Persyaratan Perangkat Lunak
 
 Pastikan komputer Anda telah terinstal:
 - **PHP** ≥ 8.2 (sesuai kebutuhan Laravel 12)
@@ -139,7 +139,7 @@ Pastikan komputer Anda telah terinstal:
 
 ---
 
-## ⚙️ Langkah Menjalankan Aplikasi
+## Langkah Menjalankan Aplikasi
 
 ### Langkah 1: Setup Database PostgreSQL
 
@@ -188,7 +188,7 @@ MIDTRANS_SERVER_KEY=server_key_sandbox_anda
 MIDTRANS_CLIENT_KEY=client_key_sandbox_anda
 
 # Google reCAPTCHA v3 (sudah terkonfigurasi untuk localhost)
-RECAPTCHA_SECRET_KEY=secret_key_recaptcha_v3_anda
+RECAPTCHA_SECRET_KEY=6Le_NQktAAAAALvA_ZqWeLthqxdj7rvNtNQt2voF
 ```
 
 ```bash
@@ -224,7 +224,7 @@ Saat pertama kali buka browser, **logout dulu** jika sudah pernah login sebelumn
 
 ---
 
-## 🔐 Data Akun Pengujian
+## Data Akun Pengujian
 
 ### 1. Admin (Manajer Utama)
 - **Akses**: CRUD hotel, kamar, pengguna; monitor semua pemesanan global
@@ -248,7 +248,7 @@ Saat pertama kali buka browser, **logout dulu** jika sudah pernah login sebelumn
 
 ---
 
-## 🛡️ Fitur Keamanan & Pembayaran
+## Fitur Keamanan & Pembayaran
 
 ### Google reCAPTCHA v3
 Registrasi dan login dilindungi dari bot. Kunci site key & secret key untuk `localhost` sudah terkonfigurasi. Tidak diperlukan konfigurasi tambahan untuk pengujian lokal.
@@ -269,7 +269,7 @@ https://xxxx.ngrok-free.app/api/midtrans/callback
 
 ---
 
-## 📧 Konfigurasi Workflow n8n (Lupa Kata Sandi)
+## Konfigurasi Workflow n8n (Lupa Kata Sandi)
 
 ### Langkah 1: Install & Jalankan n8n
 ```bash
@@ -304,7 +304,7 @@ $response = Http::post('http://localhost:5678/webhook/YOUR_PRODUCTION_ID', [
 
 ---
 
-## 🧪 Pengujian API via Postman
+## Pengujian API via Postman
 
 Berkas Postman Collection tersedia di:
 ```
@@ -318,7 +318,7 @@ postman/Restify-Hotel-Booking-API-v3.postman_collection.json
 
 ---
 
-## ⚡ Pemecahan Masalah (Troubleshooting)
+## Pemecahan Masalah (Troubleshooting)
 
 | Masalah | Solusi |
 |---|---|
@@ -332,13 +332,13 @@ postman/Restify-Hotel-Booking-API-v3.postman_collection.json
 
 ---
 
-## 📋 Changelog Terbaru
+## Changelog Terbaru
 
 ### v2.2.0 — Juni 2026 (Optimasi & Perbaikan Keamanan Terbaru)
-- ✅ **Perbaikan Fitur Checkout Mandiri**: Mendaftarkan route API `POST /user/checkout/{id}` yang sebelumnya terlewat di backend (`routes/api.php`), sehingga checkout dari aplikasi mobile berjalan sukses tanpa issue.
-- ✅ **Migrasi Next.js 16 (Turbopack)**: Memperbarui file konvensi dari `middleware.ts` ke `proxy.ts` serta fungsi ekspornya untuk mematuhi regulasi Next.js 16 terbaru dan membersihkan log warning build.
-- ✅ **Pengamanan Transmisi Cookie**: Menambahkan atribut `Secure` pada cookie token otentikasi (`auth_token`) dan cookie peran (`user_role`) di frontend untuk proteksi enkripsi SSL/TLS.
+- **Perbaikan Fitur Checkout Mandiri**: Mendaftarkan route API `POST /user/checkout/{id}` yang sebelumnya terlewat di backend (`routes/api.php`), sehingga checkout dari aplikasi mobile berjalan sukses tanpa issue.
+- **Migrasi Next.js 16 (Turbopack)**: Memperbarui file konvensi dari `middleware.ts` ke `proxy.ts` serta fungsi ekspornya untuk mematuhi regulasi Next.js 16 terbaru dan membersihkan log warning build.
+- **Pengamanan Transmisi Cookie**: Menambahkan atribut `Secure` pada cookie token otentikasi (`auth_token`) dan cookie peran (`user_role`) di frontend untuk proteksi enkripsi SSL/TLS.
 
 ---
 
-*Dibuat dengan ❤️ untuk TUBES Web — Restify v2.2.0*
+*Dibuat untuk TUBES Web — Restify v2.2.0*
