@@ -240,6 +240,129 @@ class HotelSeeder extends Seeder
                 'image' => 'hotels/kuningan-grand.jpg',
                 'qris_image' => null,
             ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | BALI HOTELS
+            |--------------------------------------------------------------------------
+            */
+            [
+                'name' => 'Ayana Resort Bali',
+                'address' => 'Jl. Karang Mas Sejahtera, Jimbaran, Kec. Kuta Selatan, Kabupaten Badung, Bali 80364',
+                'city' => 'Bali',
+                'latitude' => -8.766300,
+                'longitude' => 115.148100,
+                'description' => 'Resort mewah di atas tebing Jimbaran dengan pemandangan sunset Samudra Hindia yang spektakuler.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Gym', 'Spa', 'Private Beach', 'Restaurant'],
+                'image' => 'hotels/ayana-resort.jpg',
+                'qris_image' => null,
+            ],
+            [
+                'name' => 'The Seminyak Beach Resort',
+                'address' => 'Jl. Kayu Aya, Seminyak Beach, Kuta, Kabupaten Badung, Bali 80361',
+                'city' => 'Bali',
+                'latitude' => -8.690800,
+                'longitude' => 115.150800,
+                'description' => 'Resort bintang 5 tepi pantai di Seminyak yang menawarkan kemewahan modern dan pemandangan laut indah.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Restaurant', 'Spa', 'Bar', 'Beach Access'],
+                'image' => 'hotels/seminyak-beach.jpg',
+                'qris_image' => null,
+            ],
+            [
+                'name' => 'Ubud Hanging Gardens',
+                'address' => 'Banjar Susut, Desa Buahan, Kec. Payangan, Kabupaten Gianyar, Bali 80572',
+                'city' => 'Bali',
+                'latitude' => -8.401200,
+                'longitude' => 115.263500,
+                'description' => 'Resort tersembunyi di hutan Ubud dengan kolam renang infinity bertingkat ikonik di tengah lembah hijau.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Taman', 'Spa', 'Restaurant', 'Jungle View'],
+                'image' => 'hotels/hanging-gardens.jpg',
+                'qris_image' => null,
+            ],
+            [
+                'name' => 'Nusa Dua Beach Hotel',
+                'address' => 'Kawasan Pariwisata Nusa Dua Lot North 4, Nusa Dua, Bali 80363',
+                'city' => 'Bali',
+                'latitude' => -8.796300,
+                'longitude' => 115.231500,
+                'description' => 'Hotel bergaya istana Bali dengan akses langsung ke pantai berpasir putih Nusa Dua yang tenang.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Playground', 'Gym', 'Restaurant', 'Tennis Court'],
+                'image' => 'hotels/nusa-dua-beach.jpg',
+                'qris_image' => null,
+            ],
+            [
+                'name' => 'Kuta Heritage Hotel',
+                'address' => 'Jl. Pantai Kuta, Kuta, Kabupaten Badung, Bali 80361',
+                'city' => 'Bali',
+                'latitude' => -8.722400,
+                'longitude' => 115.169800,
+                'description' => 'Hotel butik berkonsep selancar retro-modern di seberang Pantai Kuta, ideal untuk liburan berjiwa muda.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Rooftop Bar', 'Restaurant', 'Gym'],
+                'image' => 'hotels/kuta-heritage.jpg',
+                'qris_image' => null,
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | YOGYAKARTA HOTELS
+            |--------------------------------------------------------------------------
+            */
+            [
+                'name' => 'The Phoenix Hotel Yogyakarta',
+                'address' => 'Jl. Jend. Sudirman No.9, Cokrodiningratan, Kec. Jetis, Kota Yogyakarta, DIY 55233',
+                'city' => 'Yogyakarta',
+                'latitude' => -7.782800,
+                'longitude' => 110.368800,
+                'description' => 'Hotel butik bernuansa warisan kolonial dan Jawa klasik yang elegan di jantung kota Yogyakarta.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Gym', 'Spa', 'Restaurant', 'Meeting Room'],
+                'image' => 'hotels/phoenix-yogyakarta.jpg',
+                'qris_image' => null,
+            ],
+            [
+                'name' => 'Amanjiwo Resort',
+                'address' => 'Ds. Majaksingi, Borobudur, Magelang, Jawa Tengah (Area Yogyakarta)',
+                'city' => 'Yogyakarta',
+                'latitude' => -7.618600,
+                'longitude' => 110.198900,
+                'description' => 'Resort ultra-mewah berdesain candi batu dengan pemandangan langsung ke Candi Borobudur dan Bukit Menoreh.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Spa', 'Restaurant', 'Library', 'Private Tour'],
+                'image' => 'hotels/amanjiwo.jpg',
+                'qris_image' => null,
+            ],
+            [
+                'name' => 'Hyatt Regency Yogyakarta',
+                'address' => 'Jl. Palagan Tentara Pelajar, Sariharjo, Kec. Ngaglik, Kabupaten Sleman, DIY 55581',
+                'city' => 'Yogyakarta',
+                'latitude' => -7.737100,
+                'longitude' => 110.373700,
+                'description' => 'Resort megah seluas 22 hektar dengan lapangan golf 9-hole, taman tropis rindang, dan kolam renang bernuansa candi.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Golf Course', 'Gym', 'Restaurant', 'Tennis Court'],
+                'image' => 'hotels/hyatt-regency.jpg',
+                'qris_image' => null,
+            ],
+            [
+                'name' => 'Grand Ambarrukmo Yogyakarta',
+                'address' => 'Jl. Laksda Adisucipto No.82, Ambarukmo, Caturtunggal, Depok, Sleman, DIY 55281',
+                'city' => 'Yogyakarta',
+                'latitude' => -7.782500,
+                'longitude' => 110.400500,
+                'description' => 'Hotel modern bintang 4 yang berlokasi strategis di depan Plaza Ambarrukmo dengan fasilitas lengkap.',
+                'facilities' => ['Wifi', 'Kolam Renang', 'Gym', 'Restaurant', 'Lounge', 'Sky Bar'],
+                'image' => 'hotels/grand-ambarrukmo.jpg',
+                'qris_image' => null,
+            ],
+            [
+                'name' => 'Malioboro Heritage Hotel',
+                'address' => 'Jl. Malioboro No.60, Sosromenduran, Gedong Tengen, Kota Yogyakarta, DIY 55271',
+                'city' => 'Yogyakarta',
+                'latitude' => -7.794200,
+                'longitude' => 110.365700,
+                'description' => 'Hotel butik bernuansa vintage Jawa-Kolonial dengan akses berjalan kaki ke Jalan Malioboro dan Stasiun Tugu.',
+                'facilities' => ['Wifi', 'Cafe', 'Restaurant', 'Parking Area', '24 Hours Front Desk'],
+                'image' => 'hotels/malioboro-heritage.jpg',
+                'qris_image' => null,
+            ],
+
         ];
 
         foreach ($hotels as $hotel) {

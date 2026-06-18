@@ -200,8 +200,265 @@ class RoomSeeder extends Seeder
                         'Bathtub',
                         'City View'
                     ],
-                    'image' => 'rooms/executive-room.jpg',
                 ]);
+            }
+
+            if ($hotel->city === 'Bali') {
+                if ($hotel->name === 'Ayana Resort Bali') {
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Ocean View Suite',
+                            'price' => 3200000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Suite mewah dengan pemandangan Samudra Hindia yang memukau langsung dari kamar Anda.',
+                            'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast', 'Mini Bar', 'Ocean View'],
+                            'image' => 'rooms/premier-room.jpg',
+                        ]);
+                    }
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Cliff Pool Villa',
+                            'price' => 5500000,
+                            'status' => 'available',
+                            'capacity' => 3,
+                            'description' => 'Villa eksklusif di atas tebing dengan kolam renang pribadi dan akses premium.',
+                            'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Bathtub', 'Jacuzzi', 'Breakfast', 'Private Pool'],
+                            'image' => 'rooms/presidential-suite.jpg',
+                        ]);
+                    }
+                } else if ($hotel->name === 'The Seminyak Beach Resort') {
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Beach Room',
+                            'price' => 2100000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Kamar modern dengan pemandangan taman tropis dan akses mudah langsung ke pantai Seminyak.',
+                            'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast', 'Work Desk'],
+                            'image' => 'rooms/deluxe-king.jpg',
+                        ]);
+                    }
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Ocean Suite',
+                            'price' => 3800000,
+                            'status' => 'available',
+                            'capacity' => 3,
+                            'description' => 'Suite pantai mewah dengan teras pribadi menghadap langsung ke deburan ombak pantai Seminyak.',
+                            'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Bathtub', 'Breakfast', 'Sea View'],
+                            'image' => 'rooms/executive-suite.jpg',
+                        ]);
+                    }
+                } else if ($hotel->name === 'Ubud Hanging Gardens') {
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Riverside Villa',
+                            'price' => 2800000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Villa pribadi di tepian sungai Ayung dengan dikelilingi hutan hujan Ubud yang asri.',
+                            'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast', 'Jungle View'],
+                            'image' => 'rooms/homann-suite.jpg',
+                        ]);
+                    }
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Panoramic Pool Villa',
+                            'price' => 4200000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Villa mewah dengan kolam renang infinity pribadi yang menyuguhkan pemandangan lembah Ubud.',
+                            'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Bathtub', 'Breakfast', 'Private Pool'],
+                            'image' => 'rooms/presidential-suite.jpg',
+                        ]);
+                    }
+                } else if ($hotel->name === 'Nusa Dua Beach Hotel') {
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Deluxe Room Bali',
+                            'price' => 1350000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Kamar deluxe bernuansa tradisional Bali yang hangat dengan pemandangan taman tropis.',
+                            'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast'],
+                            'image' => 'rooms/deluxe-room.jpg',
+                        ]);
+                    }
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Palace Club Room',
+                            'price' => 2250000,
+                            'status' => 'available',
+                            'capacity' => 3,
+                            'description' => 'Kamar premium dengan ornamen mewah, akses eksklusif ke Palace Club lounge dan layanan butler.',
+                            'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Bathtub', 'Breakfast', 'Club Access'],
+                            'image' => 'rooms/homann-executive.jpg',
+                        ]);
+                    }
+                } else if ($hotel->name === 'Kuta Heritage Hotel') {
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Superior Heritage',
+                            'price' => 650000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Kamar nyaman bernuansa bahari dengan fasilitas modern lengkap di pusat keramaian Kuta.',
+                            'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast'],
+                            'image' => 'rooms/standard-room.jpg',
+                        ]);
+                    }
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Deluxe Heritage',
+                            'price' => 850000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Kamar deluxe yang modern dan luas dengan desain bertema selancar yang artistik.',
+                            'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Breakfast'],
+                            'image' => 'rooms/deluxe-room.jpg',
+                        ]);
+                    }
+                }
+            }
+
+            if ($hotel->city === 'Yogyakarta') {
+                if ($hotel->name === 'The Phoenix Hotel Yogyakarta') {
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Legacy Deluxe',
+                            'price' => 1050000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Kamar klasik bergaya kolonial-Jawa dengan pemandangan kolam renang yang menawan.',
+                            'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast', 'Heritage Style'],
+                            'image' => 'rooms/homann-executive.jpg',
+                        ]);
+                    }
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Phoenix Suite',
+                            'price' => 1950000,
+                            'status' => 'available',
+                            'capacity' => 3,
+                            'description' => 'Suite megah dengan perpaduan dekorasi klasik timur dan barat, ruang santai luas, dan fasilitas premium.',
+                            'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Bathtub', 'Breakfast', 'Living Area'],
+                            'image' => 'rooms/homann-suite.jpg',
+                        ]);
+                    }
+                } else if ($hotel->name === 'Amanjiwo Resort') {
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Garden Pool Suite',
+                            'price' => 4800000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Suite pribadi dengan taman asri, kolam renang pribadi, dan pemandangan persawahan Borobudur.',
+                            'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast', 'Private Pool', 'Borobudur View'],
+                            'image' => 'rooms/premier-room.jpg',
+                        ]);
+                    }
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Borobudur Suite',
+                            'price' => 6500000,
+                            'status' => 'available',
+                            'capacity' => 3,
+                            'description' => 'Suite paling mewah dengan kubah batu, pemandangan langsung ke stupa Candi Borobudur, dan pelayanan eksklusif.',
+                            'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Bathtub', 'Breakfast', 'Butler Service'],
+                            'image' => 'rooms/presidential-suite.jpg',
+                        ]);
+                    }
+                } else if ($hotel->name === 'Hyatt Regency Yogyakarta') {
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Regency Garden',
+                            'price' => 1150000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Kamar modern dengan pemandangan taman tropis dan lapangan golf Hyatt yang luas.',
+                            'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast', 'Garden View'],
+                            'image' => 'rooms/deluxe-king.jpg',
+                        ]);
+                    }
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Regency Suite',
+                            'price' => 2300000,
+                            'status' => 'available',
+                            'capacity' => 3,
+                            'description' => 'Suite mewah dengan balkon pribadi menghadap ke Gunung Merapi dan lapangan golf.',
+                            'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Bathtub', 'Breakfast', 'Golf View'],
+                            'image' => 'rooms/executive-suite.jpg',
+                        ]);
+                    }
+                } else if ($hotel->name === 'Grand Ambarrukmo Yogyakarta') {
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Deluxe Ambarrukmo',
+                            'price' => 780000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Kamar deluxe bergaya kontemporer yang nyaman dengan fasilitas bisnis lengkap.',
+                            'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water', 'Breakfast'],
+                            'image' => 'rooms/deluxe-room.jpg',
+                        ]);
+                    }
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Grand Deluxe',
+                            'price' => 980000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Kamar grand deluxe dengan area duduk lebih luas dan desain minimalis modern.',
+                            'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Mini Bar', 'Breakfast'],
+                            'image' => 'rooms/superior-room.jpg',
+                        ]);
+                    }
+                } else if ($hotel->name === 'Malioboro Heritage Hotel') {
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Standard Malioboro',
+                            'price' => 480000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Kamar standard yang nyaman dan bersih di pusat kota Yogyakarta, sangat dekat dengan jalan Malioboro.',
+                            'facilities' => ['AC', 'Wifi', 'Smart TV', 'Hot Water'],
+                            'image' => 'rooms/standard-room.jpg',
+                        ]);
+                    }
+                    for ($i = 1; $i <= 2; $i++) {
+                        Room::create([
+                            'hotel_id' => $hotel->id,
+                            'room_type' => 'Superior Malioboro',
+                            'price' => 580000,
+                            'status' => 'available',
+                            'capacity' => 2,
+                            'description' => 'Kamar superior dengan fasilitas lebih lengkap dan desain klasik vintage Jawa.',
+                            'facilities' => ['AC', 'Wifi', 'Netflix TV', 'Breakfast'],
+                            'image' => 'rooms/superior-room.jpg',
+                        ]);
+                    }
+                }
             }
         }
     }

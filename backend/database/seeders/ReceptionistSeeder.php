@@ -103,6 +103,47 @@ class ReceptionistSeeder extends Seeder
                 'name' => 'Receptionist Kuningan Grand',
                 'email' => 'receptionist.kuningan@gmail.com',
             ],
+
+            'Ayana Resort Bali' => [
+                'name' => 'Receptionist Ayana Resort',
+                'email' => 'receptionist.ayanaresort@gmail.com',
+            ],
+            'The Seminyak Beach Resort' => [
+                'name' => 'Receptionist Seminyak Beach',
+                'email' => 'receptionist.seminyakbeach@gmail.com',
+            ],
+            'Ubud Hanging Gardens' => [
+                'name' => 'Receptionist Ubud Hanging',
+                'email' => 'receptionist.ubudhanging@gmail.com',
+            ],
+            'Nusa Dua Beach Hotel' => [
+                'name' => 'Receptionist Nusa Dua Beach',
+                'email' => 'receptionist.nusaduabeach@gmail.com',
+            ],
+            'Kuta Heritage Hotel' => [
+                'name' => 'Receptionist Kuta Heritage',
+                'email' => 'receptionist.kutaheritage@gmail.com',
+            ],
+            'The Phoenix Hotel Yogyakarta' => [
+                'name' => 'Receptionist The Phoenix',
+                'email' => 'receptionist.thephoenix@gmail.com',
+            ],
+            'Amanjiwo Resort' => [
+                'name' => 'Receptionist Amanjiwo',
+                'email' => 'receptionist.amanjiwo@gmail.com',
+            ],
+            'Hyatt Regency Yogyakarta' => [
+                'name' => 'Receptionist Hyatt Regency',
+                'email' => 'receptionist.hyattregency@gmail.com',
+            ],
+            'Grand Ambarrukmo Yogyakarta' => [
+                'name' => 'Receptionist Grand Ambarrukmo',
+                'email' => 'receptionist.grandambarrukmo@gmail.com',
+            ],
+            'Malioboro Heritage Hotel' => [
+                'name' => 'Receptionist Malioboro Heritage',
+                'email' => 'receptionist.malioboroheritage@gmail.com',
+            ],
         ];
 
         foreach ($receptionists as $hotelName => $receptionist) {
