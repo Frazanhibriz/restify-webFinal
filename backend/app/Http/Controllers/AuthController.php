@@ -257,9 +257,18 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
+        if (Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Password baru tidak boleh sama dengan password lama'
+            ], 400);
+        }
+
         $user->update([
             'password' => Hash::make($request->password)
         ]);
+
+        // Revoke all active tokens (sessions) on all devices
+        $user->tokens()->delete();
 
         DB::table('password_reset_tokens')
             ->where('email', $request->email)

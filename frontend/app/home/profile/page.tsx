@@ -217,14 +217,6 @@ export default function ProfilePage() {
             >
               Logout
             </button>
-
-            <button
-              onClick={() => setActiveTab('deleteAccount')}
-              className={`w-full py-3.5 rounded-full font-bold text-[14px] transition-all shadow-sm
-                ${activeTab === 'deleteAccount' ? 'bg-red-700 text-white' : 'bg-red-400 text-white hover:bg-red-500'}`}
-            >
-              Hapus Akun
-            </button>
           </div>
         </div>
 
@@ -279,13 +271,23 @@ export default function ProfilePage() {
                   className="w-full bg-gray-50 border border-transparent px-4 py-3 rounded-xl text-lg font-medium text-gray-400 outline-none tracking-widest cursor-not-allowed" />
               </div>
               <div className="flex justify-between items-center mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowPasswordModal(true)}
-                  className="text-[11px] text-[#5E6B52] font-black hover:underline uppercase tracking-widest"
-                >
-                  Ganti Password
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordModal(true)}
+                    className="text-[11px] text-[#5E6B52] font-black hover:underline uppercase tracking-widest"
+                  >
+                    Ganti Password
+                  </button>
+                  <span className="text-gray-300 text-xs select-none">|</span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('deleteAccount')}
+                    className="text-[11px] text-red-500 font-black hover:underline uppercase tracking-widest"
+                  >
+                    Hapus Akun
+                  </button>
+                </div>
                 <button type="submit" disabled={isUpdatingProfile}
                   className="bg-[#5E6B52] text-white px-6 py-2.5 rounded-full text-xs font-black hover:bg-[#4a5440] transition-colors shadow-sm disabled:opacity-50"
                 >

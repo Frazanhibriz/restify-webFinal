@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -111,7 +111,9 @@ function BookingDetail({
   const [reviewPhotoPreview, setReviewPhotoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showCheckoutConfirm, setShowCheckoutConfirm] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [removeImage, setRemoveImage] = useState(false);
 
   const { user } = useAuth();
@@ -292,6 +294,21 @@ function BookingDetail({
       onBack();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Gagal membatalkan booking.");
+    }
+  };
+
+  const handleCheckout = async () => {
+    if (isCheckingOut) return;
+    setIsCheckingOut(true);
+    try {
+      await api.post(`/user/checkout/${booking.id}`);
+      toast.success("Checkout mandiri berhasil!");
+      onActionSuccess();
+      onBack();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Gagal melakukan checkout.");
+    } finally {
+      setIsCheckingOut(false);
     }
   };
 
@@ -518,6 +535,27 @@ function BookingDetail({
             </div>
           )}
 
+          {booking.rawStatus === 'checked_in' && (
+            <div className="flex flex-col w-full gap-3">
+              <div className="flex items-center justify-between bg-white/15 rounded-xl px-4 py-3 text-xs">
+                <span className="opacity-80">Kode Transaksi:</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono font-bold tracking-wider">{showCode ? booking.transactionCode : '••••••'}</span>
+                  <button onClick={() => setShowCode(!showCode)}>
+                    {showCode ? <RiEyeOffLine className="text-[14px]" /> : <RiEyeLine className="text-[14px]" />}
+                  </button>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowCheckoutConfirm(true)}
+                disabled={isCheckingOut}
+                className={`w-full bg-white text-[#558B6E] rounded-xl py-3 text-xs font-black hover:bg-gray-50 transition-colors shadow-sm ${isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {isCheckingOut ? 'Memproses Checkout...' : 'Checkout Mandiri'}
+              </button>
+            </div>
+          )}
+
           {}
           {booking.rawStatus === 'completed' && (
             <>
@@ -655,6 +693,38 @@ function BookingDetail({
                 className="flex-1 py-4 bg-[#E34A42] text-white rounded-2xl font-black text-xs hover:bg-[#c93f38] transition-colors shadow-lg shadow-red-500/20"
               >
                 Ya, Batalkan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCheckoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setShowCheckoutConfirm(false)} />
+          <div className="relative w-full max-w-sm bg-white rounded-[32px] shadow-2xl p-8 animate-fade-in-up text-center border border-gray-100">
+            <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-3xl select-none">🔑</span>
+            </div>
+            <h3 className="text-xl font-black text-gray-800 mb-2">Checkout Mandiri</h3>
+            <p className="text-gray-500 text-xs leading-relaxed mb-8">
+              Apakah Anda benar-benar yakin ingin melakukan checkout dari <span className="font-bold text-[#5E6B52]">{booking.hotelName}</span> sekarang? Tindakan ini akan mengakhiri masa menginap Anda.
+            </p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setShowCheckoutConfirm(false)}
+                className="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold text-xs hover:bg-gray-200 transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={() => {
+                  setShowCheckoutConfirm(false);
+                  handleCheckout();
+                }}
+                className="flex-1 py-4 bg-[#558B6E] text-white rounded-2xl font-black text-xs hover:bg-[#436e57] transition-colors shadow-lg shadow-emerald-500/20"
+              >
+                Ya, Checkout
               </button>
             </div>
           </div>

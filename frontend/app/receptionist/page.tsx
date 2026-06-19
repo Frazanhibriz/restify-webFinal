@@ -25,7 +25,6 @@ export default function ReceptionistHomePage() {
       } else if (user.role === 'user') {
         router.push('/home');
       }
-      // receptionist is allowed to stay
     }
   }, [user, isLoading, router]);
 
@@ -92,21 +91,16 @@ export default function ReceptionistHomePage() {
 
   return (
     <div className="min-h-screen bg-[#FFFDF0] flex flex-col items-center justify-center p-6 font-sans text-gray-800 relative overflow-hidden">
-      
-      {}
       <div className="absolute top-[-100px] right-[-100px] w-80 h-80 bg-restify-olive/5 rounded-full blur-3xl" />
       <div className="absolute bottom-[-100px] left-[-100px] w-80 h-80 bg-restify-olive/5 rounded-full blur-3xl" />
 
       <div className="w-full max-w-lg bg-white rounded-[40px] p-10 md:p-14 shadow-2xl border border-restify-olive/10 animate-fade-in-up relative z-10">
-        
-        {}
         <div className="flex justify-center mb-10">
             <div className="relative w-40 h-10">
                 <Image src="/images/logo-putih.png" alt="Restify Logo" fill sizes="(max-width: 768px) 100vw, 160px" className="object-contain" priority />
             </div>
         </div>
         
-        {}
         <div className="text-center mb-8">
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-2 block">Dashboard Management</span>
             <h1 className="text-3xl font-black mb-1 text-restify-dark">Halo, Resepsionis</h1>
@@ -117,7 +111,6 @@ export default function ReceptionistHomePage() {
             )}
         </div>
 
-        {}
         <div className="grid grid-cols-3 gap-3 mb-8">
           {statsLoading ? (
             <div className="col-span-3 text-center py-4 text-sm text-gray-400 font-medium">Memuat statistik...</div>
@@ -134,7 +127,6 @@ export default function ReceptionistHomePage() {
           )}
         </div>
         
-        {}
         <div className="flex flex-col gap-4 mb-12">
             <Link href="/receptionist/reservations" className="group flex items-center justify-between bg-restify-olive text-white p-6 rounded-3xl font-black text-lg hover:shadow-xl hover:shadow-restify-olive/30 transition-all duration-300">
                 <div className="flex items-center gap-4">
@@ -157,7 +149,6 @@ export default function ReceptionistHomePage() {
             </Link>
         </div>
 
-        {}
         <div className="flex justify-center pt-6 border-t border-gray-50">
             <button 
                 onClick={handleLogout}

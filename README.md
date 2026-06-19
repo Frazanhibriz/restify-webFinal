@@ -1,6 +1,6 @@
 # Restify - Aplikasi Hotel Booking Terintegrasi
 
-Restify adalah platform manajemen dan pemesanan (booking) hotel *end-to-end* yang terdiri dari **Laravel 12 API** sebagai Backend dan **Next.js 15** sebagai Frontend. Platform ini menyediakan fitur lengkap mulai dari pencarian hotel, manajemen kamar, pemesanan hotel terintegrasi dengan Midtrans Payment Gateway, sistem manajemen khusus Resepsionis untuk check-in/out, sistem rating dinamis dengan dukungan foto ulasan, unduh bukti pembayaran (E-Receipt PDF), proteksi rute berbasis peran (Role Guard), fitur penghapusan akun mandiri oleh user, hingga mekanisme keamanan modern dengan Laravel Sanctum dan Google reCAPTCHA v3.
+Restify adalah platform manajemen dan pemesanan (booking) hotel *end-to-end* yang terdiri dari **Laravel 12 API** sebagai Backend dan **Next.js 16** sebagai Frontend. Platform ini menyediakan fitur lengkap mulai dari pencarian hotel, manajemen kamar, pemesanan hotel terintegrasi dengan Midtrans Payment Gateway, sistem manajemen khusus Resepsionis untuk check-in/out, sistem rating dinamis dengan dukungan foto ulasan, unduh bukti pembayaran (E-Receipt PDF), proteksi rute berbasis peran (Role Guard), fitur penghapusan akun mandiri oleh user, hingga mekanisme keamanan modern dengan Laravel Sanctum dan Google reCAPTCHA v3.
 
 Project ini dibuat khusus untuk memenuhi kebutuhan **Artefak TUBES 1 Web**.
 
@@ -108,7 +108,7 @@ restify-webFinal/
 │   ├── routes/api.php              # Definisi seluruh endpoint API
 │   ├── storage/                    # Upload foto profil, kamar, ulasan
 │   └── .env.example                # Template konfigurasi environment
-├── frontend/                       # Source code Frontend Next.js 15
+├── frontend/                       # Source code Frontend Next.js 16
 │   ├── app/
 │   │   ├── (auth)/                 # Login, Register, Forgot Password
 │   │   ├── admin/                  # Panel Admin (CRUD hotel, kamar, user)
@@ -143,6 +143,9 @@ Pastikan komputer Anda telah terinstal:
 
 ### Langkah 1: Setup Database PostgreSQL
 
+Terdapat **dua pilihan (opsi)** untuk menyiapkan database:
+
+#### Opsi A: Mengimpor Database dari File SQL (Metode Instan)
 1. Buka **pgAdmin** atau terminal PostgreSQL Anda.
 2. Buat database baru bernama `restify`.
 3. Import file **`restify_database.sql`** dari root direktori project:
@@ -152,49 +155,65 @@ Pastikan komputer Anda telah terinstal:
      psql -U postgres -d restify -f restify_database.sql
      ```
 
+#### Opsi B: Menggunakan Laravel Migration & Seeder (Rekomendasi Bersih)
+Jika Anda ingin membuat skema database secara dinamis dan mengisi data dummy awal (termasuk 28 hotel di Bandung, Yogyakarta, Bali, & Jakarta dengan deskripsi lengkap untuk chatbot) secara otomatis:
+1. Buat database baru bernama `restify` di PostgreSQL.
+2. Lanjutkan ke **Langkah 2** untuk mengonfigurasi `.env` terlebih dahulu.
+3. Setelah dependensi di-install dan file `.env` disesuaikan, jalankan perintah berikut di folder `backend`:
+   ```bash
+   php artisan migrate --seed
+   ```
+
 ---
 
 ### Langkah 2: Setup & Jalankan Backend (Laravel API)
 
-```bash
-cd backend
-```
+1. Masuk ke folder backend:
+   ```bash
+   cd backend
+   ```
 
-```bash
-# Windows
-copy .env.example .env
-# Linux / macOS
-cp .env.example .env
-```
+2. Salin template environment file:
+   ```bash
+   # Windows
+   copy .env.example .env
+   # Linux / macOS
+   cp .env.example .env
+   ```
 
-```bash
-composer install
-php artisan key:generate
-```
+3. Buka `backend/.env` dan sesuaikan kredensial koneksi database PostgreSQL Anda (username & password):
+   ```env
+   # Database PostgreSQL
+   DB_CONNECTION=pgsql
+   DB_HOST=127.0.0.1
+   DB_PORT=5432
+   DB_DATABASE=restify
+   DB_USERNAME=username_postgresql_anda
+   DB_PASSWORD=password_postgresql_anda
 
-Buka `backend/.env` dan sesuaikan konfigurasi berikut:
+   # Midtrans Sandbox (https://dashboard.sandbox.midtrans.com)
+   # Jika ingin menguji pembayaran penuh, ganti dengan key sandbox Midtrans Anda sendiri.
+   MIDTRANS_SERVER_KEY=server_key_sandbox_anda
+   MIDTRANS_CLIENT_KEY=client_key_sandbox_anda
 
-```env
-# Database PostgreSQL
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=restify
-DB_USERNAME=username_postgresql_anda
-DB_PASSWORD=password_postgresql_anda
+   # Google reCAPTCHA v3 (sudah terkonfigurasi untuk localhost)
+   RECAPTCHA_SECRET_KEY=6Le_NQktAAAAALvA_ZqWeLthqxdj7rvNtNQt2voF
+   ```
 
-# Midtrans Sandbox (https://dashboard.sandbox.midtrans.com)
-MIDTRANS_SERVER_KEY=server_key_sandbox_anda
-MIDTRANS_CLIENT_KEY=client_key_sandbox_anda
+4. Jalankan perintah instalasi dependensi, pembuatan app key, dan migrasi (jika menggunakan Opsi B):
+   ```bash
+   composer install
+   php artisan key:generate
 
-# Google reCAPTCHA v3 (sudah terkonfigurasi untuk localhost)
-RECAPTCHA_SECRET_KEY=6Le_NQktAAAAALvA_ZqWeLthqxdj7rvNtNQt2voF
-```
+   # Jalankan perintah di bawah HANYA jika Anda memilih Opsi B untuk Setup Database:
+   php artisan migrate --seed
+   ```
 
-```bash
-php artisan storage:link
-php artisan serve
-```
+5. Buat tautan penyimpanan (symlink) untuk gambar hotel & kamar, lalu jalankan server backend Laravel:
+   ```bash
+   php artisan storage:link
+   php artisan serve
+   ```
 
 > Backend aktif di **http://127.0.0.1:8000**
 
@@ -334,6 +353,12 @@ postman/Restify-Hotel-Booking-API-v3.postman_collection.json
 
 ## Changelog Terbaru
 
+### v2.3.0 — Juni 2026 (Pembersihan Folder, Pemeliharaan Kode, & Pengayaan Data)
+- **Pembersihan Folder Mockup & Static**: Menghapus seluruh folder static mockup yang tidak lagi digunakan (`frontend/app/admin/daftarDataKamar`, `frontend/app/admin/editKamar`, `frontend/app/admin/tambahKamar`, dan `frontend/app/receptionist/dataKamarAdmin`) untuk memastikan struktur folder bersih dari sisa-sisa pengembangan terdahulu.
+- **Pembersihan AI Comments**: Membersihkan seluruh komentar boilerplate buatan AI dan blok kosong dari modul-modul utama Admin dan Resepsionis untuk menjaga kerapian kode dan mempermudah penilaian dosen.
+- **Perbaikan Safety Form (Koordinat Trim)**: Menambahkan pembungkus `String()` sebelum memanggil fungsi `.trim()` pada kolom input koordinat (Latitude & Longitude) hotel pada panel admin untuk mencegah runtime crash jika data koordinat yang dikembalikan berupa tipe float dari database.
+- **Pengayaan Database Seeder**: Memperluas deskripsi hotel secara komprehensif pada `HotelSeeder.php` untuk seluruh 28 hotel di 4 wilayah utama (Bandung, Yogyakarta, Bali, Jakarta) untuk memperkaya data ulasan dan meningkatkan akurasi rekomendasi chatbot.
+
 ### v2.2.0 — Juni 2026 (Optimasi & Perbaikan Keamanan Terbaru)
 - **Perbaikan Fitur Checkout Mandiri**: Mendaftarkan route API `POST /user/checkout/{id}` yang sebelumnya terlewat di backend (`routes/api.php`), sehingga checkout dari aplikasi mobile berjalan sukses tanpa issue.
 - **Migrasi Next.js 16 (Turbopack)**: Memperbarui file konvensi dari `middleware.ts` ke `proxy.ts` serta fungsi ekspornya untuk mematuhi regulasi Next.js 16 terbaru dan membersihkan log warning build.
@@ -341,4 +366,4 @@ postman/Restify-Hotel-Booking-API-v3.postman_collection.json
 
 ---
 
-*Dibuat untuk TUBES Web — Restify v2.2.0*
+*Dibuat untuk TUBES Web — Restify v2.3.0*

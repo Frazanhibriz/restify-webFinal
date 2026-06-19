@@ -12,6 +12,17 @@ import { calculateDistance, getCityCenter } from '@/lib/distance';
 import { getFallbackImage } from '@/lib/utils';
 import { useFavorites } from '@/hooks/useFavorites';
 
+const formatRupiah = (value: string) => {
+    const numberString = value.replace(/[^0-9]/g, '');
+    if (!numberString) return '';
+    return parseInt(numberString, 10).toLocaleString('id-ID');
+};
+
+const parseRupiah = (value: string): number | null => {
+    const cleaned = value.replace(/[^0-9]/g, '');
+    return cleaned ? parseInt(cleaned, 10) : null;
+};
+
 export default function HomePage() {
     const { user } = useAuth();
 
@@ -21,6 +32,19 @@ export default function HomePage() {
     const [showNotif, setShowNotif] = useState(false);
     const [selectedCity, setSelectedCity] = useState('Bandung');
     const [showCityDropdown, setShowCityDropdown] = useState(false);
+
+    useEffect(() => {
+        const storedCity = localStorage.getItem('selectedCity');
+        if (storedCity) {
+            setSelectedCity(storedCity);
+        }
+    }, []);
+
+    const handleSelectCity = (city: string) => {
+        setSelectedCity(city);
+        localStorage.setItem('selectedCity', city);
+        setShowCityDropdown(false);
+    };
 
     const [userCoords, setUserCoords] = useState<{ latitude: number; longitude: number } | null>(null);
     const [hasGps, setHasGps] = useState(false);
@@ -100,8 +124,8 @@ export default function HomePage() {
     };
 
     const handleApplyFilter = () => {
-        setAppliedMin(minPrice ? parseInt(minPrice, 10) : null);
-        setAppliedMax(maxPrice ? parseInt(maxPrice, 10) : null);
+        setAppliedMin(parseRupiah(minPrice));
+        setAppliedMax(parseRupiah(maxPrice));
         setShowFilter(false);
     };
 
@@ -156,25 +180,25 @@ export default function HomePage() {
                             {showCityDropdown && (
                                 <div className="absolute top-12 left-0 bg-white border border-gray-100 rounded-2xl shadow-xl py-3 w-48 z-[60] animate-fade-in">
                                     <button 
-                                        onClick={() => { setSelectedCity('Bandung'); setShowCityDropdown(false); }}
+                                        onClick={() => handleSelectCity('Bandung')}
                                         className={`w-full text-left px-5 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors ${selectedCity === 'Bandung' ? 'text-restify-olive' : 'text-gray-700'}`}
                                     >
                                         Bandung, Indonesia
                                     </button>
                                     <button 
-                                        onClick={() => { setSelectedCity('Jakarta'); setShowCityDropdown(false); }}
+                                        onClick={() => handleSelectCity('Jakarta')}
                                         className={`w-full text-left px-5 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors ${selectedCity === 'Jakarta' ? 'text-restify-olive' : 'text-gray-700'}`}
                                     >
                                         Jakarta, Indonesia
                                     </button>
                                     <button 
-                                        onClick={() => { setSelectedCity('Bali'); setShowCityDropdown(false); }}
+                                        onClick={() => handleSelectCity('Bali')}
                                         className={`w-full text-left px-5 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors ${selectedCity === 'Bali' ? 'text-restify-olive' : 'text-gray-700'}`}
                                     >
                                         Bali, Indonesia
                                     </button>
                                     <button 
-                                        onClick={() => { setSelectedCity('Yogyakarta'); setShowCityDropdown(false); }}
+                                        onClick={() => handleSelectCity('Yogyakarta')}
                                         className={`w-full text-left px-5 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors ${selectedCity === 'Yogyakarta' ? 'text-restify-olive' : 'text-gray-700'}`}
                                     >
                                         Yogyakarta, Indonesia
@@ -257,11 +281,23 @@ export default function HomePage() {
                                     <div className="space-y-4">
                                         <div>
                                             <label className="block text-[10px] font-bold text-gray-700 mb-1">Min. Harga</label>
-                                            <input type="number" placeholder="Rp 0" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-restify-olive" />
+                                            <input 
+                                                type="text" 
+                                                placeholder="Rp 0" 
+                                                value={minPrice} 
+                                                onChange={(e) => setMinPrice(formatRupiah(e.target.value))} 
+                                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-restify-olive" 
+                                            />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-bold text-gray-700 mb-1">Max. Harga</label>
-                                            <input type="number" placeholder="Rp 5.000.000" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-restify-olive" />
+                                            <input 
+                                                type="text" 
+                                                placeholder="Rp 5.000.000" 
+                                                value={maxPrice} 
+                                                onChange={(e) => setMaxPrice(formatRupiah(e.target.value))} 
+                                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-restify-olive" 
+                                            />
                                         </div>
                                         <button onClick={handleApplyFilter} className="w-full bg-restify-olive text-white font-bold py-3 rounded-xl hover:opacity-90 shadow-lg shadow-restify-olive/20 transition-all mt-2">
                                             Terapkan Filter
@@ -363,7 +399,19 @@ export default function HomePage() {
                                         <FiSearch className="text-5xl text-gray-200" />
                                     </div>
                                     <p className="text-gray-500 font-medium">Yah, hotel yang kamu cari belum ketemu nih.</p>
-                                    <button onClick={() => {setSearchInput(''); setAppliedSearchQuery('');}} className="mt-4 text-restify-olive font-bold underline">Lihat semua hotel</button>
+                                    <button 
+                                        onClick={() => {
+                                            setSearchInput('');
+                                            setAppliedSearchQuery('');
+                                            setMinPrice('');
+                                            setMaxPrice('');
+                                            setAppliedMin(null);
+                                            setAppliedMax(null);
+                                        }} 
+                                        className="mt-4 text-restify-olive font-bold underline"
+                                    >
+                                        Lihat semua hotel
+                                    </button>
                                 </div>
                             )}
                         </div>

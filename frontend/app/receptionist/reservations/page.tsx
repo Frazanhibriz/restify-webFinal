@@ -45,7 +45,6 @@ export default function ReservationPage() {
             const bookingsArray = res.data.data || res.data || [];
             setBookings(bookingsArray);
             
-            // Silently update the selected reservation detail if user is viewing one
             setSelectedRes((prev: any) => {
                 if (!prev) return prev;
                 const updated = bookingsArray.find((b: any) => b.id === prev.id);
@@ -62,9 +61,8 @@ export default function ReservationPage() {
         let interval: NodeJS.Timeout;
 
         if (user && user.role === 'receptionist') {
-            fetchBookings(true); // Initial load with spinner
+            fetchBookings(true);
 
-            // Background polling — no loading spinner
             interval = setInterval(() => {
                 fetchBookings(false);
             }, 5000);

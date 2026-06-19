@@ -94,7 +94,6 @@ export default function AdminPage() {
             } else if (user.role === 'user') {
                 router.push('/home');
             }
-            // admin is allowed to stay
         }
     }, [user, isLoading, router]);
 

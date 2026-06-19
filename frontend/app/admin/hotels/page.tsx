@@ -49,6 +49,8 @@ export default function AdminHotelsPage() {
     const [hotelCity, setHotelCity] = useState('');
     const [hotelLocation, setHotelLocation] = useState('');
     const [hotelDescription, setHotelDescription] = useState('');
+    const [hotelLatitude, setHotelLatitude] = useState('');
+    const [hotelLongitude, setHotelLongitude] = useState('');
     const [hotelImage, setHotelImage] = useState<File | null>(null);
     const [hotelQris, setHotelQris] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -99,6 +101,8 @@ export default function AdminHotelsPage() {
             setHotelCity('');
             setHotelLocation('');
             setHotelDescription('');
+            setHotelLatitude('');
+            setHotelLongitude('');
             setHotelImage(null);
             setHotelQris(null);
             setSelectedHotelFacilities([]);
@@ -118,6 +122,8 @@ export default function AdminHotelsPage() {
             setHotelCity(editData.city || '');
             setHotelLocation(editData.address || '');
             setHotelDescription(editData.description || '');
+            setHotelLatitude(editData.latitude !== undefined && editData.latitude !== null ? String(editData.latitude) : '');
+            setHotelLongitude(editData.longitude !== undefined && editData.longitude !== null ? String(editData.longitude) : '');
 
             const facilitiesArray = Array.isArray(editData.facilities) ? editData.facilities : [];
             setSelectedHotelFacilities(facilitiesArray);
@@ -314,8 +320,8 @@ export default function AdminHotelsPage() {
     };
 
     const handleSubmitHotel = async () => {
-        if (!hotelName.trim() || !hotelCity.trim() || !hotelLocation.trim() || !hotelDescription.trim()) {
-            toast.warning("Mohon lengkapi semua bidang wajib (Nama, Kota, Alamat, Deskripsi)");
+        if (!hotelName.trim() || !hotelCity.trim() || !hotelLocation.trim() || !hotelDescription.trim() || !String(hotelLatitude).trim() || !String(hotelLongitude).trim()) {
+            toast.warning("Mohon lengkapi semua bidang wajib (Nama, Kota, Alamat, Deskripsi, Latitude, Longitude)");
             return;
         }
 
@@ -327,8 +333,8 @@ export default function AdminHotelsPage() {
             formData.append('address', hotelLocation);
             formData.append('description', hotelDescription);
             
-            formData.append('latitude', editData?.latitude || '-6.917464');
-            formData.append('longitude', editData?.longitude || '107.619123');
+            formData.append('latitude', hotelLatitude);
+            formData.append('longitude', hotelLongitude);
 
             if (hotelImage) formData.append('image', hotelImage);
             if (hotelQris) formData.append('qris_image', hotelQris);
@@ -590,6 +596,16 @@ export default function AdminHotelsPage() {
                                 <div>
                                     <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Kota</label>
                                     <input type="text" value={hotelCity} onChange={(e) => setHotelCity(e.target.value)} placeholder="Contoh: Bandung" className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive transition-all" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Latitude</label>
+                                        <input type="text" value={hotelLatitude} onChange={(e) => setHotelLatitude(e.target.value)} placeholder="Contoh: -6.917464" className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive transition-all" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Longitude</label>
+                                        <input type="text" value={hotelLongitude} onChange={(e) => setHotelLongitude(e.target.value)} placeholder="Contoh: 107.619123" className="w-full bg-gray-50 border border-transparent rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:bg-white focus:border-restify-olive transition-all" />
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Alamat Lengkap</label>

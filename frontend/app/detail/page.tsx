@@ -87,7 +87,12 @@ function HotelDetailContent() {
         setHotelData(res.data);
         setRooms(res.data.rooms || []);
         if (res.data.rooms?.length > 0) {
-            setSelectedRoomId(res.data.rooms[0].id);
+            const firstAvailableRoom = res.data.rooms.find((r: any) => r.status === 'available');
+            if (firstAvailableRoom) {
+                setSelectedRoomId(firstAvailableRoom.id);
+            } else {
+                setSelectedRoomId(res.data.rooms[0].id);
+            }
         }
       } catch (error) {
         console.error("Gagal mengambil detail hotel:", error);
@@ -210,9 +215,9 @@ function HotelDetailContent() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24">
-      {}
+      {/* Header overlay */}
       <div className="absolute top-0 left-0 w-full z-10 px-6 py-6 flex items-center justify-between">
-        <button onClick={() => router.push('/home')} className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
+        <button onClick={() => router.back()} className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
             <FaChevronLeft />
         </button>
         <button 
@@ -426,15 +431,28 @@ function HotelDetailContent() {
                         return (
                             <div 
                                 key={room.id} 
-                                onClick={() => setSelectedRoomId(room.id)}
-                                className={`bg-white rounded-[24px] border-2 overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${selectedRoomId === room.id ? 'border-restify-olive' : 'border-gray-100'}`}
+                                onClick={() => {
+                                    if (room.status !== 'maintenance') {
+                                        setSelectedRoomId(room.id);
+                                    }
+                                }}
+                                className={`bg-white rounded-[24px] border-2 overflow-hidden shadow-sm hover:shadow-md transition-all 
+                                    ${room.status === 'maintenance' ? 'opacity-60 cursor-not-allowed bg-gray-50/50' : 'cursor-pointer'} 
+                                    ${selectedRoomId === room.id ? 'border-restify-olive' : 'border-gray-100'}`}
                             >
                                 {/* Main Card Content: Three columns */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100 p-6 gap-6">
                                     
                                     {/* Column 1: Title & Gallery */}
                                     <div className="space-y-4">
-                                        <h4 className="text-xl font-bold text-black">{room.room_type}</h4>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <h4 className="text-xl font-bold text-black">{room.room_type}</h4>
+                                            {room.status === 'maintenance' && (
+                                                <span className="bg-amber-100 text-amber-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
+                                                    Maintenance
+                                                </span>
+                                            )}
+                                        </div>
                                         
                                         {/* Gallery Grid */}
                                         <div className="space-y-2">
@@ -575,11 +593,19 @@ function HotelDetailContent() {
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <span className="text-sm font-bold text-gray-700">
-                                            Tersedia : <span className="text-[#5E6B52] font-black">{room.status === 'available' || room.status !== 'booked' ? '2' : '0'}</span> Kamar
+                                            {room.status === 'maintenance' ? (
+                                                <span className="text-amber-600 font-extrabold uppercase tracking-wide text-xs">Sedang Maintenance</span>
+                                            ) : (
+                                                <>
+                                                    Tersedia : <span className="text-[#5E6B52] font-black">{room.status === 'available' ? '2' : '0'}</span> Kamar
+                                                </>
+                                            )}
                                         </span>
-                                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedRoomId === room.id ? 'border-restify-olive' : 'border-gray-200'}`}>
-                                            {selectedRoomId === room.id && <div className="w-3.5 h-3.5 bg-[#5E6B52] rounded-full" />}
-                                        </div>
+                                        {room.status !== 'maintenance' && (
+                                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedRoomId === room.id ? 'border-restify-olive' : 'border-gray-200'}`}>
+                                                {selectedRoomId === room.id && <div className="w-3.5 h-3.5 bg-[#5E6B52] rounded-full" />}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -621,6 +647,11 @@ function HotelDetailContent() {
                             }
                             if (!selectedRoomId) {
                                 toast.warning("Silakan pilih tipe kamar terlebih dahulu di bagian Pilihan Kamar.");
+                                return;
+                            }
+                            const selectedRoom = rooms.find(r => r.id === selectedRoomId);
+                            if (selectedRoom?.status === 'maintenance') {
+                                toast.warning("Tipe kamar yang Anda pilih sedang dalam perbaikan/maintenance.");
                                 return;
                             }
                             setShowBooking(true);

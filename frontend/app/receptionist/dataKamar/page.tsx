@@ -45,7 +45,6 @@ export default function Page() {
     if (user && user.role === 'receptionist') {
         fetchRooms();
 
-        
         interval = setInterval(() => {
             fetchRooms();
         }, 5000);

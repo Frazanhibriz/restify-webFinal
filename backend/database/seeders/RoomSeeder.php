@@ -96,12 +96,27 @@ class RoomSeeder extends Seeder
                         'image' => 'rooms/homann-suite.jpg',
                     ]);
                 } else {
+                    $prices = [
+                        'Flores Gallery Hotel' => ['deluxe' => 450000, 'superior' => 650000],
+                        'eL Hotel Bandung' => ['deluxe' => 600000, 'superior' => 800000],
+                        'Puteri Gunung Hotel' => ['deluxe' => 720000, 'superior' => 950000],
+                        'Grand Restify Hotel' => ['deluxe' => 900000, 'superior' => 1200000],
+                        'Braga Heritage Hotel' => ['deluxe' => 550000, 'superior' => 750000],
+                        'Dago Hills Resort' => ['deluxe' => 850000, 'superior' => 1100000],
+                        'Lembang View Hotel' => ['deluxe' => 500000, 'superior' => 700000],
+                        'Cihampelas Urban Hotel' => ['deluxe' => 400000, 'superior' => 550000],
+                        'Asia Afrika Hotel' => ['deluxe' => 480000, 'superior' => 680000],
+                        'Setiabudi Garden Hotel' => ['deluxe' => 650000, 'superior' => 850000],
+                    ];
+
+                    $hotelPrices = $prices[$hotel->name] ?? ['deluxe' => 750000, 'superior' => 950000];
+
                     // Type 1: Deluxe Room, 2 kamar
                     for ($i = 1; $i <= 2; $i++) {
                         Room::create([
                             'hotel_id' => $hotel->id,
                             'room_type' => 'Deluxe Room',
-                            'price' => 750000,
+                            'price' => $hotelPrices['deluxe'],
                             'status' => 'available',
                             'capacity' => 2,
                             'description' => 'Kamar deluxe nyaman dengan fasilitas lengkap untuk tamu yang menginginkan kenyamanan standar premium.',
@@ -121,7 +136,7 @@ class RoomSeeder extends Seeder
                         Room::create([
                             'hotel_id' => $hotel->id,
                             'room_type' => 'Superior Room',
-                            'price' => 950000,
+                            'price' => $hotelPrices['superior'],
                             'status' => 'available',
                             'capacity' => 3,
                             'description' => 'Kamar superior dengan ruang lebih luas dan fasilitas premium untuk keluarga atau perjalanan bisnis.',
@@ -148,12 +163,21 @@ class RoomSeeder extends Seeder
             */
 
             if ($hotel->city === 'Jakarta') {
+                $jakartaPrices = [
+                    'Menteng City Hotel' => ['standard' => 550000, 'deluxe' => 800000, 'executive' => 1150000],
+                    'Sudirman Executive Hotel' => ['standard' => 750000, 'deluxe' => 1050000, 'executive' => 1450000],
+                    'Kemang Boutique Hotel' => ['standard' => 600000, 'deluxe' => 850000, 'executive' => 1200000],
+                    'Ancol Seaside Hotel' => ['standard' => 680000, 'deluxe' => 950000, 'executive' => 1300000],
+                    'Kuningan Grand Hotel' => ['standard' => 800000, 'deluxe' => 1100000, 'executive' => 1500000],
+                ];
+
+                $prices = $jakartaPrices[$hotel->name] ?? ['standard' => 650000, 'deluxe' => 900000, 'executive' => 1250000];
 
                 // Type 1: Standard Room, 1 kamar
                 Room::create([
                     'hotel_id' => $hotel->id,
                     'room_type' => 'Standard Room',
-                    'price' => 650000,
+                    'price' => $prices['standard'],
                     'status' => 'available',
                     'capacity' => 2,
                     'description' => 'Kamar standard yang nyaman untuk tamu bisnis maupun wisatawan dengan fasilitas dasar lengkap.',
@@ -170,7 +194,7 @@ class RoomSeeder extends Seeder
                 Room::create([
                     'hotel_id' => $hotel->id,
                     'room_type' => 'Deluxe Room',
-                    'price' => 900000,
+                    'price' => $prices['deluxe'],
                     'status' => 'available',
                     'capacity' => 2,
                     'description' => 'Kamar deluxe modern dengan fasilitas lebih lengkap dan suasana nyaman di pusat kota.',
@@ -188,7 +212,7 @@ class RoomSeeder extends Seeder
                 Room::create([
                     'hotel_id' => $hotel->id,
                     'room_type' => 'Executive Room',
-                    'price' => 1250000,
+                    'price' => $prices['executive'],
                     'status' => 'available',
                     'capacity' => 3,
                     'description' => 'Kamar executive dengan fasilitas premium untuk kebutuhan bisnis dan pengalaman menginap yang lebih eksklusif.',
