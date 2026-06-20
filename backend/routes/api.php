@@ -8,6 +8,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReceptionistController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FavoriteController;
 
 
 Route::post('/register', [AuthController::class,'register'])->middleware(['throttle:register', 'recaptcha']);
@@ -63,6 +64,9 @@ Route::middleware(['auth:sanctum','role:user'])
     Route::post('/upload-profile', [AuthController::class, 'uploadProfile']);
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
     Route::delete('/delete-account', [UserController::class, 'deleteOwnAccount']);
+
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
 }); 
 
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { RiArrowLeftLine, RiFileTextLine, RiEyeLine, RiEyeOffLine, RiStarFill, RiStarLine, RiImageAddLine, RiCloseLine } from 'react-icons/ri';
+import { RiArrowLeftLine, RiFileTextLine, RiEyeLine, RiEyeOffLine, RiStarFill, RiStarLine, RiImageAddLine, RiCloseLine, RiCalendarLine } from 'react-icons/ri';
 import {
   formatTanggal,
   formatTanggalSingkat,
@@ -740,7 +740,16 @@ export default function RiwayatPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [filterDate, setFilterDate] = useState<string>('');
   const selectedBookingRef = useRef<Booking | null>(null);
+
+  const filteredBookings = bookings.filter((b) => {
+    if (!filterDate) return true;
+    const selected = filterDate;
+    const checkIn = b.checkIn.split('T')[0];
+    const checkOut = b.checkOut.split('T')[0];
+    return selected >= checkIn && selected <= checkOut;
+  });
 
   useEffect(() => {
     selectedBookingRef.current = selectedBooking;
@@ -830,18 +839,60 @@ export default function RiwayatPage() {
             onActionSuccess={() => fetchBookingHistory(false)}
           />
         ) : (
-          <div className="flex flex-col gap-4">
-            {bookings.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="text-5xl mb-4">🏨</div>
-                <p className="text-gray-400 text-sm font-bold">Belum ada riwayat pemesanan.</p>
-                <p className="text-gray-300 text-xs mt-1">Pesan hotel pertama Anda sekarang!</p>
+          <div className="flex flex-col">
+            {/* Filter Date */}
+            {(bookings.length > 0 || filterDate) && (
+              <div className="bg-[#F5F5F5] rounded-2xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-gray-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="bg-[#5E6B52]/10 p-2 rounded-xl text-[#5E6B52]">
+                    <RiCalendarLine className="text-xl" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-gray-800 uppercase tracking-wider">Filter Tanggal</h4>
+                    <p className="text-[10px] text-gray-400 font-medium">Tampilkan reservasi yang aktif pada tanggal terpilih</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                    className="bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:border-[#5E6B52] transition-colors cursor-pointer"
+                  />
+                  {filterDate && (
+                    <button
+                      onClick={() => setFilterDate('')}
+                      className="bg-red-50 text-red-500 border border-red-100 hover:bg-red-100/50 rounded-xl px-3 py-2 text-xs font-extrabold transition-colors active:scale-95"
+                    >
+                      Reset
+                    </button>
+                  )}
+                </div>
               </div>
-            ) : (
-              bookings.map((b) => (
-                <BookingCard key={b.id} booking={b} onSelect={setSelectedBooking} />
-              ))
             )}
+
+            <div className="flex flex-col gap-4">
+              {filteredBookings.length === 0 ? (
+                <div className="text-center py-20 bg-white border border-gray-100 rounded-2xl">
+                  <div className="text-5xl mb-4">🏨</div>
+                  <p className="text-gray-400 text-sm font-bold">
+                    {filterDate ? 'Tidak ada reservasi pada tanggal ini.' : 'Belum ada riwayat pemesanan.'}
+                  </p>
+                  {filterDate ? (
+                    <button onClick={() => setFilterDate('')} className="mt-4 text-[#5E6B52] font-black text-xs underline">
+                      Tampilkan Semua Riwayat
+                    </button>
+                  ) : (
+                    <p className="text-gray-300 text-xs mt-1">Pesan hotel pertama Anda sekarang!</p>
+                  )}
+                </div>
+              ) : (
+                filteredBookings.map((b) => (
+                  <BookingCard key={b.id} booking={b} onSelect={setSelectedBooking} />
+                ))
+              )}
+            </div>
           </div>
         )}
       </div>

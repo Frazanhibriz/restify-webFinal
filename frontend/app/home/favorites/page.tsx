@@ -7,10 +7,11 @@ import { FiSearch } from 'react-icons/fi';
 import api from '@/lib/axios';
 import { toast } from 'sonner';
 import { calculateDistance, getCityCenter } from '@/lib/distance';
+import { useFavorites } from '@/hooks/useFavorites';
 
 export default function FavoritesPage() {
     const [hotels, setHotels] = useState<any[]>([]);
-    const [favorites, setFavorites] = useState<number[]>([]);
+    const { favorites, toggleFavorite } = useFavorites();
     const [isLoading, setIsLoading] = useState(true);
     const [userCoords, setUserCoords] = useState<{ latitude: number; longitude: number } | null>(null);
 
@@ -48,16 +49,6 @@ export default function FavoritesPage() {
     };
 
     useEffect(() => {
-        // Load favorites
-        const saved = localStorage.getItem('restify_favorites');
-        if (saved) {
-            try {
-                setFavorites(JSON.parse(saved));
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
         // Fetch hotels
         const fetchHotels = async () => {
             try {
@@ -88,14 +79,7 @@ export default function FavoritesPage() {
         fetchHotels();
     }, []);
 
-    const toggleFavorite = (hotelId: number, e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const newFavorites = favorites.filter(id => id !== hotelId);
-        setFavorites(newFavorites);
-        localStorage.setItem('restify_favorites', JSON.stringify(newFavorites));
-        toast.success('Hotel dihapus dari daftar favorit.');
-    };
+    // toggleFavorite is now provided by useFavorites hook
 
     const favoritedHotels = hotels.filter(hotel => favorites.includes(hotel.id));
 
