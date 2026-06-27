@@ -7,6 +7,7 @@ import { FiPlus, FiEdit, FiTrash2, FiImage, FiFileText, FiChevronLeft, FiMinus, 
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { formatRupiah } from '@/lib/utils';
 
 export default function AdminHotelsPage() {
     const getFallbackImage = (id: number | string) => {
@@ -727,7 +728,7 @@ export default function AdminHotelsPage() {
                                         <div key={room.id} className="flex items-center justify-between p-6 bg-gray-50 rounded-3xl border border-transparent hover:border-gray-200 transition-all">
                                             <div>
                                                 <h4 className="font-black text-lg">{room.room_type}</h4>
-                                                <p className="text-sm font-bold text-restify-olive">Rp {parseFloat(room.price).toLocaleString('id-ID')} <span className="text-[10px] text-gray-400 font-normal uppercase">/ malam</span></p>
+                                                <p className="text-sm font-bold text-restify-olive">{formatRupiah(room.price)} <span className="text-[10px] text-gray-400 font-normal uppercase">/ malam</span></p>
                                                 <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-widest">Kapasitas: {room.capacity} Orang</p>
                                             </div>
                                             <div className="flex gap-3">

@@ -99,5 +99,5 @@ export function formatJam(isoDateTime: string): string {
 }
 
 export function formatRupiah(amount: number): string {
-  return `Rp${amount.toLocaleString('id-ID')}`;
+  return `Rp ${amount.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }

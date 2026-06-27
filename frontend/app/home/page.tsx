@@ -9,7 +9,7 @@ import NotificationPanel from '@/app/components/NotificationPanel';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
 import { calculateDistance, getCityCenter } from '@/lib/distance';
-import { getFallbackImage } from '@/lib/utils';
+import { getFallbackImage, formatRupiah as formatRupiahUtil } from '@/lib/utils';
 import { useFavorites } from '@/hooks/useFavorites';
 
 const formatRupiah = (value: string) => {
@@ -382,7 +382,7 @@ export default function HomePage() {
                                             <div>
                                                 <span className="text-[11px] font-bold text-gray-400 uppercase tracking-tighter">Mulai dari</span>
                                                 <p className="font-extrabold text-xl text-black">
-                                                    Rp {hotel.pricePerDay.toLocaleString('id-ID')}
+                                                    {formatRupiahUtil(hotel.pricePerDay)}
                                                     <span className="text-xs font-normal text-gray-400 ml-1">/malam</span>
                                                 </p>
                                             </div>

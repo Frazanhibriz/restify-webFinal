@@ -130,7 +130,7 @@ function BookingDetail({
     const nights = Math.max(1, Math.round((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)));
 
     const fmtDate = (d: Date) => d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-    const fmtRp   = (n: number) => 'Rp\u00a0' + n.toLocaleString('id-ID');
+    const fmtRp   = (n: number) => 'Rp ' + n.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const txCode        = booking.transactionCode || '-';
     const hotelNm       = booking.hotelName || '-';

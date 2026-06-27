@@ -5,6 +5,7 @@ import styles from "./DataKamar.module.css";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
+import { formatRupiah } from "@/lib/utils";
 
 export default function Page() {
   const router = useRouter();
@@ -96,7 +97,7 @@ export default function Page() {
             {rooms.length > 0 ? rooms.map((room) => (
               <div className={styles.tableRow} key={room.id}>
                 <span>{room.room_type}</span>
-                <span>Rp {parseFloat(room.price).toLocaleString('id-ID')}</span>
+                <span>{formatRupiah(room.price)}</span>
                 <span className={`font-bold ${room.status === 'available' ? 'text-green-600' : room.status === 'booked' ? 'text-blue-600' : 'text-red-600'}`}>
                     {room.status.toUpperCase()}
                 </span>

@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { FaMapMarkerAlt, FaStar, FaChevronLeft, FaRegHeart, FaHeart, FaWifi, FaCoffee, FaShower, FaTv, FaUserFriends } from 'react-icons/fa';
 import { FiClock, FiShield, FiArrowRight } from 'react-icons/fi';
 import { calculateDistance, getCityCenter } from '@/lib/distance';
-import { getFallbackImage } from '@/lib/utils';
+import { getFallbackImage, formatRupiah } from '@/lib/utils';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useAuth } from '@/context/AuthContext';
 
@@ -588,7 +588,7 @@ function HotelDetailContent() {
                                 <div className="bg-[#FAF8EE] px-6 py-4 flex items-center justify-between border-t border-gray-100">
                                     <div className="flex items-center gap-1.5 text-sm font-bold text-gray-700">
                                         <span>Harga :</span>
-                                        <span className="text-[#5E6B52] font-black text-base">Rp {parseFloat(room.price).toLocaleString('id-ID')}</span>
+                                        <span className="text-[#5E6B52] font-black text-base">{formatRupiah(room.price)}</span>
                                         <span className="text-xs text-gray-400 font-normal">/ Malam</span>
                                     </div>
                                     <div className="flex items-center gap-4">
@@ -619,7 +619,7 @@ function HotelDetailContent() {
                 <div className="bg-white rounded-[32px] p-8 shadow-xl border border-gray-50 sticky top-28">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">Harga Per Malam</span>
                     <div className="flex items-baseline gap-2 mb-8">
-                        <h2 className="text-3xl font-black text-black">Rp {parseFloat(hotelData.lowest_price || hotelData.price || 0).toLocaleString('id-ID')}</h2>
+                        <h2 className="text-3xl font-black text-black">{formatRupiah(hotelData.lowest_price || hotelData.price || 0)}</h2>
                         <span className="text-sm text-gray-400">/malam</span>
                     </div>
 
@@ -745,7 +745,7 @@ function HotelDetailContent() {
                             <div>
                                 <p className="font-black text-base text-black">{currentRoom.room_type}</p>
                                 <p className="text-sm text-restify-olive font-extrabold mt-1">
-                                    Rp {parseFloat(currentRoom.price).toLocaleString('id-ID')} <span className="text-[11px] text-gray-400 font-normal">/ Malam</span>
+                                    {formatRupiah(currentRoom.price)} <span className="text-[11px] text-gray-400 font-normal">/ Malam</span>
                                 </p>
                             </div>
                             <span className="bg-[#657657] text-white text-[11px] font-black px-4 py-2 rounded-full uppercase tracking-wider shadow-sm">
@@ -777,7 +777,7 @@ function HotelDetailContent() {
                 <div className="flex justify-between text-sm"><span className="text-gray-400">Tipe Kamar:</span> <span className="font-bold">{currentRoom?.room_type}</span></div>
                 <div className="pt-4 border-t border-gray-200 flex justify-between">
                     <span className="font-bold">Total Pembayaran</span>
-                    <span className="text-xl font-black text-restify-olive">Rp {parseFloat(currentRoom?.price || 0).toLocaleString('id-ID')}</span>
+                    <span className="text-xl font-black text-restify-olive">{formatRupiah(currentRoom?.price || 0)}</span>
                 </div>
               </div>
 

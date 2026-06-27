@@ -8,6 +8,7 @@ import api from '@/lib/axios';
 import { toast } from 'sonner';
 import { calculateDistance, getCityCenter } from '@/lib/distance';
 import { useFavorites } from '@/hooks/useFavorites';
+import { formatRupiah } from '@/lib/utils';
 
 export default function FavoritesPage() {
     const [hotels, setHotels] = useState<any[]>([]);
@@ -158,7 +159,7 @@ export default function FavoritesPage() {
                                             <div>
                                                 <span className="text-[11px] font-bold text-gray-400 uppercase tracking-tighter">Mulai dari</span>
                                                 <p className="font-extrabold text-xl text-black">
-                                                    Rp {hotel.pricePerDay.toLocaleString('id-ID')}
+                                                    {formatRupiah(hotel.pricePerDay)}
                                                     <span className="text-xs font-normal text-gray-400 ml-1">/malam</span>
                                                 </p>
                                             </div>
