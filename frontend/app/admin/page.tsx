@@ -903,7 +903,7 @@ export default function AdminPage() {
                                                     <span className={styles.prefixLabel}>Rp.</span>
                                                     <input 
                                                         type="number" 
-                                                        placeholder="Contoh: 123.456" 
+                                                        placeholder="Contoh: 123456" 
                                                         value={hargaKamar}
                                                         onChange={(e) => setHargaKamar(e.target.value)}
                                                         required

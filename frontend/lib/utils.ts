@@ -26,10 +26,25 @@ export const formatRupiah = (price: number | string | null | undefined): string 
   let str = price.toString().trim();
   if (!str) return 'Rp 0,00';
 
+  // Clean prefix like Rp and spaces
+  str = str.replace(/[Rp\s]/gi, '');
+
   if (str.includes(',') && str.includes('.')) {
+    // Standard format like 650.000,00 -> 650000.00
     str = str.replace(/\./g, '').replace(/,/g, '.');
   } else if (str.includes(',')) {
+    // Format like 650000,00 -> 650000.00
     str = str.replace(/,/g, '.');
+  } else if (str.includes('.')) {
+    // Format like 650.000 or 650000.00
+    const parts = str.split('.');
+    if (parts.length === 2 && parts[1].length <= 2) {
+      // 650000.00 (decimal point)
+      str = parts[0];
+    } else {
+      // 650.000 (thousands separator)
+      str = str.replace(/\./g, '');
+    }
   }
 
   const cleanString = str.replace(/[^0-9.-]/g, '');
