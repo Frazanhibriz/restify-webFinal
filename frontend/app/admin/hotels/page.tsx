@@ -239,8 +239,10 @@ export default function AdminHotelsPage() {
     }, [view, editData, editRoomData]);
 
     useEffect(() => {
-        fetchHotels();
-    }, []);
+        if (user && user.role === 'admin') {
+            fetchHotels();
+        }
+    }, [user]);
 
     const fetchHotels = async () => {
         try {

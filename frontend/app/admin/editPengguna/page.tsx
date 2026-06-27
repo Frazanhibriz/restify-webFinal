@@ -6,9 +6,11 @@ import styles from "./EditPengguna.module.css";
 import api from "@/lib/axios";
 import { notify } from "@/lib/notifications";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 function EditPenggunaContent() {
   const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
   const searchParams = useSearchParams();
   const userId = searchParams.get("id");
 
@@ -20,6 +22,16 @@ function EditPenggunaContent() {
   const [hotels, setHotels] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        router.push('/login');
+      } else if (user.role !== 'admin') {
+        router.push('/home');
+      }
+    }
+  }, [user, authLoading, router]);
 
   useEffect(() => {
     if (!userId) {
@@ -35,11 +47,11 @@ function EditPenggunaContent() {
 
         
         const userRes = await api.get(`/admin/users/${userId}`);
-        const user = userRes.data;
-        setName(user.name);
-        setEmail(user.email);
-        setRoleId(user.role_id);
-        setHotelId(user.hotel_id || "");
+        const userData = userRes.data;
+        setName(userData.name);
+        setEmail(userData.email);
+        setRoleId(userData.role_id);
+        setHotelId(userData.hotel_id || "");
       } catch (error) {
         console.error("Gagal mengambil data:", error);
         notify.api.serverError();
@@ -48,8 +60,10 @@ function EditPenggunaContent() {
       }
     };
 
-    fetchData();
-  }, [userId, router]);
+    if (user && user.role === 'admin') {
+      fetchData();
+    }
+  }, [userId, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,7 +121,7 @@ function EditPenggunaContent() {
     }
   };
 
-  if (isFetching) return <div className="p-20 text-center">Memuat data...</div>;
+  if (authLoading || isFetching) return <div className="p-20 text-center">Memuat data...</div>;
 
   return (
     <div className={styles.container}>
