@@ -203,7 +203,7 @@ class AuthController extends Controller
                     ]
                 ])
 
-                ->post('http://localhost:5678/webhook/61c2954c-8125-4afb-9a44-3438eb385db0', [
+                ->post(env('N8N_WEBHOOK_URL', 'http://localhost:5678/webhook/61c2954c-8125-4afb-9a44-3438eb385db0'), [
                     'email' => $request->email,
                     'code' => $code
                 ]);

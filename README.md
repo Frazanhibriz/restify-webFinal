@@ -231,15 +231,27 @@ php artisan schedule:work
 
 ### Langkah 4: Setup & Jalankan Frontend (Next.js)
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+1. Masuk ke folder frontend:
+   ```bash
+   cd frontend
+   ```
+2. (Opsional) Salin file environment:
+   Jika Anda ingin mengubah API URL atau kunci pihak ketiga, salin file `.env.example` menjadi `.env`:
+   ```bash
+   # Windows
+   copy .env.example .env
+   # Linux / macOS
+   cp .env.example .env
+   ```
+3. Install dependensi dan jalankan server pengembangan:
+   ```bash
+   npm install
+   npm run dev
+   ```
 
 > Frontend aktif di **http://localhost:3000**
 
-Saat pertama kali buka browser, **logout dulu** jika sudah pernah login sebelumnya agar cookie role tersinkronisasi dengan benar.
+*Tips:* Saat pertama kali membuka browser, pastikan untuk **logout dulu** jika sudah pernah masuk sebelumnya agar cookie role tersinkronisasi dengan benar.
 
 ---
 
@@ -312,13 +324,16 @@ Klik dua kali node pengirim email → isi:
 1. Aktifkan workflow → klik **Publish**
 2. Klik node Webhook → tab **Webhook URLs** → salin **Production URL**
 
-### Langkah 5: Update AuthController
-Buka `backend/app/Http/Controllers/AuthController.php` dan ganti URL webhook di method `forgotPassword`:
-```php
-$response = Http::post('http://localhost:5678/webhook/YOUR_PRODUCTION_ID', [
-    'email' => $request->email,
-    'code'  => $code
-]);
+### Langkah 5: Sesuaikan URL Webhook di `.env` (Jika Diperlukan)
+Secara default, backend Laravel sudah dikonfigurasi menggunakan ID webhook dari workflow bawaan (`http://localhost:5678/webhook/61c2954c-8125-4afb-9a44-3438eb385db0`).
+
+Namun, jika n8n Anda menghasilkan ID/URL webhook yang berbeda saat diaktifkan, Anda **tidak perlu mengedit kode program PHP**. Cukup buka file `backend/.env` dan perbarui nilai variabel berikut dengan URL webhook n8n baru Anda:
+```env
+N8N_WEBHOOK_URL=http://localhost:5678/webhook/YOUR_NEW_WEBHOOK_ID
+```
+Setelah mengubah berkas `.env`, jalankan perintah berikut di terminal backend agar konfigurasi baru dimuat:
+```bash
+php artisan config:clear
 ```
 
 ---
